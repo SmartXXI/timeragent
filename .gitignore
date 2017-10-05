@@ -57,3 +57,8 @@ typings/
 # dotenv environment variables file
 .env
 
+#vendor folder
+/vendor
+
+#idea folder
+/.idea
