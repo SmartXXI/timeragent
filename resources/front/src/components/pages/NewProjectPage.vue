@@ -4,7 +4,7 @@
         <div class="container">
                 <div class="pull-right">
                     <button type="button" class="btn btn-wide btn-default btn-lg" @click="$router.go(-1)"> Cancel </button> 
-                    <button type="submit" class="btn btn-wide btn-primary btn-lg" title="Press Ctrl+Enter to save changes" @click="addProject"> Save </button> 
+                    <button type="submit" class="btn btn-wide btn-primary btn-lg" title="Press Ctrl+Enter to save changes" @click="addProject" :disabled="formInvalid"> Save </button> 
                 </div>
                 <span class="page-title"> New Project </span> 
             <div class="row">
@@ -13,7 +13,13 @@
                         <div class="col-md-8">
                             <div class="form-group row">
                                 <div class="col-xs-8"> <label class="control-label" for="project-name">Name</label> 
-                                    <input id="project-name" class="form-control" placeholder="Enter project name" v-model="project.name"> 
+                                    <input id="project-name" class="form-control" :class="{ 'has-error': $v.project.name.$error}"
+                                    placeholder="Enter project name" v-model="project.name" @input="$v.project.name.$touch()">
+                                        <i class="fa fa-exclamation-circle error-icon" v-if="$v.project.name.$error">
+                                        <div class="errors">
+                                            <span class="error-message" v-if="!$v.project.name.required">Field is required</span>
+                                        </div> 
+                                    </i>
                                 </div>
                                 <div class="col-xs-4">
                                     <label class="control-label" for="project-status" disabled="disabled">Status</label> 
@@ -77,6 +83,7 @@
 <script>
 	import NavMenuAuth from '../blocks/NavMenuAuth.vue';
     import {HTTP} from '../../main.js';
+    import { required } from 'vuelidate/lib/validators';
 
 	export default {
         data() {
@@ -89,11 +96,17 @@
                 addedTeams: [],
             }
         },
+        computed: {
+            formInvalid() {
+                return this.$v.$invalid;
+            }
+        },
         created() {
             HTTP.get('api/projects/teams').then(response => this.teams = response.data);
         },
         methods: {
             addProject() {
+                if (this.$v.$invalid) return;
                 HTTP.post('api/projects/new', { project: this.project, teams: this.addedTeams }).then((response) => {
                     this.$router.push('/projects');
                 });
@@ -101,7 +114,14 @@
         },
 		components: {
 			NavMenuAuth
-		}
+		},
+        validations: {
+            project: {
+                name: {
+                    required,
+                }
+            }
+        }
 	}
 </script>
 <style lang="scss" rel="stylesheet/css" scoped>

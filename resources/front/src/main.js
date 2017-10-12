@@ -5,7 +5,10 @@ import App from './App.vue';
 import router from './router';
 import moment from 'moment'; 				//eslint-disable-line
 import store from './store';             	//eslint-disable-line
-import axios from 'axios';  				//eslint-disable-line                                                   
+import axios from 'axios';  				//eslint-disable-line
+import Vuelidate from 'vuelidate';
+
+Vue.use(Vuelidate);                                                 
 
 // require('../node_modules/bootstrap/less/bootstrap.less');
 

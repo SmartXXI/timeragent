@@ -7,3 +7,4 @@ export const CONTINUE_TASK = 'CONTINUE_TASK';
 export const STOP_TASK = 'STOP_TASK';
 export const DELETE_TASK = 'DELETE_TASK';
 export const ADD_TIME_ENTRY = 'ADD_TIME_ENTRY';
+export const GET_USER = 'GET_USER';

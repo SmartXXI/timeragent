@@ -67,4 +67,7 @@ export default {
         state.tasks = state.tasks.concat(task);//eslint-disable-line
         state.tasksExists = true;//eslint-disable-line
     },
+    [types.GET_USER](state, user) {
+        state.user = user;
+    }
 };

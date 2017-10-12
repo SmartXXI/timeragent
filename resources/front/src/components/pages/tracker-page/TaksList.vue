@@ -1,6 +1,6 @@
 <template >
 	<div>
-		<one-task v-for="(task, index) in sortedTasks" :task="task" :index="index" :tasks="sortedTasks"></one-task>
+		<one-task v-for="(task, index) in sortedTasks" :key="task.id" :task="task" :index="index" :tasks="sortedTasks"></one-task>
 	</div>
 </template>
 

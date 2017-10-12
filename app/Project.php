@@ -17,6 +17,12 @@ class Project extends Model
     	return $this;
     }
 
+    public function detachTeam($team_id)
+    {
+        $this->teams()->detach($team_id);
+        return $this;
+    }
+
     public function users() {
     	return $this->belongsToMany('App\User', 'projects_users', 'project_id', 'user_id')
     		->withPivot('billable_rate', 'cost_rate')
@@ -26,6 +32,12 @@ class Project extends Model
     {
     	$this->users()->attach($user_id, $pivot);
     	return $this;
+    }
+
+    public function detachUser($user_id, $pivot = [])
+    {
+        $this->users()->detach($user_id, $pivot);
+        return $this;
     }
 
     public function tasks() {

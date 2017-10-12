@@ -32,6 +32,8 @@ Route::middleware('auth:api')->post('/delete-task/{task}', 'TaskController@delet
 Route::middleware('auth:api')->get('/teams', 'TeamController@getTeams');
 Route::middleware('auth:api')->post('/teams/new', 'TeamController@create');
 Route::middleware('auth:api')->post('/teams/invite', 'TeamController@invite');
+Route::middleware('auth:api')->get('/teams/exists-members', 'TeamController@getExistsMembers');
+Route::middleware('auth:api')->post('/teams/{team}/delete', 'TeamController@delete');
 Route::middleware('auth:api')->get('/teams/{team}', 'TeamController@edit');
 Route::middleware('auth:api')->post('/teams/{team}', 'TeamController@update');
 
@@ -40,3 +42,4 @@ Route::middleware('auth:api')->post('/projects/new', 'ProjectController@createPr
 Route::middleware('auth:api')->get('/projects/teams', 'TeamController@getOwnTeams');
 Route::middleware('auth:api')->get('/projects/{project}', 'ProjectController@edit');
 Route::middleware('auth:api')->post('/projects/{project}', 'ProjectController@update');
+Route::middleware('auth:api')->post('/projects/{project}/delete', 'ProjectController@delete');

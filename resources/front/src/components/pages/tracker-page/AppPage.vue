@@ -96,7 +96,9 @@
                     const tasks = JSON.parse(JSON.stringify(this.tasks));                   //eslint-disable-line
 
                     const total = tasks.reduce(function(prev, cur) {                        //eslint-disable-line
-                        return moment.duration(moment.duration(moment(cur.endTime, 'HH:mm:ss').diff(moment(cur.startTime, 'HH:mm:ss')))).add(prev);
+                        let endTime = cur.endTime;
+                        if (!endTime) endTime = moment().format('HH:mm:ss');
+                        return moment.duration(moment(endTime, 'HH:mm:ss').diff(moment(cur.startTime, 'HH:mm:ss'))).add(prev);
                     }, null);                                                               //eslint-disable-line
                     // return moment.utc(total.asMilliseconds()).format('HH [h] mm [min]');
                     const hours = total.hours();

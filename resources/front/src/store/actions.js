@@ -59,4 +59,7 @@ export default {
         HTTP.post('api/create-task', { task: task}).then(response => context.commit(types.ADD_TIME_ENTRY, response.data));
         // context.commit(types.ADD_TIME_ENTRY, task);
     },
+    getUser(context) {
+        HTTP.get('api/user').then(response => context.commit(types.GET_USER, response.data));
+    }
 };

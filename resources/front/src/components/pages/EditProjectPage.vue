@@ -4,7 +4,7 @@
         <div class="container">
                 <div class="pull-right">
                     <button type="button" class="btn btn-wide btn-default btn-lg" @click="$router.go(-1)"> Cancel </button> 
-                    <button type="submit" class="btn btn-wide btn-primary btn-lg" title="Press Ctrl+Enter to save changes" @click="updateProject"> Save </button> 
+                    <button type="submit" class="btn btn-wide btn-primary btn-lg" title="Press Ctrl+Enter to save changes" @click="updateProject" :disabled="formInvalid"> Save </button> 
                 </div>
                 <span class="page-title"> Edit Project </span> 
             <div class="row">
@@ -13,7 +13,13 @@
                         <div class="col-md-8">
                             <div class="form-group row">
                                 <div class="col-xs-8"> <label class="control-label" for="project-name">Name</label> 
-                                    <input id="project-name" class="form-control" placeholder="Enter project name" v-model="project.name"> 
+                                    <input id="project-name" class="form-control" :class="{ 'has-error': $v.project.name.$error }"
+                                    placeholder="Enter project name" v-model="project.name" @input="$v.project.name.$touch()">
+                                    <i class="fa fa-exclamation-circle error-icon" v-if="$v.project.name.$error">
+                                        <div class="errors">
+                                            <span class="error-message" v-if="!$v.project.name.required">Field is required</span>
+                                        </div> 
+                                    </i>
                                 </div>
                                 <div class="col-xs-4">
                                     <label class="control-label" for="project-status" disabled="disabled">Status</label> 
@@ -40,20 +46,50 @@
                             </div>
                             <div> 
                                 <ul class="list-group margin-top-small"> 
-                                    <li v-for="team in project.teams" class="list-group-item hoverable-element clearfix"> 
+                                    <li v-for="(team, index) in project.teams" class="list-group-item hoverable-element clearfix"> 
                                         <span class="fa fa-users"></span> {{ team.name }} <span class="pull-right"> 
-                                        <span class="fa fa-times hoverable-cross"></span> 
+                                        <span class="fa fa-times hoverable-cross" @click="deleteTeam(index, team.id)"></span> 
                                         </span>
 
                                         <ul class="list-group margin-top-small"> 
                                             <li v-for="member in team.users" class="list-group-item hoverable-element clearfix"> 
-                                                <span class="fa fa-users"></span> {{ member.name }} <span class="pull-right"> 
+                                                <span class="fa fa-user"></span> {{ member.name }} <span class="pull-right"> 
                                                 </span> 
                                             </li>
                                         </ul> 
                                     </li>
                                 </ul>
                             </div>
+                            <div><a @click="showConfirmModal = true">Delete Project</a></div>
+
+                            <!-- Confirm delete project modal form -->
+                            <div class="modal" v-if="showConfirmModal">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <form> 
+                                            <div class="modal-header"> 
+                                                <button type="button" class="close" @click="showConfirmModal = false"> 
+                                                    <span>×</span>
+                                                </button> <h4 class="modal-title ng-binding">Delete project</h4> 
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="row">
+                                                    <div class="col-sm-12">
+                                                       <span>It will not be undone, continue?</span>
+                                                    </div>
+                                                </div>
+                                            </div> 
+                                            <div class="modal-footer">
+                                                <button type="submit" class="btn btn-primary" @click="deleteProject">Delete</button>
+                                                <button type="submit" class="btn btn-default" @click="showConfirmModal = false ">Cancel</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                                <div class="modal-backdrop" ></div>
+                            </div>
+
+                            <!-- Adding teams modal form -->
 
                             <div class="modal" v-if="showModal">
                                 <div class="modal-dialog">
@@ -74,7 +110,7 @@
                                                 </div>
                                             </div> 
                                             <div class="modal-footer">
-                                                <button type="submit" class="btn btn-primary" @click="showModal = false">Add</button>
+                                                <button type="submit" class="btn btn-primary" @click="addTeams">Add</button>
                                                 <button type="submit" class="btn btn-default" @click="showModal = false ">Cancel</button>
                                             </div>
                                         </form>
@@ -93,6 +129,7 @@
 <script>
 	import NavMenuAuth from '../blocks/NavMenuAuth.vue';
     import {HTTP} from '../../main.js';
+    import {required} from 'vuelidate/lib/validators';
 
 	export default {
         props: ['projectId'],
@@ -103,23 +140,60 @@
                 },
                 teams: {},
                 showModal: false,
+                showConfirmModal: false,
                 addedTeams: [],
+                deletedTeams: [],
             }
         },
         created() {
             HTTP.get('api/projects/teams').then(response => this.teams = response.data);
             HTTP.get('api/projects/' + this.projectId).then(response => this.project = response.data);
         },
+        computed: {
+            formInvalid() {
+                return this.$v.$invalid; 
+            },
+        },
         methods: {
             updateProject() {
-                HTTP.post('api/projects/' + this.project.id, {project: this.project, teams: this.addedTeams}).then((response) => {
+                if (this.$v.$invalid) return;
+                HTTP.post('api/projects/' + this.project.id, {project: this.project, addedTeams: this.addedTeams, deletedTeams: this.deletedTeams}).then((response) => {
                     this.$router.push('/projects');
                 });
+            },
+            deleteProject() {
+                HTTP.post('api/projects/' + this.project.id + '/delete').then((response) => {
+                    this.showConfirmModal = false;
+                    this.$router.go(-1);
+                });
+            },
+            deleteTeam(index, team_id) {
+                this.deletedTeams.push(team_id);
+                this.project.teams.splice(index);
+            },
+            addTeams() {
+                this.addedTeams.map((teamId) => {
+                    let teamIndex = this.teams.findIndex(obj => obj.id === teamId);
+                    console.log(teamIndex);
+                    let index = this.project.teams.findIndex(obj => obj.id === teamId);
+                    if (index === -1) {
+                        let team = this.teams[teamIndex];
+                        this.project.teams.push(team);
+                    }
+                });
+                this.showModal = false;
             },
         },
 		components: {
 			NavMenuAuth
-		}
+		},
+        validations: {
+            project: {
+                name: {
+                    required,
+                }
+            }
+        }
 	}
 </script>
 <style lang="scss" rel="stylesheet/css" scoped>
@@ -290,5 +364,8 @@
     .list-group-item {
         margin-top: 5px;
         margin-bottom: 5px;
+    }
+    .fa-times {
+        cursor: pointer;
     }
 </style>

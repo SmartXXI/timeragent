@@ -15,7 +15,7 @@
             				</div> 
             			</div>
                         <div class="panel-body form clear-padding">
-                        <table class="table teams" v-if="teams">
+                        <table class="table teams" v-if="teams.length">
                         <thead>
                             <tr>
                                 <th>Name</th>
@@ -25,14 +25,15 @@
                         </thead>
                         <tbody>
                             <tr v-for="team in teams" >
-                                <td @click="goToTeam(team.id)">{{ team.name }}</td> 
-                                <td @click="goToTeam(team.id)">{{ team.owner_name }}</td> 
-                                <td @click="goToTeam(team.id)"><div v-for="user in team.users">{{ user.name }}</div></td> 
+                                <td>{{ team.name }}</td> 
+                                <td>{{ team.owner_name }}</td> 
+                                <td><div v-for="user in team.users">{{ user.name }}</div></td>
+                                <div v-if="user.id == team.owner_id" class="edit-button" @click="goToTeam(team.id)"><a><i class="fa fa-pencil" aria-hidden="true"></i></a></div>
                             </tr>
                         </tbody>
                         </table>
                         </div>  
-            			<div class="panel-body form clear-padding" v-if="!teams">
+            			<div class="panel-body form clear-padding" v-if="!teams.length">
             				<div class="well text-center" > No teams have been added yet. </div>
             			</div> 
             		</div>
@@ -54,6 +55,11 @@
         },
         created() {
             HTTP.get('api/teams').then(response => this.teams = response.data);
+        },
+        computed: {
+            user() {
+                return this.$store.state.user;
+            }
         },
         methods: {
             goToTeam(teamId) {
@@ -143,6 +149,13 @@
             line-height: 1.42857;
             vertical-align: top;
             border-top: 1px solid #e0e0e0;
+        }
+    }
+    .edit-button {
+        margin: 20px 0;
+        text-align: center;
+        a {
+            color: inherit;
         }
     }
 </style>

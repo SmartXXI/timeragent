@@ -30,19 +30,43 @@
                             <button type="button" class="btn btn-icon-default" title="Pick start time">
                                 <i class="fa fa-clock-o"></i>
                             </button>
-                            <input class="form-control" placeholder="HH:mm" v-model="localTask.startTime">
+                            <input class="form-control" :class="{'has-error': $v.localTask.startTime.$error }"
+                             placeholder="HH:mm" v-model="localTask.startTime" @input="$v.localTask.startTime.$touch()">
+                             <!-- errors block -->
+                            <i class="fa fa-exclamation-circle error-icon" v-if="$v.localTask.startTime.$error">
+                                <div class="errors">
+                                    <span class="error-message" v-if="!$v.localTask.startTime.required">Field is required</span>
+                                    <span class="error-message" v-if="!$v.localTask.startTime.validTime">Invalid time</span>
+                                </div>
+                            </i>
+                            
                         </div>
                         <div class="time-editor-input-group flex-container">
                             <button type="button" class="btn btn-icon-default" title="Pick end time">
                                 <i class="fa fa-clock-o"></i>
                             </button>
-                            <input class="form-control" placeholder="HH:mm" v-model="localTask.endTime">
+                            <input class="form-control" placeholder="HH:mm" v-model="localTask.endTime"
+                            :class="{ 'has-error': $v.localTask.endTime.$error }" @input="$v.localTask.endTime.$touch()">
+                            <!-- errors block -->
+                            <i class="fa fa-exclamation-circle error-icon" v-if="$v.localTask.endTime.$error">
+                                <div class="errors">
+                                    <span class="error-message" v-if="!$v.localTask.endTime.required">Field is required</span>
+                                    <span class="error-message" v-if="!$v.localTask.endTime.validTime">Invalid time</span>
+                                </div>
+                            </i>
                         </div>
                         <div class="time-editor-input-group flex-container">
                             <button type="button" class="btn btn-icon-default" title="Duration is linked to start time and end time values.">
                                 <i class="fa fa-clock-o"></i>
                             </button>
-                            <input class="form-control" placeholder="0 h 0 min" v-model="spendTime">
+                            <input class="form-control" placeholder="0 h 0 min" v-model="spendTime"
+                            :class="{ 'has-error': $v.localTask.spendTime.$error }" @input="$v.localTask.spendTime.$touch()">
+                            <!-- errors block -->
+                            <i class="fa fa-exclamation-circle error-icon" v-if="$v.localTask.endTime.$error">
+                                <div class="errors">
+                                    <span class="error-message" v-if="!$v.localTask.endTime.required">Field is required</span>
+                                </div>
+                            </i>
                         </div>
                     </div>
                 </div>
@@ -51,8 +75,8 @@
                 </div>
             </div>
             <div class="actions margin-top-20">
-                <button v-if="editTask" @click="updateTask" title="Save editing" class="btn btn-primary"> Save </button>
-                <button v-if="addingTimeEntry" @click="addTimeEntry" title="Add time entry" class="btn btn-primary"> Save </button>
+                <button v-if="editTask" @click="updateTask" title="Save editing" class="btn btn-primary" :disabled="formInvalid"> Save </button>
+                <button v-if="addingTimeEntry" @click="addTimeEntry" title="Add time entry" :disabled="formInvalid" class="btn btn-primary"> Save </button>
                 <button
                         @click="closeEditor"
                         type="button"
@@ -69,6 +93,7 @@
 <script>
     import moment from 'moment';
     import {HTTP} from '../../../main.js';
+    import { required, minLength, between } from 'vuelidate/lib/validators';
 
     export default {
         props: ['task', 'addingTimeEntry', 'editTask'],
@@ -87,6 +112,21 @@
                 projects: {},
             };
         },
+        watch: {
+            'localTask.startTime'(val, oldVal) {
+                if (val.length == 1 && val > 2 && oldVal.substr(-1) !== ':') {
+                    this.localTask.startTime = this.localTask.startTime + ":";
+                } else if (val.length == 2 && val.substr(-1) !== ':' && oldVal.substr(-1) !== ':') {
+                    console.log(oldVal);
+                    this.localTask.startTime = this.localTask.startTime + ":";
+                }
+            },
+            'localTask.endTime'(val, oldVal) {
+                if (val.length == 2 && oldVal.substr(-1) !== ':') {
+                    this.localTask.endTime = this.localTask.endTime + ":";
+                } 
+            },
+        },
         computed: {
             spendTime() {
                 if (this.localTask.startTime != "" && this.localTask.endTime != "") {
@@ -98,6 +138,9 @@
                 this.localTask.spendTime = "";
                 return this.localTask.spendTime;
             },
+            formInvalid() {
+                return this.$v.$invalid;
+            }
         },
         created() {
             if (this.task) {
@@ -117,7 +160,29 @@
                 this.$emit('update-task', this.localTask);
             },
             addTimeEntry() {
+                if (this.$v.$invalid) return;
                 this.$emit('add-time-entry', this.localTask);
+            },
+        },
+        validations: {
+            localTask: {
+                startTime: {
+                    required,
+                    validTime(value) {
+                        if (moment(value, "HH:mm:ss").isBefore(moment()) || value === "") return true;
+                        return false;
+                    },
+                },
+                endTime: {
+                    required,
+                    validTime(value) {
+                        if (moment(value, "HH:mm:ss").isBefore(moment()) || value === "") return true;
+                        return false;
+                    },
+                },
+                spendTime: {
+                    required,
+                },
             },
         },
     };

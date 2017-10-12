@@ -5,7 +5,7 @@
                 <!-- BEGIN LOGO -->
                 <span class="logo">
                     <router-link to="/">
-                        <img src="../../assets/images/logo.png" alt="logo"/>
+                        <img class="logo" src="../../assets/images/logo.svg" alt="logo"/>
                     </router-link>
 
                 </span>
@@ -197,16 +197,18 @@
         data() {
             return {
                 isOpened: null,
-                user: null,
             };
         },
         created() {
-            HTTP.get('api/user').then(response => this.user = response.data);
+            this.$store.dispatch('getUser');
         },
         computed: {
             timerStarted() {
                 return this.$store.state.timerStarted;
             },
+            user() {
+                return this.$store.state.user;
+            }
         },
         methods: {
             showSubMenu(name) {
@@ -234,6 +236,10 @@
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss" rel="stylesheet/scss" scoped>
+        .logo {
+            width: 240px;
+            height: 70px;
+        }
 
     body {
         font-family: "Open Sans", sans-serif;

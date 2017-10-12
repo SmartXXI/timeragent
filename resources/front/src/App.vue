@@ -42,4 +42,48 @@
         -moz-osx-font-smoothing: grayscale;
         line-height: inherit;
     }
+
+    .has-error {
+        border-bottom: 2px solid #e02c48 !important;
+        color: #e02c48 !important;
+    }
+    .has-error:focus {
+        border-bottom: 2px solid #e02c48 !important;
+    }
+    .error-icon {
+        position: relative;
+        font-size: 20px;
+        margin: 5px;
+        color: #e02c48;
+    }
+    .errors {
+        display: none;
+        position: absolute;
+        left:0;
+        bottom:0;
+        right:0;
+        top: 33px;
+        width: 130px;
+        height: 50px;
+        background-color: #f2dede;
+        border: 1px solid #ebcccc;
+        color: #a94442;
+        font-size: initial;
+        padding: 10px;
+    }
+    .errors:before {
+        border-bottom: 8px solid #f2dede;
+        border-left: 8px solid transparent;
+        border-right: 8px solid transparent;
+        content: '';
+        left: 0px;
+        position: absolute;
+        top: -8px;
+    }
+    .error-icon:hover .errors {
+        display: block;
+    }
+    a {
+        cursor: pointer;
+    }
 </style>

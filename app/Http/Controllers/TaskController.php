@@ -26,7 +26,9 @@ class TaskController extends Controller
     	// dd($request->task);
 
     	$task->description = $request->task['description'];
-        $task->project_id = $request->task['project_id'];
+        if (isset($request->task['project_id'])) {
+            $task->project_id = $request->task['project_id'];
+        }
     	$task->startTime = $request->task['startTime'];
     	$task->spendTime = $request->task['spendTime'];
     	$task->endTime = $request->task['endTime'];

@@ -7,6 +7,7 @@ export default {
     total: null,
     activeTask: null,
     date: moment().format('YYYY-MM-DD'),
+    user: {},
     tasks: [
         // {
         //     description: 'blabla 1',

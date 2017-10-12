@@ -15,7 +15,7 @@
             				</div> 
             			</div>
                         <div class="panel-body form clear-padding">
-                        <table class="table projects" v-if="projects">
+                        <table class="table projects" v-if="projects.length">
                             <thead>
                                 <tr>
                                     <th>Name</th>
@@ -24,15 +24,16 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr v-for="project in projects" >
-                                    <td @click="goToProject(project.id)">{{ project.name }}</td> 
-                                    <td @click="goToProject(project.id)">{{ project.owner_name }}</td> 
-                                    <td @click="goToProject(project.id)">{{ project.teams.length }}</td> 
+                                <tr v-for="project in projects">
+                                    <td>{{ project.name }}</td> 
+                                    <td>{{ project.owner_name }}</td> 
+                                    <td>{{ project.teams.length }}</td>
+                                    <div v-if="user.id == project.owner_id" class="edit-button" @click="goToProject(project.id)"><a><i class="fa fa-pencil" aria-hidden="true"></i></a></div> 
                                 </tr>
                             </tbody>
                         </table>
                         </div>  
-            			<div class="panel-body form clear-padding" v-if="!projects">
+            			<div class="panel-body form clear-padding" v-if="!projects.length">
             				<div class="well text-center" > No projects have been added yet. </div>
             			</div> 
             		</div>
@@ -54,6 +55,11 @@
         },
         created() {
             HTTP.get('api/projects').then(response => this.projects = response.data);
+        },
+        computed: {
+            user() {
+                return this.$store.state.user;
+            }
         },
         methods: {
             goToProject(projectId) {
@@ -139,6 +145,13 @@
             line-height: 1.42857;
             vertical-align: top;
             border-top: 1px solid #e0e0e0;
+        }
+    }
+    .edit-button {
+        margin: 20px 0;
+        text-align: center;
+        a {
+            color: inherit;
         }
     }
 </style>

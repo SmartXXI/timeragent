@@ -5,7 +5,7 @@
                 <div class="pull-right">
                     <button type="button" @click="$router.go(-1)" class="btn btn-wide btn-default btn-lg"> Cancel </button> 
                     <button type="submit" class="btn btn-wide btn-primary btn-lg" title="Press Ctrl+Enter to save changes" 
-                    @click="updateTeam"> Save </button> 
+                    @click="updateTeam" :disabled="formInvalid"> Save </button> 
                 </div>
                 <span class="page-title"> Edit Team </span> 
             <div class="row">
@@ -14,7 +14,13 @@
                         <div class="col-md-8">
                             <div class="form-group row">
                                 <div class="col-xs-12"> <label class="control-label" for="project-name">Name</label> 
-                                    <input id="project-name" class="form-control" placeholder="Enter team name" v-model="team.name"> 
+                                    <input id="project-name" class="form-control" :class="{ 'has-error': $v.team.name.$error }"
+                                     placeholder="Enter team name" v-model="team.name" @input="$v.team.name.$touch()">
+                                    <i class="fa fa-exclamation-circle error-icon" v-if="$v.team.name.$error">
+                                        <div class="errors">
+                                            <span class="error-message" v-if="!$v.team.name.required">Field is required</span>
+                                        </div>
+                                    </i> 
                                 </div>
                             </div>
 
@@ -29,14 +35,42 @@
                             </div>
                             <div> 
                                 <ul class="list-group margin-top-small"> 
-                                    <li v-for="user in team.users" class="list-group-item hoverable-element clearfix"> 
+                                    <li v-for="(user, index) in team.users" class="list-group-item hoverable-element clearfix"> 
                                         <span class="fa fa-user"></span> {{ user.name }} <span class="pull-right"> 
-                                        <span class="fa fa-times hoverable-cross"></span> 
+                                        <span class="fa fa-times hoverable-cross" @click="deleteMember(index, user.id)"></span> 
                                         </span> 
                                     </li>
                                 </ul>
                             </div>
+                            <div><a @click="showConfirmModal = true">Delete team</a></div>
+                            <!-- Confirm delete team modal form -->
+                            <div class="modal" v-if="showConfirmModal">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <form> 
+                                            <div class="modal-header"> 
+                                                <button type="button" class="close" @click="showConfirmModal = false"> 
+                                                    <span>×</span>
+                                                </button> <h4 class="modal-title ng-binding">Delete team</h4> 
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="row">
+                                                    <div class="col-sm-12">
+                                                       <span>It will not be undone, continue?</span>
+                                                    </div>
+                                                </div>
+                                            </div> 
+                                            <div class="modal-footer">
+                                                <button type="submit" class="btn btn-primary" @click="deleteTeam">Delete</button>
+                                                <button type="submit" class="btn btn-default" @click="showConfirmModal = false ">Cancel</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                                <div class="modal-backdrop" ></div>
+                            </div>
 
+                            <!-- Adding members modal form -->
                             <div class="modal" v-if="showModal">
                                 <div class="modal-dialog">
                                     <div class="modal-content">
@@ -49,12 +83,24 @@
                                             <div class="modal-body">
                                                 <div class="row">
                                                     <div class="col-sm-12">
-                                                        <input type="text" class="form-control" placeholder="Find user..." v-model="members">
+                                                        <input type="text" class="form-control" :class="{ 'has-error': $v.members.$error }"
+                                                         placeholder="Enter user email..." v-model="members" @input="$v.members.$touch()">
+                                                         <i class="fa fa-exclamation-circle error-icon" v-if="$v.members.$error">
+                                                             <div class="errors">
+                                                                 <span class="error-message" v-if="!$v.members.email">Invalid email</span>
+                                                             </div>
+                                                         </i>
                                                     </div>
                                                 </div>
+
+                                            <div class="members-list" v-for="member in existsMembers"> 
+                                                <input type="checkbox" :name="member.id" :value="member.id" v-model="addedMembers"> {{ member.name }} 
+                                            </div>
+
                                             </div> 
                                             <div class="modal-footer">
-                                                <button type="submit" class="btn btn-primary" @click="showModal = false ">Add</button>
+                                                <button type="submit" class="btn btn-primary" @click="addMembers">Add</button>
+                                                <!-- <button type="submit" class="btn btn-primary" @click="showModal = false">Add</button> -->
                                                 <button type="submit" class="btn btn-default" @click="showModal = false ">Cancel</button>
                                             </div>
                                         </form>
@@ -74,6 +120,7 @@
 <script>
 	import NavMenuAuth from '../blocks/NavMenuAuth.vue';
     import {HTTP} from '../../main.js';
+    import {required, email} from 'vuelidate/lib/validators'
 
 	export default {
         props: ['teamId'],
@@ -83,28 +130,70 @@
                     name: null,
                 },
                 showModal: false,
+                showConfirmModal: false,
                 members: "",
+                addedMembers: [],
+                existsMembers: {},
+                deletedMembers: [],
             }
         },
         created() {
             HTTP.get('api/teams/' + this.teamId).then(response => this.team = response.data);
+            HTTP.get('api/teams/exists-members').then(response => this.existsMembers = response.data);
+        },
+        computed: {
+            formInvalid() {
+                return this.$v.$invalid;
+            },
         },
         methods: {
             updateTeam() {
-                HTTP.post('api/teams/' + this.team.id, this.team).then((response) => {
+                if (this.$v.$invalid) return;
+                HTTP.post('api/teams/' + this.team.id, {team: this.team, deletedMembers: this.deletedMembers, addedMembers: this.addedMembers}).then((response) => {
                     if (this.members !== "") {
                         this.inviteMembers(response.data.id);
                     }
                     this.$router.push('/teams');
                 });
             },
+            deleteTeam() {
+                HTTP.post('api/teams/' + this.team.id + '/delete').then((response) => {
+                    this.showConfirmModal = false ;
+                    this.$router.go(-1);
+                });
+            },
             inviteMembers(team_id) {
                 HTTP.post('api/teams/invite', { members: this.members, team_id: team_id } );
-            }
+            },
+            deleteMember(index, user_id) {
+                this.deletedMembers.push(user_id);
+                this.team.users.splice(index);
+            },
+            addMembers() {
+                this.addedMembers.map((memberId) => {
+                    let memberIndex = this.existsMembers.findIndex(obj => obj.id === memberId);
+                    let index = this.team.users.findIndex(obj => obj.id === memberId);
+                    if (index === -1) {
+                        let member = this.existsMembers[memberIndex];
+                        this.team.users.push(member);
+                    }
+                });
+                this.showModal = false;
+            },
         },
 		components: {
 			NavMenuAuth
-		}
+		},
+        validations: {
+            team: {
+                name: {
+                    required,
+                }
+            },
+            members: {
+                email,
+            }
+        }
 	}
 </script>
 <style lang="scss" rel="stylesheet/css" scoped>
@@ -283,5 +372,11 @@
     .list-group-item {
         margin-top: 5px;
         margin-bottom: 5px;
+    }
+    .members-list {
+        margin-top: 20px;
+    }
+    .fa-times {
+        cursor: pointer;
     }
 </style>

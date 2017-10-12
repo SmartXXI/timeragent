@@ -12,7 +12,9 @@ class ProjectController extends Controller
 {
 	public function getProjects() {
 		$user_id = Auth::user()->id;
-		$projects = Project::where('owner_id', '=', $user_id)->get();
+        $projects = Auth::user()->projects;
+		$own_projects = Project::where('owner_id', '=', $user_id)->get();
+        $projects = $projects->merge($own_projects);
         $projects->map(function (Project $project) {
             $project->owner_name = User::find($project->owner_id)->name;
             $project->teams = $project->teams;
@@ -50,9 +52,21 @@ class ProjectController extends Controller
     }
 
     public function update(Request $request, Project $project) {
-        if ($request->teams) {
+
+        if ($request->deletedTeams) {
+            foreach($request->deletedTeams as $team_id) {
+                $team = Team::find($team_id);
+                $users = $team->users;
+                foreach ($users as $user) {
+                    $project->detachUser($user->id);
+                }
+                $project->detachTeam($team_id);
+            }
+        }
+
+        if ($request->addedTeams) {
             $team_exists = false;
-            foreach($request->teams as $team_id) {
+            foreach($request->addedTeams as $team_id) {
 
                 foreach($project->teams as $team) {
                     if ($team->id == $team_id) {
@@ -81,5 +95,9 @@ class ProjectController extends Controller
         $project->update([
             'name' => $request['project']['name'],
         ]);
+    }
+
+    public function delete(Project $project) {
+        $project->delete();
     }
 }

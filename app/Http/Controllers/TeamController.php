@@ -27,9 +27,14 @@ class TeamController extends Controller
 
     	$team = new Team();
 		$team->owner_id = $user->getKey();
-		$team->name = $request->name;
+		$team->name = $request->team['name'];
 		$team->save();
 		$user->attachTeam($team);
+
+        foreach($request->members as $member) {
+            $member = User::find($member);
+            $member->attachTeam($team);
+        }
 
 		return $team;
     }
@@ -49,6 +54,9 @@ class TeamController extends Controller
     public function getOwnTeams(Request $request) {
     	$user = Auth::user();
     	$teams = $user->teams->where('owner_id', '=', $user->id);
+        $teams->map(function(Team $team) {
+            $team->users = $team->users;
+        });
     	return $teams;
     }
     public function edit(Request $request, Team $team) {
@@ -56,6 +64,50 @@ class TeamController extends Controller
         return $team;
     }
     public function update(Request $request, Team $team) {
-        $team->update($request->all()); 
+        $projects = $team->projects;
+
+        foreach ($request->deletedMembers as $member) {
+            foreach ($projects as $project) {
+                $project->detachUser($member);
+            }
+
+            $member = User::find($member);
+            $member->detachTeam($team);
+        }
+        foreach($request->addedMembers as $member) {
+            $member = User::find($member);
+            $member->attachTeam($team);
+        }
+        $all['name'] = $request->team['name'];
+        $team->update($all); 
+    }
+    public function getExistsMembers(Request $request) {
+        $user = Auth::user();
+        $teams = $user->teams;
+        $existsMembers = [];
+
+        foreach($teams as $team) {
+            foreach ($team->users as $user) {
+                $noUser = false;
+                if ($user->id != Auth::user()->id) {
+                    if(count($existsMembers) == 0) $existsMembers[] = $user; 
+                    foreach($existsMembers as $member) {
+                        if ($member->id == $user->id) {
+                            $noUser = false;
+                            break;
+                        }
+                        else $noUser = true;
+                    }
+                    if($noUser) {
+                        $existsMembers[] = $user;
+                    }
+                }
+            }
+        } 
+        return $existsMembers;
+    }
+
+    public function delete(Team $team) {
+        $team->delete();
     }
 }

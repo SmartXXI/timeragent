@@ -5,7 +5,7 @@
                 <div class="pull-right">
                     <button type="  button" class="btn btn-wide btn-default btn-lg" @click="$router.go(-1)"> Cancel </button> 
                     <button type="submit" class="btn btn-wide btn-primary btn-lg" title="Press Ctrl+Enter to save changes" 
-                    @click="addTeam"> Save </button> 
+                    @click="addTeam" :disabled="formInvalid"> Save </button> 
                 </div>
                 <span class="page-title"> New Team </span> 
             <div class="row">
@@ -14,7 +14,13 @@
                         <div class="col-md-8">
                             <div class="form-group row">
                                 <div class="col-xs-12"> <label class="control-label" for="project-name">Name</label> 
-                                    <input id="project-name" class="form-control" placeholder="Enter team name" v-model="team.name"> 
+                                    <input id="project-name" class="form-control" :class="{ 'has-error': $v.team.name.$error }"
+                                    placeholder="Enter team name" v-model="team.name" @input="$v.team.name.$touch()"> 
+                                    <i class="fa fa-exclamation-circle error-icon" v-if="$v.team.name.$error">
+                                    <div class="errors">
+                                        <span class="error-message" v-if="!$v.team.name.required">Field is required</span>
+                                    </div>
+                            </i>
                                 </div>
                             </div>
 
@@ -40,7 +46,16 @@
                                             <div class="modal-body">
                                                 <div class="row">
                                                     <div class="col-sm-12">
-                                                        <input type="text" class="form-control" placeholder="Find user..." v-model="members">
+                                                        <input type="text" class="form-control" :class="{ 'has-error': $v.members.$error }"
+                                                        placeholder="Enter user email..." v-model="members" @input="$v.members.$touch()">
+                                        <i class="fa fa-exclamation-circle error-icon" v-if="$v.members.$error">
+                                            <div class="errors">
+                                                <span class="error-message" v-if="!$v.members.email">Invalid email</span>
+                                            </div>
+                                        </i>
+
+                                                        <div class="members-list" v-for="member in existsMembers"> 
+                                                            <input type="checkbox" :name="member.id" :value="member.id" v-model="addedMembers"> {{ member.name }} </div>
                                                     </div>
                                                 </div>
                                             </div> 
@@ -65,6 +80,7 @@
 <script>
 	import NavMenuAuth from '../blocks/NavMenuAuth.vue';
     import {HTTP} from '../../main.js';
+    import { required, email } from 'vuelidate/lib/validators';
 
 	export default {
         data() {
@@ -73,14 +89,24 @@
                     name: null,
                 },
                 showModal: false,
-                members: null,
+                members: "",
+                addedMembers: [],
+                existsMembers: null,
+            }
+        },
+        computed: {
+            formInvalid() {
+                return this.$v.$invalid;
             }
         },
         methods: {
             addTeam() {
-                HTTP.post('api/teams/new', this.team).then((response) => {
+                if (this.$v.$invalid) return;
+                HTTP.post('api/teams/new', {team: this.team, members: this.addedMembers}).then((response) => {
                     console.log(response.data.id);
-                    this.inviteMembers(response.data.id);
+                    if (this.members != "") {
+                        this.inviteMembers(response.data.id);
+                    }
                     this.$router.push('/teams');
                 });
             },
@@ -88,9 +114,22 @@
                 HTTP.post('api/teams/invite', { members: this.members, team_id: team_id } );
             }
         },
+        created() {
+            HTTP.get('api/teams/exists-members').then(response => this.existsMembers = response.data);
+        },
 		components: {
 			NavMenuAuth
-		}
+		},
+        validations: {
+            team: {
+                name: {
+                    required,
+                }
+            },
+            members: {
+                email,
+            }
+        }
 	}
 </script>
 <style lang="scss" rel="stylesheet/css" scoped>
@@ -261,5 +300,8 @@
         padding: 25px;
         text-align: left;
         border-top: 1px solid #e0e0e0;
+    }
+    .members-list {
+        margin-top: 20px;
     }
 </style>
