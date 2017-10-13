@@ -93,6 +93,6 @@
             @endif
         </div>
 
-        <script type="text/javascript" src="{{ mix('js/app.js') }}"></script>
+        <script type="text/javascript" src="{{ mix('js/main.js') }}"></script>
     </body>
 </html>
