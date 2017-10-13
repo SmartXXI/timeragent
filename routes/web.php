@@ -12,6 +12,9 @@
 */
 
 Route::get('/', function () {
+    if (!auth()->check()) {
+        return redirect()->to(config('app.promo_url'));
+    }
     return view('welcome');
 });
 

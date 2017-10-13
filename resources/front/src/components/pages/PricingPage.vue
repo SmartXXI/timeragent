@@ -53,7 +53,7 @@
                                 <div class="plan-action text-center">
                                     <div class="wrapper">
                                         <a class="btn btn-plan-action btn-common"
-                                           href="https://app.tmetric.com/register"
+                                           href="https://app.timeragent.com/register"
                                            role="button">Sign Up</a>
                                     </div>
                                 </div>
@@ -97,7 +97,7 @@
                                 <div class="plan-action text-center">
                                     <div class="wrapper">
                                         <a class="btn btn-plan-action btn-common"
-                                           href="https://app.tmetric.com/register"
+                                           href="https://app.timeragent.com/register"
                                            role="button">Sign Up</a>
                                     </div>
                                 </div>
@@ -140,7 +140,7 @@
                                 <div class="plan-action text-center">
                                     <div class="wrapper">
                                         <a class="btn btn-plan-action btn-common"
-                                           href="https://app.tmetric.com/register"
+                                           href="https://app.timeragent.com/register"
                                            role="button">Sign Up</a>
                                     </div>
                                 </div>
@@ -156,15 +156,15 @@
                                                                              title="Features">detailed plan comparison</a>
                     </p>
                     <h3 style="text-align: center;">How to Buy?</h3>
-                    <p style="text-align: left;">1. <a href="https://app.tmetric.com/login" target="_blank">Log in</a>
-                        to your TMetric account. If you don't have one, <a href="https://app.tmetric.com/register"
+                    <p style="text-align: left;">1. <a href="https://app.timeragent.com/login" target="_blank">Log in</a>
+                        to your TimerAgent account. If you don't have one, <a href="https://app.timeragent.com/register"
                                                                            target="_blank">sign up</a> now.</p>
                     <p style="text-align: left;">2. On the main menu, click <strong>Manage</strong> and select <strong>Subscription</strong>.
                     </p>
                     <p style="text-align: left;">3. Choose the plan you want to buy and click <strong>Buy Now</strong>.
                     </p>
                     <p style="text-align: left;">Learn more about <span><a
-                            href="https://tmetric.com/help/account-management/managing-subscription/" target="_blank">managing a subscription</a> in documentation</span>.
+                            href="https://timeragent.com/help/account-management/managing-subscription/" target="_blank">managing a subscription</a> in documentation</span>.
                     </p>
                     <h3 style="text-align: center;">Other Questions</h3>
                     <h4>Have a large team?</h4>
@@ -173,9 +173,9 @@
                             data-id="4957" href="/sales-faq/" title="Sales FAQ">Sales FAQ</a><span>.</span></p>
                     <h4>Running a non-profit organization?</h4>
                     <p>We offer special pricing options for non-profit and education organizations. To apply, please <a
-                            href="mailto:sales@tmetric.com">contact</a> the sales team.</p>
+                            href="mailto:sales@timeragent.com">contact</a> the sales team.</p>
                     <h4>Have other sales questions?</h4>
-                    <p>Please contact our sales department at <a href="mailto:sales@tmetric.com">sales@tmetric.com</a>
+                    <p>Please contact our sales department at <a href="mailto:sales@timeragent.com">sales@timeragent.com</a>
                     </p>
                 </div>
             </div>

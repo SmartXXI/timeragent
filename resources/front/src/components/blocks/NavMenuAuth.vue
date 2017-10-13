@@ -131,7 +131,7 @@
                 <!-- BEGIN SIDE MENU -->
                 <ul class="nav navbar-nav pull-right user-menu">
                     <li>
-                        <a href="https://tmetric.com/help" target="_blank" title="Help">
+                        <a href="https://timeragent.com/help" target="_blank" title="Help">
                             <i class="fa fa-question-circle"></i>
                         </a>
                     </li>

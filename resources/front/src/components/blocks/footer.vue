@@ -44,7 +44,7 @@
                                             <a href="/integrations/">Timer Integrations</a>
                                         </div>
                                         <div class="">
-                                            <a href="https://support.tmetric.com">Support</a>
+                                            <a href="https://support.timeragent.com">Support</a>
                                         </div>
                                         <div class="">
                                             <a href="/blog/">Blog</a>
@@ -68,25 +68,25 @@
                                 <div class="footer-column-body">
                                     <div class="footer-column-content">
                                         <div>
-                                            <a href="https://chrome.google.com/webstore/detail/tmetric-extension/ffijoclmniipjbhecddgkfpdafpbdnen">
+                                            <a href="https://chrome.google.com/webstore/detail/timeragent-extension/ffijoclmniipjbhecddgkfpdafpbdnen">
                                                 <span class="icon icon-chrome"></span>
                                                 <span>Chrome</span>
                                             </a>
                                         </div>
                                         <div>
-                                            <a href="https://addons.mozilla.org/en-US/firefox/addon/tmetric-extension/">
+                                            <a href="https://addons.mozilla.org/en-US/firefox/addon/timeragent-extension/">
                                                 <span class="icon icon-firefox"></span>
                                                 <span>Firefox</span>
                                             </a>
                                         </div>
                                         <div>
-                                            <a href="https://addons.opera.com/en/extensions/details/tmetric-extension/">
+                                            <a href="https://addons.opera.com/en/extensions/details/timeragent-extension/">
                                                 <span class="icon icon-opera"></span>
                                                 <span>Opera</span>
                                             </a>
                                         </div>
                                         <div>
-                                            <a href="/help/desktop-app/download-tmetric-desktop/">
+                                            <a href="/help/desktop-app/download-timeragent-desktop/">
                                                 <span class="icon icon-windows"></span>
                                                 <span>Desktop App</span>
                                             </a>
@@ -109,7 +109,7 @@
                                 <div class="footer-column-body">
                                     <div class="footer-column-content">
                                         <div class="">
-                                            <a href="/about/">About TMetric</a>
+                                            <a href="/about/">About TimerAgent</a>
                                         </div>
                                         <div class="">
                                             <a href="/terms-of-service/">Terms of Service</a>
@@ -136,19 +136,19 @@
                                 <div class="footer-column-body">
                                     <div class="footer-column-content">
                                         <div>
-                                            <a href="https://twitter.com/TMetric_Timer">
+                                            <a href="https://twitter.com/TimerAgent_Timer">
                                                 <span class="icon icon-twitter-mono"></span>
                                                 <span>Twitter</span>
                                             </a>
                                         </div>
                                         <div>
-                                            <a href="https://www.facebook.com/tmetrictimer/">
+                                            <a href="https://www.facebook.com/timeragenttimer/">
                                                 <span class="icon icon-facebook-mono"></span>
                                                 <span>Facebook</span>
                                             </a>
                                         </div>
                                         <div>
-                                            <a href="https://www.linkedin.com/company/tmetric">
+                                            <a href="https://www.linkedin.com/company/timeragent">
                                                 <span class="icon icon-linkedin-mono"></span>
                                                 <span>Linkedin</span>
                                             </a>

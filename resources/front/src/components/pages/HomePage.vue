@@ -13,7 +13,7 @@
                         <h1>Time Tracking Made Easy</h1>
                         <h2>Simple time tracking software for teams of any size.</h2>
                         <a class="btn btn-danger btn-lg btn-common"
-                           href="https://app.tmetric.com/register"
+                           href="https://app.timeragent.com/register"
                            role="button">Start Tracking</a>
                     </div>
                 </div>
@@ -27,7 +27,7 @@
                 <div class="description-content">
                     <div class="container container-narrow">
                         <p class="lead text-center">
-                            TMetric is a work time tracking service for IT-professionals and companies.
+                            TimerAgent is a work time tracking service for IT-professionals and companies.
                             Start in one minute, setup later. Track tasks from multiple project management systems with one click. Categorize time, create reports, and monitor your team online.
                         </p>
                     </div>
@@ -38,7 +38,7 @@
                 <div class="screenshot-content">
                     <div class="screenshot-background section-background"></div>
                     <div class="screenshot-image">
-                        <img src="/media/1632/tmetric_main_screen.png" style="max-width: 1180px"/>
+                        <img src="/media/1632/timeragent_main_screen.png" style="max-width: 1180px"/>
                     </div>
                 </div>
             </div>
@@ -115,7 +115,7 @@
                             <div class="integrations-text">
                                 <p>
                                 <p>
-                                    Install a browser extension for TMetric and track time for tasks created in your favorite web application.
+                                    Install a browser extension for TimerAgent and track time for tasks created in your favorite web application.
                             </p>
                             </div>
                             <div class="integrations-button text-center">
@@ -269,7 +269,7 @@
                     <div class="text-center">
                         <p>
                             <a class="btn btn-success btn-lg btn-common"
-                               href="https://app.tmetric.com/register"
+                               href="https://app.timeragent.com/register"
                                role="button">Start for Free</a>
                         </p>
                     </div>
@@ -395,7 +395,7 @@
         background-attachment: scroll;
         background-position: center center;
         background-repeat: no-repeat;
-        background-image: url('../../assets/images/tmetric_topbar_500px_light.png')
+        // background-image: url('../../assets/images/timeragent_topbar_500px_light.png')
     }
 
     /*.lead {*/
@@ -1363,7 +1363,7 @@
     .features .features-list ul li {
         margin: 0;
         padding: 15px 0 15px 45px;
-        background-image: url(../../assets/images/star.png);
+        // background-image: url(../../assets/images/star.png);
         background-repeat: no-repeat;
         background-position: 0 15px
     }
@@ -1380,11 +1380,11 @@
     }
 
     .icon-checked {
-        background-image: url(/images/icon_checked.png)
+        // background-image: url(/images/icon_checked.png)
     }
 
     .icon-unchecked {
-        background-image: url(/images/icon_unchecked.png)
+        // background-image: url(/images/icon_unchecked.png)
     }
 
     .features-table {
@@ -1627,7 +1627,7 @@
     }
 
     .aspect-ratio-content {
-        background-image: url('../../assets/images/int_banner.png')
+        // background-image: url('../../assets/images/int_banner.png')
     }
 
     /*Pricing*/

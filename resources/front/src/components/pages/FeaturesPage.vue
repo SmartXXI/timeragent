@@ -701,7 +701,7 @@
                 <div class="container container-normal">
                     <div class="text-center">
                         <a class="btn btn-success btn-lg btn-common"
-                           href="https://app.tmetric.com/register"
+                           href="https://app.timeragent.com/register"
                            role="button">Start for Free</a>
                     </div>
                 </div>

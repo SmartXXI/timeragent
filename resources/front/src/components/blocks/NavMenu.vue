@@ -18,7 +18,7 @@
                                 <span class="icon-bar"></span>
                             </button>
                             <router-link to="/">
-                                <img src="../../assets/images/logo.png" alt="TMetric">
+                                <!--<img src="../../assets/images/logo.png" alt="TimerAgent">-->
                             </router-link>
                         </div>
 
@@ -31,7 +31,7 @@
                                     <router-link to="pricing">Pricing</router-link>
                                 </li>
                                 <li class="">
-                                    <a href="https://support.tmetric.com">Support</a>
+                                    <a href="https://support.timeragent.com">Support</a>
                                 </li>
                                 <li class="">
                                     <a href="/blog/">Blog</a>
@@ -41,7 +41,7 @@
                                     <a class="login" href="http://time-tracker-laravel.dev/redirect">Log In</a>
                                 </li>
                                 <li>
-                                    <a class="signup" href="https://app.tmetric.com/register">Sign Up</a>
+                                    <a class="signup" href="https://app.timeragent.com/register">Sign Up</a>
                                 </li>
 
                             </ul>
@@ -88,8 +88,6 @@
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-
-
     header {
         display: block;
         flex-grow: 0;
@@ -100,7 +98,6 @@
     .btn-common, .navbar-fixed-top .navbar-nav > li > a {
         font-family: Montserrat;
         text-transform: uppercase;
-
     }
 
     .background-contain, .banner > .banner-image {
@@ -114,7 +111,6 @@
     }
 
     .navbar-default {
-
         background-color: #464646;
     }
 
@@ -168,6 +164,4 @@
             border-right: .85714286rem solid transparent
         }
     }
-
-
 </style>
