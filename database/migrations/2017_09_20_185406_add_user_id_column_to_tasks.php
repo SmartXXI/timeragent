@@ -14,7 +14,7 @@ class AddUserIdColumnToTasks extends Migration
     public function up()
     {
         Schema::table('tasks', function (Blueprint $table) {
-            $table->integer('user_id')->after('active');
+            $table->integer('user_id')->nullable()->after('active');
         });
     }
 
