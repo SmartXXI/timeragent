@@ -12,7 +12,7 @@
 */
 
 Route::get('/', function () {
-    if (!auth()->check()) {
+    if (!auth()->check() && !app()->environment() === 'local') {
         return redirect()->to(config('app.promo_url'));
     }
     return view('welcome');
