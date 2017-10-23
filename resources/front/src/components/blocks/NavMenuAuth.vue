@@ -13,13 +13,15 @@
                 <!-- BEGIN TIMER ACTIONS -->
                 <span class="timer-actions">
                     <div class="timer-buttons">
-                        <button title="Start timer" class="btn btn-timer-start" v-if="!timerStarted" @click="startTimer">
+                        <button title="Start timer" class="btn btn-timer-start" v-if="!timerStarted"
+                                @click="startTimer">
                             <i class="fa fa-play"></i>
                         </button>
                         <button class="btn btn-tier-continue" v-if="timerStarted">
                             <i class="fa fa-plus"></i>
                         </button>
-                        <button title="Stop timer" class="btn btn-timer-stop" @click="stopTimer" :disabled="!timerStarted">
+                        <button title="Stop timer" class="btn btn-timer-stop" @click="stopTimer"
+                                :disabled="!timerStarted">
                             <i class="fa fa-stop"></i>
                         </button>
                     </div>
@@ -28,9 +30,9 @@
                 <!-- BEGIN NAVIGATION MENU -->
                 <div class="main-menu">
                     <ul class="nav navbar-nav">
-                        <router-link tag="li" to="/"  exact>
-                            <router-link to="/" class="navbar-link bold text-uppercase"  exact>
-                                        <span>time</span>
+                        <router-link tag="li" to="/" exact>
+                            <router-link to="/" class="navbar-link bold text-uppercase" exact>
+                                <span>time</span>
                             </router-link>
                         </router-link>
                         <li class="dropdown">
@@ -86,7 +88,7 @@
                                 <li>
                                     <router-link to="/teams">
                                         Teams
-                                    </router-link> 
+                                    </router-link>
                                 </li>
                                 <li class="divider"></li>
                                 <li>
@@ -97,7 +99,7 @@
                                 <li>
                                     <router-link to="/projects">
                                         <span>Projects</span>
-                                    </router-link>  
+                                    </router-link>
                                 </li>
                             </ul>
                         </li>
@@ -156,7 +158,6 @@
 </template>
 
 <script>
-    import {HTTP} from '../../main.js';
     export default {
         data() {
             return {
@@ -172,200 +173,195 @@
             },
             user() {
                 return this.$store.state.user;
-            }
+            },
         },
         methods: {
             showSubMenu(name) {
                 this.isOpened = (this.isOpened === null) ? name : null;
             },
-            // startTimer() {
-            //     this.$emit('start-timer');
-            // },
-            // stopTimer() {
-            //     this.$emit('stop-timer');
-            // },
             startTimer() {
                 this.$store.dispatch('startTimer');
                 this.$store.dispatch('createTask');
             },
             stopTimer() {
-                let taskIndex = this.$store.state.activeTask;
-                let activeTask = this.$store.state.tasks[taskIndex];
+                const taskIndex = this.$store.state.activeTask;
+                const activeTask = this.$store.state.tasks[taskIndex];
                 this.$store.dispatch('stopTimer');
                 this.$store.dispatch('stopTask', { task_id: activeTask.id, index: taskIndex, task: activeTask });
             },
             subIsActive(input) {
                 const paths = Array.isArray(input) ? input : [input];
-                return paths.some(path => {
-                    return this.$route.path.indexOf(path) === 0 // current path starts with this path string
-                })
+
+                // current path starts with this path string
+                return paths.some(path => this.$route.path.indexOf(path) === 0);
             },
             hideSubMenu() {
-                setTimeout(() => this.isOpened = null, 300);
-            }
+                setTimeout(() => {
+                    this.isOpened = null;
+                }, 300);
+            },
         },
     };
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss" rel="stylesheet/scss" scoped>
-        .logo {
-            width: 240px;
-            height: 70px;
-        }
+    .logo {
+        width  : 240px;
+        height : 70px;
+    }
 
     body {
-        font-family: "Open Sans", sans-serif;
-        font-size: 14px;
-        line-height: 1.42857;
-        color: #525252;
+        font-family : "Open Sans", sans-serif;
+        font-size   : 14px;
+        line-height : 1.42857;
+        color       : #525252;
 
         .dropdown-menu {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            z-index: 1000;
-            display: none;
-            min-width: 160px;
-            padding: 6px 0;
-            margin: 5px 0 0;
-            list-style: none;
-            font-size: 14px;
-            text-align: left;
-            background-color: #fff;
-            border: 1px solid rgba(0, 0, 0, .15);
-            border-radius: 3px;
-            -webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, .175);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, .175);
-            background-clip: padding-box;
+            position           : absolute;
+            top                : 100%;
+            left               : 0;
+            z-index            : 1000;
+            display            : none;
+            min-width          : 160px;
+            padding            : 6px 0;
+            margin             : 5px 0 0;
+            list-style         : none;
+            font-size          : 14px;
+            text-align         : left;
+            background-color   : #fff;
+            border             : 1px solid rgba(0, 0, 0, .15);
+            border-radius      : 3px;
+            -webkit-box-shadow : 0 6px 12px rgba(0, 0, 0, .175);
+            box-shadow         : 0 6px 12px rgba(0, 0, 0, .175);
+            background-clip    : padding-box;
         }
 
         .btn {
-            font-size: 18px;
+            font-size : 18px;
         }
 
         header {
 
-            display: block;
-            flex-grow: 0;
-            background-color: #464646;
-            box-shadow: 0 2px 3px 0 rgba(47, 47, 47, .25) !important;
+            display          : block;
+            flex-grow        : 0;
+            background-color : #464646;
+            box-shadow       : 0 2px 3px 0 rgba(47, 47, 47, .25) !important;
 
             .fa {
-                font-size: 0.9em;
+                font-size : 0.9em;
             }
 
             .navbar {
-                display: flex;
-                justify-content: space-between;
-                margin: auto !important;
-                border: 0 !important;
-                border-radius: unset;
+                display         : flex;
+                justify-content : space-between;
+                margin          : auto !important;
+                border          : 0 !important;
+                border-radius   : unset;
 
                 img {
-                    vertical-align: middle;
+                    vertical-align : middle;
                 }
 
                 .dropdown {
 
                     .dropdown-menu {
 
-                        position: absolute;
-                        left: 0;
-                        z-index: 1000;
-                        display: none;
-                        min-width: 160px;
-                        padding: 6px 0;
-                        margin: 5px 0 0;
-                        list-style: none;
-                        font-size: 14px;
-                        text-align: left;
-                        border-radius: 3px;
-                        -webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, .175);
-                        background-clip: padding-box;
-                        background-color: #393939;
-                        border: none;
-                        top: 65px;
-                        box-shadow: 2px 2px 3px 0 rgba(47, 47, 47, .25) !important;
+                        position           : absolute;
+                        left               : 0;
+                        z-index            : 1000;
+                        display            : none;
+                        min-width          : 160px;
+                        padding            : 6px 0;
+                        margin             : 5px 0 0;
+                        list-style         : none;
+                        font-size          : 14px;
+                        text-align         : left;
+                        border-radius      : 3px;
+                        -webkit-box-shadow : 0 6px 12px rgba(0, 0, 0, .175);
+                        background-clip    : padding-box;
+                        background-color   : #393939;
+                        border             : none;
+                        top                : 65px;
+                        box-shadow         : 2px 2px 3px 0 rgba(47, 47, 47, .25) !important;
 
                         li {
 
                             a {
-                                color: rgba(255, 255, 255, .5);
-                                display: block;
-                                padding: 6px 25px;
-                                font-weight: 400;
+                                color       : rgba(255, 255, 255, .5);
+                                display     : block;
+                                padding     : 6px 25px;
+                                font-weight : 400;
                             }
 
                             a:hover {
-                                color: rgba(255, 255, 255, .75);
-                                background-color: #444;
+                                color            : rgba(255, 255, 255, .75);
+                                background-color : #444;
                             }
                         }
 
                     }
 
                     .open {
-                        display: block;
+                        display : block;
 
                         a {
-                            background-color: #393939;
-                            color: #fff;
+                            background-color : #393939;
+                            color            : #fff;
                         }
                     }
 
                 }
 
                 * {
-                    display: inline-block;
-                    vertical-align: top;
-                    margin: 0;
-                    line-height: inherit;
+                    display        : inline-block;
+                    vertical-align : top;
+                    margin         : 0;
+                    line-height    : inherit;
                 }
 
                 .logo {
-                    line-height: 70px;
+                    line-height : 70px;
                 }
 
                 .timer-buttons {
 
-
                     .btn {
-                        height: 48px;
-                        width: 48px;
-                        min-width: 0;
-                        margin: 11px 3px;
-                        border-radius: 48px;
-                        box-shadow: 0 2px 6px rgba(0,0,0,.2)!important;
-                    
-                        color: #fff;
-                        background-color: #00bc6a;
+                        height           : 48px;
+                        width            : 48px;
+                        min-width        : 0;
+                        margin           : 11px 3px;
+                        border-radius    : 48px;
+                        box-shadow       : 0 2px 6px rgba(0, 0, 0, .2) !important;
+
+                        color            : #fff;
+                        background-color : #00bc6a;
                     }
 
                     .btn-timer-start:hover {
-                        background-color: #00a35c;
-                        border-color: #00a35c;
+                        background-color : #00a35c;
+                        border-color     : #00a35c;
                     }
 
                     .btn-timer-continue:hover {
-                        background-color: #00a35c;
-                        border-color: #00a35c;
+                        background-color : #00a35c;
+                        border-color     : #00a35c;
                     }
 
                     .btn-timer-stop {
-                        height: 36px;
-                        width: 36px;
-                        margin: 17px 3px;
-                        border-radius: 36px;
-                        padding: 6px 0;
+                        height           : 36px;
+                        width            : 36px;
+                        margin           : 17px 3px;
+                        border-radius    : 36px;
+                        padding          : 6px 0;
 
-                        color: #fff;
-                        background-color: #e26a6a;
+                        color            : #fff;
+                        background-color : #e26a6a;
                     }
 
                     .btn-timer-stop:hover {
-                        background-color: #de5555;
-                        border-color: #de5555;
+                        background-color : #de5555;
+                        border-color     : #de5555;
                     }
                 }
 
@@ -373,89 +369,89 @@
 
             .navbar-default {
 
-                background-color: #464646;
+                background-color : #464646;
 
                 .navbar-nav {
 
-                        a.router-link-active {
-                            color: #fff;
-                            background-color: #393939;
-                            border-top: 4px solid transparent;
-                            border-bottom: 4px solid #fff;
-                            padding-top: 21px;
-                            padding-bottom: 21px;
-                        }
-                        a.router-link-active:hover {
-                            color: #fff;
-                        }
-                    .router-link-active  {
+                    a.router-link-active {
+                        color            : #fff;
+                        background-color : #393939;
+                        border-top       : 4px solid transparent;
+                        border-bottom    : 4px solid #fff;
+                        padding-top      : 21px;
+                        padding-bottom   : 21px;
+                    }
+                    a.router-link-active:hover {
+                        color : #fff;
+                    }
+                    .router-link-active {
 
                         a {
-                            color: #fff;
-                            background-color: #393939;
-                            border-top: 4px solid transparent ;
-                            border-bottom: 4px solid #fff;
-                            padding-top: 21px;
-                            padding-bottom: 21px;
+                            color            : #fff;
+                            background-color : #393939;
+                            border-top       : 4px solid transparent;
+                            border-bottom    : 4px solid #fff;
+                            padding-top      : 21px;
+                            padding-bottom   : 21px;
                         }
                         .open {
                             a.router-link-active {
-                                color: #fff;
-                                background-color: #393939;
+                                color            : #fff;
+                                background-color : #393939;
                             }
 
                             a.router-link-active:hover {
-                                color: #fff;
+                                color : #fff;
                             }
 
                             a {
-                                display: block;
-                                padding: 6px 25px;
-                                font-weight: 400;
-                                color: #333;
-                                color: rgba(255, 255, 255, .5);
-                                border: none;
+                                display     : block;
+                                padding     : 6px 25px;
+                                font-weight : 400;
+                                color       : #333;
+                                color       : rgba(255, 255, 255, .5);
+                                border      : none;
                             }
                         }
                     }
 
                     .open a {
-                        display: block;
-                        padding: 6px 25px;
-                        font-weight: 400;
-                        color: #333;
-                        color: rgba(255,255,255,.5);
+                        display     : block;
+                        padding     : 6px 25px;
+                        font-weight : 400;
+                        color       : #333;
+                        color       : rgba(255, 255, 255, .5);
 
                     }
 
                     /*.open {*/
-                        /*a.router-link-active {*/
-                            /*color: #fff;*/
-                            /*background-color: #393939;*/
-                        /*}*/
-                        /*a.router-link-active:hover {*/
-                            /*color: #fff;*/
-                        /*}*/
+                    /*a.router-link-active {*/
+                    /*color: #fff;*/
+                    /*background-color: #393939;*/
+                    /*}*/
+                    /*a.router-link-active:hover {*/
+                    /*color: #fff;*/
+                    /*}*/
                     /*}*/
 
                     a.expanded {
-                        background-color: #393939;
-                        color: #fff;
+                        background-color : #393939;
+                        color            : #fff;
                     }
 
                     a:focus {
-                        color: rgba(255, 255, 255, .75);
-                        background-color: #404040;
+                        color            : rgba(255, 255, 255, .75);
+                        background-color : #404040;
                     }
 
                     li {
 
                         a {
-                            color: rgba(255, 255, 255, .5);
-                            font-weight: bold;
-                            max-height: 70px;
-                            padding-top: 25px;
-                            padding-bottom: 25px;
+                            color          : rgba(255, 255, 255, .5);
+                            font-weight    : bold;
+                            max-height     : 70px;
+                            padding-top    : 25px;
+                            padding-bottom : 25px;
                         }
                     }
                 }

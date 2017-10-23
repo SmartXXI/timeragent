@@ -1,73 +1,78 @@
+import moment from 'moment';
 import * as types from './mutation-types';
-import moment from 'moment'; //eslint-disable-line
-import {HTTP} from '../main.js';
 
 export default {
     [types.GET_TASKS](state, data) {
-        state.tasks = data.data;
-        state.date = data.date;
+        let activeTask;
 
-        if (state.tasks.length > 0 && state.tasks[state.tasks.length - 1].active == true) {
-            state.activeTask = state.tasks.length - 1;
+        if (state.tasks.length > 0 && state.tasks[state.tasks.length - 1].active === true) {
+            activeTask = state.tasks.length - 1;
         }
+
+        Object.assign(state, {
+            tasks: data.data,
+            date : data.date,
+            activeTask,
+        });
     },
 
     [types.START_TIMER](state) {
-    	state.timerID = window.setInterval(function() {                                 //eslint-disable-line
-        state.spendTime = moment();                                                     //eslint-disable-line
-        const activeTask = state.tasks[state.activeTask];
-        // activeTask.spendTime = moment().diff(activeTask.startTime, 'minutes');
-        const spendTime = moment.duration(moment().diff(moment(activeTask.startTime, 'HH:mm:ss')));
-        activeTask.spendTime = moment.utc(spendTime.asMilliseconds()).format('HH:mm:ss');
-        }, 1000);                                                                       //eslint-disable-line
-        state.timerStarted = true;                                                      //eslint-disable-line
+        const timerID = window.setInterval(() => {
+            const activeTask = state.tasks[state.activeTask];
+            const spendTime = moment.duration(moment().diff(moment(activeTask.startTime, 'HH:mm:ss')));
+
+            Object.assign(state, { spendTime: moment() });
+            activeTask.spendTime = moment.utc(spendTime.asMilliseconds()).format('HH:mm:ss');
+        }, 1000);
+        Object.assign(state, {
+            timerID,
+            timerStarted: true,
+        });
     },
 
     [types.STOP_TIMER](state) {
         clearInterval(state.timerID);
-        state.spendTime = null;                                                         //eslint-disable-line
-        state.timerStarted = false;                                                     //eslint-disable-line
+        Object.assign(state, {
+            spendTime   : null,
+            timerStarted: false,
+        });
     },
 
     [types.CREATE_TASK](state, task) {
-        state.tasksExists = true;                                                       //eslint-disable-line
-        task.startTime = moment().format('HH:mm:ss');                                    //eslint-disable-line
-        state.tasks.push(task);//eslint-disable-line
-        state.activeTask = state.tasks.length - 1;//eslint-disable-line
+        Object.assign(task, { startTime: moment().format('HH:mm:ss') });
+        state.tasks.push(task);
+
+        Object.assign(state, {
+            tasksExists: true,
+            activeTask : state.tasks.length - 1,
+        });
     },
 
     [types.UPDATE_TASK](state, task) {
-        Object.assign(state.tasks[task.index], task.task);                              //eslint-disable-line
+        Object.assign(state.tasks[task.index], task.task);
     },
 
     [types.CONTINUE_TASK](state) {
-        let activeTask = state.tasks[state.activeTask];                                 //eslint-disable-line
-        activeTask.active = true;                                                       //eslint-disable-line
+        const activeTask = state.tasks[state.activeTask];
+        activeTask.active = true;
         activeTask.endTime = null;
     },
 
     [types.STOP_TASK](state, task) {
-        //reload task
         Object.assign(state.tasks[task.index], task.task);
-
-        // if (moment.duration(activeTask.spendTime).minutes() < 1) {
-        //     state.tasks.splice(state.activeTask, 1);
-        //     state.activeTask = null;                                                    //eslint-disable-line
-        // }
-        // if (state.tasks.length === 0) {
-        //     state.tasksExists = false;                                                  //eslint-disable-line
-        // }
     },
     [types.DELETE_TASK](state, task) {
         state.tasks.splice(task.index, 1);
-        state.activeTask = null;
+        Object.assign(state, { activeTask: null });
     },
 
     [types.ADD_TIME_ENTRY](state, task) {
-        state.tasks = state.tasks.concat(task);//eslint-disable-line
-        state.tasksExists = true;//eslint-disable-line
+        Object.assign(state, {
+            tasks      : state.tasks.concat(task),
+            tasksExists: true,
+        });
     },
     [types.GET_USER](state, user) {
-        state.user = user;
-    }
+        Object.assign(state, { user });
+    },
 };

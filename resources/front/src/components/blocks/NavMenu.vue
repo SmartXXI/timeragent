@@ -56,14 +56,12 @@
 </template>
 
 <script>
-    import qs from 'qs';//eslint-disable-line
-
     export default {
         data() {
             return {
-                scrolled: false,
+                scrolled     : false,
                 authenticated: false,
-                loginQuery: '',
+                loginQuery   : '',
             };
         },
         methods: {
@@ -73,15 +71,6 @@
         },
         created() {
             window.addEventListener('scroll', this.handleScroll);
-
-            // const url = 'http://time-tracker-laravel.dev/oauth/authorize?';
-            // const params = qs.stringify({
-            //     client_id: 3,//eslint-disable-line
-            //     redirect_uri: 'http://time-tracker-laravel.dev/callback',//eslint-disable-line
-            //     response_type: 'code',//eslint-disable-line
-            //     scope: '',//eslint-disable-line
-            // });
-            // this.loginUrl = url + params;
         },
     };
 </script>
@@ -89,79 +78,79 @@
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
     header {
-        display: block;
-        flex-grow: 0;
-        background-color: #464646;
-        box-shadow: 0 2px 3px 0 rgba(47, 47, 47, .25) !important;
+        display          : block;
+        flex-grow        : 0;
+        background-color : #464646;
+        box-shadow       : 0 2px 3px 0 rgba(47, 47, 47, .25) !important;
     }
 
     .btn-common, .navbar-fixed-top .navbar-nav > li > a {
-        font-family: Montserrat;
-        text-transform: uppercase;
+        font-family    : Montserrat;
+        text-transform : uppercase;
     }
 
     .background-contain, .banner > .banner-image {
-        background-attachment: scroll;
-        background-position: center center;
-        background-repeat: no-repeat
+        background-attachment : scroll;
+        background-position   : center center;
+        background-repeat     : no-repeat
     }
 
     .navbar-inverse .navbar-nav > li > a {
-        color: rgba(255, 255, 255, .7)
+        color : rgba(255, 255, 255, .7)
     }
 
     .navbar-default {
-        background-color: #464646;
+        background-color : #464646;
     }
 
-    @media (min-width: 769px) {
+    @media (min-width : 769px) {
         .container-narrow {
-            width: 780px
+            width : 780px
         }
     }
 
     .navbar-fixed-top .container-normal {
-        width: auto;
-        max-width: 1024px;
+        width     : auto;
+        max-width : 1024px;
     }
 
     .navbar-fixed-top .navbar-nav > li > a {
-        border: 1px solid transparent;
-        transition: .5s
+        border     : 1px solid transparent;
+        transition : .5s
     }
 
-    @media (min-width: 769px) {
+    @media (min-width : 769px) {
         .navbar-fixed-top {
-            padding: 1.71428571rem 0;
-            transition: .4s
+            padding    : 1.71428571rem 0;
+            transition : .4s
         }
 
         .navbar-fixed-top.home {
-            background-color: transparent;
-            border-color: transparent
+            background-color : transparent;
+            border-color     : transparent
         }
 
         .navbar-fixed-top.minimized {
-            background-color: #333;
-            border-color: #1a1a1a;
-            padding: .42857143rem 0
+            background-color : #333;
+            border-color     : #1a1a1a;
+            padding          : .42857143rem 0
         }
 
         .navbar-fixed-top .navbar-nav > li > a.signup {
-            border: 1px solid rgba(255, 255, 255, .7)
+            border : 1px solid rgba(255, 255, 255, .7)
         }
 
         .navbar-fixed-top .navbar-nav > li > a.signup:focus, .navbar-fixed-top .navbar-nav > li > a.signup:hover {
-            border-color: #fff
+            border-color : #fff
         }
 
         .navbar-fixed-top .navbar-nav > li.active > a {
-            border-bottom: 1px solid
+            border-bottom : 1px solid
         }
 
         .navbar-fixed-top .navbar-nav > li.divider {
-            border-left: .85714286rem solid transparent;
-            border-right: .85714286rem solid transparent
+            border-left  : .85714286rem solid transparent;
+            border-right : .85714286rem solid transparent
         }
     }
 </style>

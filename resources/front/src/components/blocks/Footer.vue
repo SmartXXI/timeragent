@@ -19,7 +19,7 @@
                             </div>
                             <div class="footer-column-body">
                                 <div class="footer-column-content">
-                                    <span class="copyright small">Copyright &copy; Devart 2017</span>
+                                    <span class="copyright small">Copyright &copy; DigitalIDEA Studio 2017</span>
                                 </div>
                             </div>
                         </div>
@@ -41,7 +41,7 @@
                                             <a href="/help/">Documentation</a>
                                         </div>
                                         <div class="">
-                                            <a href="/integrations/">Timer Integrations</a>
+                                            <a href="/integrations/">Integrations</a>
                                         </div>
                                         <div class="">
                                             <a href="https://support.timeragent.com">Support</a>

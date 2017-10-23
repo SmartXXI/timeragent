@@ -1,21 +1,26 @@
 language: php
 
-env:
-  global:
-    - setup=stable
+php:
+  - 7.0
 
-matrix:
-  fast_finish: true
-  include:
-    - php: 7.0.21
-    - php: 7.0.21
-      env: setup=lowest
-    - php: 7.1
-    - php: 7.1
-      env: setup=lowest
-    - php: 7.2
-    - php: 7.2
-      env: setup=lowest
+env:
+  APP_ENV: testing
+  CACHE_DRIVER: redis
+  SESSION_DRIVER: redis
+  QUEUE_DRIVER: sync
+  DB_CONNECTION: sqlite
+  APP_KEY: 16efa6c23c2e8c705826b0e66778fbe7
+
+branches:
+  - master
+
+install:
+  - . $HOME/.nvm/nvm.sh
+  - nvm install 8.7.0
+  - nvm use 8.7.0
+  - npm i
+  - composer self-update
+  - composer install --prefer-dist --no-interaction
 
 sudo: false
 
@@ -33,8 +38,6 @@ before_install:
   - printf "\n" | pecl install -f redis
   - travis_retry composer self-update
 
-install:
-  - if [[ $setup = 'stable' ]]; then travis_retry composer update --prefer-dist --no-interaction --prefer-stable --no-suggest; fi
-  - if [[ $setup = 'lowest' ]]; then travis_retry composer update --prefer-dist --no-interaction --prefer-lowest --prefer-stable --no-suggest; fi
-
-script: vendor/bin/phpunit
+script:
+  - vendor/bin/phpunit
+  - npm test
