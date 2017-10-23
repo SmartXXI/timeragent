@@ -14,10 +14,9 @@ use Illuminate\Support\Facades\Auth;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    // return $request->user();
-    return Auth::user();
-});
+Route::middleware('auth:api')->get('/user', 'UserController@index');
+
+Route::middleware('auth:api')->post('/user', 'UserController@update');
 
 Route::middleware('auth:api')->get('/tasks', 'TaskController@getTasks');
 

@@ -28,20 +28,16 @@
                 <!-- BEGIN NAVIGATION MENU -->
                 <div class="main-menu">
                     <ul class="nav navbar-nav">
-                        <li>
-                            <router-link to="/" class="navbar-link bold text-uppercase">
+                        <router-link tag="li" to="/"  exact>
+                            <router-link to="/" class="navbar-link bold text-uppercase"  exact>
                                         <span>time</span>
                             </router-link>
-                        </li>
-                        <li>
-                            <a href="" class="navbar-link bold text-uppercase">
-                                <span>tasks</span>
-                            </a>
-                        </li>
+                        </router-link>
                         <li class="dropdown">
                             <a href class="dropdown-toggle bold text-uppercase"
                                v-on:click.prevent="showSubMenu('Reports')"
                                v-bind:class="{ expanded: isOpened == 'Reports'}"
+                               @blur="hideSubMenu"
                             >
                                 <span>Reports</span>
                                 <span><i class="fa fa-angle-down"></i></span>
@@ -71,10 +67,16 @@
                                 </li>
                             </ul>
                         </li>
-                        <li class="dropdown">
+                        <li class="dropdown"
+                            :class="{
+                                'router-link-active': subIsActive('/teams') ||
+                                subIsActive('/projects') ||
+                                subIsActive('/clients')
+                        }">
                             <a href class="dropdown-toggle bold text-uppercase"
                                v-on:click.prevent="showSubMenu('Manage')"
                                v-bind:class="{ expanded: isOpened == 'Manage'}"
+                               @blur="hideSubMenu"
                             >
                                 <span>Manage</span>
                                 <span><i class="fa fa-angle-down"></i></span>
@@ -82,46 +84,20 @@
                             <ul class="dropdown-menu dropdown-menu-default"
                                 v-bind:class=" { open : isOpened == 'Manage' }">
                                 <li>
-                                    <a href="">
-                                        account
-                                    </a>
-                                </li>
-                                <li>
-                                    <router-link to="/members">
-                                        Members
-                                    </router-link>  
-                                </li>
-                                <li>
                                     <router-link to="/teams">
                                         Teams
                                     </router-link> 
                                 </li>
                                 <li class="divider"></li>
                                 <li>
-                                    <a href="">
-                                        clients
-                                    </a>
+                                    <router-link to="/clients">
+                                        <span>Clients</span>
+                                    </router-link>
                                 </li>
                                 <li>
                                     <router-link to="/projects">
                                         <span>Projects</span>
                                     </router-link>  
-                                </li>
-                                <li>
-                                    <a href="">
-                                        tags
-                                    </a>
-                                </li>
-                                <li class="divider"></li>
-                                <li>
-                                    <a href="">
-                                        importAndExport
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="">
-                                        subscription
-                                    </a>
                                 </li>
                             </ul>
                         </li>
@@ -136,48 +112,36 @@
                         </a>
                     </li>
                     <!-- BEGIN LOGIN MENU -->
-                    <li class="dropdown pull-right">
-                        <a href="" class="dropdown-toggle" data-toggle="dropdown" data-close-others="true">
+                    <li class="dropdown pull-right"
+                        :class="{
+                                'router-link-active': subIsActive('/profile')
+                        }"
+                    >
+                        <a href=""
+                           class="dropdown-toggle"
+                           data-toggle="dropdown"
+                           data-close-others="true"
+                           v-on:click.prevent="showSubMenu('User')"
+                           v-bind:class="{ expanded: isOpened == 'User'}"
+                           @blur="hideSubMenu"
+                        >
                             <span class="login-info">
                                 <span v-if="user" class="bold text-overflow">{{ user.name }}</span>
                             </span>
-                            <span class="">
-                                <i class="fa margin-left-x-small margin-right-x-small"></i>
-
-                            </span>
+                            <span><i class="fa fa-angle-down"></i></span>
                         </a>
-                        <ul class="dropdown-menu dropdown-menu-default login-dropdown-menu pull-right">
+                        <ul class="dropdown-menu dropdown-menu-default login-dropdown-menu pull-right"
+                            v-bind:class=" { open : isOpened == 'User' }">
 
                             <li>
-                                <a href="">
-                                    myProfile
-                                </a>
-                            </li>
-
-                            <li class="divider"></li>
-
-                            <li class="dropdown-header">
-                                accounts
-                            </li>
-
-                            <!--User accounts.-->
-                            <li>
-                                <a href="">
-                                    accountName
-                                </a>
+                                <router-link to="/profile">
+                                    <span>My Profile</span>
+                                </router-link>
                             </li>
 
                             <li>
                                 <a href="">
-                                    manageMyAccounts
-                                </a>
-                            </li>
-
-                            <li class="divider"></li>
-
-                            <li>
-                                <a href="">
-                                    logOff
+                                    Log off
                                 </a>
                             </li>
                         </ul>
@@ -230,6 +194,15 @@
                 this.$store.dispatch('stopTimer');
                 this.$store.dispatch('stopTask', { task_id: activeTask.id, index: taskIndex, task: activeTask });
             },
+            subIsActive(input) {
+                const paths = Array.isArray(input) ? input : [input];
+                return paths.some(path => {
+                    return this.$route.path.indexOf(path) === 0 // current path starts with this path string
+                })
+            },
+            hideSubMenu() {
+                setTimeout(() => this.isOpened = null, 300);
+            }
         },
     };
 </script>
@@ -404,13 +377,66 @@
 
                 .navbar-nav {
 
-                    .active {
+                        a.router-link-active {
+                            color: #fff;
+                            background-color: #393939;
+                            border-top: 4px solid transparent;
+                            border-bottom: 4px solid #fff;
+                            padding-top: 21px;
+                            padding-bottom: 21px;
+                        }
+                        a.router-link-active:hover {
+                            color: #fff;
+                        }
+                    .router-link-active  {
 
                         a {
                             color: #fff;
                             background-color: #393939;
+                            border-top: 4px solid transparent ;
+                            border-bottom: 4px solid #fff;
+                            padding-top: 21px;
+                            padding-bottom: 21px;
+                        }
+                        .open {
+                            a.router-link-active {
+                                color: #fff;
+                                background-color: #393939;
+                            }
+
+                            a.router-link-active:hover {
+                                color: #fff;
+                            }
+
+                            a {
+                                display: block;
+                                padding: 6px 25px;
+                                font-weight: 400;
+                                color: #333;
+                                color: rgba(255, 255, 255, .5);
+                                border: none;
+                            }
                         }
                     }
+
+                    .open a {
+                        display: block;
+                        padding: 6px 25px;
+                        font-weight: 400;
+                        color: #333;
+                        color: rgba(255,255,255,.5);
+
+                    }
+
+                    /*.open {*/
+                        /*a.router-link-active {*/
+                            /*color: #fff;*/
+                            /*background-color: #393939;*/
+                        /*}*/
+                        /*a.router-link-active:hover {*/
+                            /*color: #fff;*/
+                        /*}*/
+                    /*}*/
 
                     a.expanded {
                         background-color: #393939;

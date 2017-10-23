@@ -24,7 +24,7 @@ Auth::routes();
         // Route::get('/', 'HomeController@index')->name('home');
 // });
 
-Route::get('/tracker', 'HomeController@index')->name('home');
+Route::get('/', 'HomeController@index')->name('home');
 
 Route::get('/redirect', function() {
     // Build the query parameter string to pass auth information to our request

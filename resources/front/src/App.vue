@@ -16,7 +16,8 @@
     @import url('https://fonts.googleapis.com/css?family=Montserrat');
     @import url('https://fonts.googleapis.com/css?family=Lato');
     @import url('https://fonts.googleapis.com/css?family=Open+Sans');
-    @import url('https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css');
+    /*@import url('https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css');*/
+    @import './assets/fonts/font-awesome/css/font-awesome.min.css';
 
     @font-face {
         font-family: 'FontAwesome';
@@ -52,14 +53,20 @@
     }
     .error-icon {
         position: relative;
+        margin: 5px;
+        color: #e02c48;
+    }
+    .error-icon:before {
+        position: relative;
         font-size: 20px;
         margin: 5px;
         color: #e02c48;
+        display: block;
     }
     .errors {
         display: none;
         position: absolute;
-        left:0;
+        left: 4px;
         bottom:0;
         right:0;
         top: 33px;

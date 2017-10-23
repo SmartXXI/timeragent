@@ -12,6 +12,9 @@ import Teams from '../components/pages/TeamsPage.vue';
 import NewTeam from '../components/pages/NewTeamPage.vue';
 import EditTeam from '../components/pages/EditTeamPage.vue';
 import EditProject from '../components/pages/EditProjectPage.vue';
+import Clients from '../components/pages/ClientsPage.vue';
+import NewClient from '../components/pages/NewClientPage.vue';
+import Profile from '../components/pages/ProfilePage.vue';
 
 Vue.use(Router);
 
@@ -80,6 +83,21 @@ export default new Router({
             name: 'editProject',
             component: EditProject,
             props: true,
+        },
+        {
+            path: '/clients',
+            name: 'Clients',
+            component: Clients,
+        },
+        {
+            path: '/clients/new',
+            name: 'NewClient',
+            component: NewClient,
+        },
+        {
+            path: '/profile',
+            name: 'Profile',
+            component: Profile,
         },
     ],
 });
