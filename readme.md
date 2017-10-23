@@ -9,7 +9,7 @@
 
 ## About TimerAgent
 
-TimerAgent is an open-source time tracking & project management software for web agencies with a variety of features such as:
+TimerAgent is a time tracking & project management software for teams with a variety of features such as:
 
 - [Time tracker](https://timeragent.com/docs/tracking).
 - [Task management](https://timeragent.com/docs/tasks).
