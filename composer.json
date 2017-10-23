@@ -2,7 +2,7 @@
     "name": "digitalideastudio/timeragent",
     "description": "TimerAgent is a time tracking & project management software for teams",
     "keywords": ["time-tracker", "time-management", "project-management", "time-management", "accounting"],
-    "license": "GPL",
+    "license": "MIT",
     "type": "project",
     "require": {
         "php": ">=7.0.0",
