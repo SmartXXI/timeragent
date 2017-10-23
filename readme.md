@@ -2,10 +2,11 @@
 
 <p align="center">
 <a href="https://travis-ci.org/digitalideastudio/timeragent"><img src="https://travis-ci.org/digitalideastudio/timeragent.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/digitalideastudio/timeragent"><img src="https://poser.pugx.org/digitalideastudio/timeragent/d/total.svg" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/digitalideastudio/timeragent"><img src="https://poser.pugx.org/digitalideastudio/timeragent/v/stable.svg" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/digitalideastudio/timeragent"><img src="https://poser.pugx.org/digitalideastudio/timeragent/license.svg" alt="License"></a>
+<img src="https://poser.pugx.org/digitalideastudio/timeragent/d/total" alt="Total Downloads">
+<img src="https://poser.pugx.org/digitalideastudio/timeragent/v/stable" alt="Latest Stable Version">
+<img src="https://poser.pugx.org/digitalideastudio/timeragent/license" alt="License">
 </p>
+
 
 ## About TimerAgent
 
