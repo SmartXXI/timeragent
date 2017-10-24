@@ -10,6 +10,7 @@ env:
   SESSION_DRIVER: redis
   QUEUE_DRIVER: sync
   DB_CONNECTION: sqlite
+  MAIL_DRIVER: log
   APP_KEY: 16efa6c23c2e8c705826b0e66778fbe7
 
 branches:

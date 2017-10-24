@@ -11,7 +11,7 @@
 </script>
 
 <style>
-    @import '~font-awesome/scss/font-awesome.scss';
+    /* @import '../../../node_modules/font-awesome/scss/font-awesome.scss'; */
     @import url('https://fonts.googleapis.com/css?family=Montserrat');
     @import url('https://fonts.googleapis.com/css?family=Lato');
     @import url('https://fonts.googleapis.com/css?family=Open+Sans');
