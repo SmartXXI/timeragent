@@ -13,10 +13,9 @@
 </template>
 
 <script>
-    import NavMenuAuth from '../blocks/NavMenuAuth.vue';
-    import AppPage from './tracker-page/AppPage.vue';
-    import TimeEntries from './tracker-page/TimeEntries.vue';                                               
-
+    import NavMenuAuth from '../blocks/NavMenuAuth';
+    import AppPage from './tracker-page/AppPage';
+    import TimeEntries from './tracker-page/TimeEntries';
 
     export default {
         data() {
@@ -25,7 +24,7 @@
             };
         },
         created() {
-            let date = this.$store.state.date;
+            const date = this.$store.state.date;
             this.$store.dispatch('getTasks', { date });
         },
         methods: {

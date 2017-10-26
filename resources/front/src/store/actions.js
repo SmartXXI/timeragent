@@ -7,7 +7,7 @@ export default {
         Http.get(`api/tasks?date=${obj.date}`).then((response) => {
             context.commit(types.GET_TASKS, { data: response.data, date: obj.date });
             if (response.data.length > 0
-                && response.data[response.data.length - 1].active === true) {
+                && response.data[response.data.length - 1].active === 1) {
                 context.dispatch('startTimer');
             }
         });

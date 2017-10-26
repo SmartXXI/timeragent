@@ -5,8 +5,10 @@ export default {
     [types.GET_TASKS](state, data) {
         let activeTask;
 
-        if (state.tasks.length > 0 && state.tasks[state.tasks.length - 1].active === true) {
-            activeTask = state.tasks.length - 1;
+        if (data.data.length > 0 && data.data[data.data.length - 1].active === 1) {
+            activeTask = data.data.length - 1;
+        } else {
+            activeTask = null;
         }
 
         Object.assign(state, {

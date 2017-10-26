@@ -11,10 +11,12 @@
 </script>
 
 <style>
-    /* @import '../../../node_modules/font-awesome/scss/font-awesome.scss'; */
+    @import '../../../node_modules/font-awesome/css/font-awesome.min.css';
     @import url('https://fonts.googleapis.com/css?family=Montserrat');
     @import url('https://fonts.googleapis.com/css?family=Lato');
     @import url('https://fonts.googleapis.com/css?family=Open+Sans');
+    @import url('https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css');
+    @import url('https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js');
 
     body {
         font-family : "Open Sans", Helvetica, Arial, sans-serif;

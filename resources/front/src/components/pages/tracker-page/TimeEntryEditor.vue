@@ -92,8 +92,8 @@
 
 <script>
     import moment from 'moment';
-    import {HTTP} from '../../../main.js';
-    import { required, minLength, between } from 'vuelidate/lib/validators';
+    import { required } from 'vuelidate/lib/validators';
+    import Http from '../../../helpers/Http';
 
     export default {
         props: ['task', 'addingTimeEntry', 'editTask'],
@@ -101,46 +101,45 @@
             return {
                 localTask: {
                     description: '',
-                    checked: false,
-                    active: false,
-                    project_id: "",
-                    startTime: "",
-                    spendTime: this.spendTime,
-                    endTime: "",
+                    checked    : false,
+                    active     : false,
+                    project_id : '',
+                    startTime  : '',
+                    spendTime  : this.spendTime,
+                    endTime    : '',
                 },
-                oldTask: {},
+                oldTask : {},
                 projects: {},
             };
         },
         watch: {
             'localTask.startTime'(val, oldVal) {
-                if (val.length == 1 && val > 2 && oldVal.substr(-1) !== ':') {
-                    this.localTask.startTime = this.localTask.startTime + ":";
-                } else if (val.length == 2 && val.substr(-1) !== ':' && oldVal.substr(-1) !== ':') {
-                    console.log(oldVal);
-                    this.localTask.startTime = this.localTask.startTime + ":";
+                if (val.length === 1 && val > 2 && oldVal.substr(-1) !== ':') {
+                    this.localTask.startTime = `${this.localTask.startTime}:`;
+                } else if (val.length === 2 && val.substr(-1) !== ':' && oldVal.substr(-1) !== ':') {
+                    this.localTask.startTime = `${this.localTask.startTime}:`;
                 }
             },
             'localTask.endTime'(val, oldVal) {
-                if (val.length == 2 && oldVal.substr(-1) !== ':') {
-                    this.localTask.endTime = this.localTask.endTime + ":";
-                } 
+                if (val.length === 2 && oldVal.substr(-1) !== ':') {
+                    this.localTask.endTime = `${this.localTask.endTime}:`;
+                }
             },
         },
         computed: {
             spendTime() {
-                if (this.localTask.startTime != "" && this.localTask.endTime != "") {
-                    let spendTime = moment.duration(moment(this.localTask.endTime, 'HH:mm')
-                        .diff(moment(this.localTask.startTime, "HH:mm")));
-                    this.localTask.spendTime = spendTime.hours() + " h " + spendTime.minutes() + " min ";
-                return  this.localTask.spendTime;
+                if (this.localTask.startTime !== '' && this.localTask.endTime !== '') {
+                    const spendTime = moment.duration(moment(this.localTask.endTime, 'HH:mm')
+                        .diff(moment(this.localTask.startTime, 'HH:mm')));
+                    this.localTask.spendTime = `${spendTime.hours()}  h  ${spendTime.minutes()}  min `;
+                    return this.localTask.spendTime;
                 }
-                this.localTask.spendTime = "";
+                this.localTask.spendTime = '';
                 return this.localTask.spendTime;
             },
             formInvalid() {
                 return this.$v.$invalid;
-            }
+            },
         },
         created() {
             if (this.task) {
@@ -148,8 +147,9 @@
                 this.localTask = Object.assign({}, this.task);
             }
 
-            HTTP.get('api/projects').then(response => this.projects = response.data);
-
+            Http.get('api/projects').then((response) => {
+                this.projects = response.data;
+            });
         },
         methods: {
             closeEditor() {
@@ -169,15 +169,13 @@
                 startTime: {
                     required,
                     validTime(value) {
-                        if (moment(value, "HH:mm:ss").isBefore(moment()) || value === "") return true;
-                        return false;
+                        return moment(value, 'HH:mm:ss').isBefore(moment()) || value === '';
                     },
                 },
                 endTime: {
                     required,
                     validTime(value) {
-                        if (moment(value, "HH:mm:ss").isBefore(moment()) || value === "") return true;
-                        return false;
+                        return moment(value, 'HH:mm:ss').isBefore(moment()) || value === '';
                     },
                 },
                 spendTime: {

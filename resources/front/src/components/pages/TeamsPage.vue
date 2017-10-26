@@ -44,32 +44,34 @@
 </template>
 
 <script>
-	import NavMenuAuth from '../blocks/NavMenuAuth.vue';
-    import {HTTP} from '../../main.js';
+    import NavMenuAuth from '../blocks/NavMenuAuth';
+    import Http from '../../helpers/Http';
 
-	export default {
+    export default {
         data() {
             return {
-                teams: {}
-            }
+                teams: {},
+            };
         },
         created() {
-            HTTP.get('api/teams').then(response => this.teams = response.data);
+            Http.get('api/teams').then((response) => {
+                this.teams = response.data;
+            });
         },
         computed: {
             user() {
                 return this.$store.state.user;
-            }
+            },
         },
         methods: {
             goToTeam(teamId) {
-                this.$router.push({name: 'editTeam', params: {teamId} })
-            }
+                this.$router.push({ name: 'editTeam', params: { teamId } });
+            },
         },
-		components: {
-			NavMenuAuth,
-		}
-	}
+        components: {
+            NavMenuAuth,
+        },
+    };
 </script>
 <style lang="scss" rel="stylesheet/css" scoped>
 	.page-title {

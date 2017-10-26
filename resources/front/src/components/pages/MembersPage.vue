@@ -51,18 +51,18 @@
 </template>
 
 <script>
-    import NavMenuAuth from '../blocks/NavMenuAuth.vue';
+    import NavMenuAuth from '../blocks/NavMenuAuth';
 
     export default {
         data() {
             return {
                 showModal: false,
-            } 
+            };
         },
         components: {
             NavMenuAuth,
-        }
-    }
+        },
+    };
 </script>
 <style lang="scss" rel="stylesheet/css" scoped>
     .page-title {

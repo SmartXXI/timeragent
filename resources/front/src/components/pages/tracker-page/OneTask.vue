@@ -47,7 +47,7 @@
 </template>
 
 <script>
-import TimeEntryEditor from './TimeEntryEditor.vue';
+import TimeEntryEditor from './TimeEntryEditor';
 import moment from 'moment';//eslint-disable-line
 import { mapActions } from 'vuex';//eslint-disable-line
 
@@ -60,16 +60,17 @@ export default {
     },
     computed: {
         spendTime() {
-        	let spendTime;
-	        if (this.task.endTime == null) {
-	            spendTime = moment.duration(this.task.spendTime);
-        	}
-        	if (this.task.endTime !== null) {
-        		spendTime = moment.duration(moment(this.task.endTime, 'HH:mm:ss').diff(moment(this.task.startTime, 'HH:mm:ss')));
-        	}
+            let spendTime;
+            if (this.task.endTime == null) {
+                spendTime = moment.duration(this.task.spendTime);
+            }
+            if (this.task.endTime !== null) {
+                spendTime = moment.duration(moment(this.task.endTime, 'HH:mm:ss').diff(moment(this.task.startTime, 'HH:mm:ss')));
+            }
             const hours = spendTime.hours();
             const minutes = spendTime.minutes();
-            return (hours > 0 ? hours + ' h ' : '') + minutes + ' min ';//eslint-disable-line
+//            return (hours > 0 ? hours + ' h ' : '') + minutes + ' min ';//eslint-disable-line
+            return `${(hours > 0 ? `${hours} h ` : '')} ${minutes} min`;
         },
     },
     methods: {
@@ -80,8 +81,9 @@ export default {
             this.isEditing = false;
         },
         updateTask(task) {
-        	task.spendTime = moment(task.spendTime, 'HH [h] mm [min]').format('HH:mm:ss');
-            this.$store.dispatch('updateTask', { task, index: this.index });
+            const lTask = task;
+            lTask.spendTime = moment(lTask.spendTime, 'HH [h] mm [min]').format('HH:mm:ss');
+            this.$store.dispatch('updateTask', { lTask, index: this.index });
             // this.task = Object.assign({}, task);
             this.isEditing = false;
         },
@@ -90,18 +92,18 @@ export default {
             this.$store.dispatch('stopTask', { task_id: this.task.id, index: this.index, task: this.task });
         },
         continueTask() {
-        	this.$store.dispatch('startTimer');
-        	this.$store.dispatch('createTask');
+            this.$store.dispatch('startTimer');
+            this.$store.dispatch('createTask');
         },
-        deleteTask(){
-        	if (this.task.active == true && moment().diff(moment(this.task.startTime, 'HH:mm:ss'), 'seconds') < 60 ) {
-        		this.stopTask();
-        	} else if (this.task.active == true) {
-        		this.$store.dispatch('stopTimer');
-        		this.$store.dispatch('deleteTask', {task_id: this.task.id, index: this.index});
-        	} else {
-        		this.$store.dispatch('deleteTask', {task_id: this.task.id, index: this.index});
-        	}
+        deleteTask() {
+            if (this.task.active === 1 && moment().diff(moment(this.task.startTime, 'HH:mm:ss'), 'seconds') < 60) {
+                this.stopTask();
+            } else if (this.task.active === 1) {
+                this.$store.dispatch('stopTimer');
+                this.$store.dispatch('deleteTask', { task_id: this.task.id, index: this.index });
+            } else {
+                this.$store.dispatch('deleteTask', { task_id: this.task.id, index: this.index });
+            }
         },
         currentTime() {
             return moment();

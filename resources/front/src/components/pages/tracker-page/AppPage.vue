@@ -73,8 +73,8 @@
     export default {
         data() {
             return {
-                isOpened: null,
-                today: moment().format('YYYY-MM-DD'),
+                isOpened : null,
+                today    : moment().format('YYYY-MM-DD'),
                 yesterday: moment().subtract(1, 'day').format('YYYY-MM-DD'),
             };
         },
@@ -113,18 +113,18 @@
             },
             formatedDate() {
                 return moment(this.date, 'YYYY-MM-DD').format('ddd, D MMMM');
-            }
+            },
         },
         methods: {
             addDay() {
-                let date = moment(this.date, 'YYYY-MM-DD').add(1, 'day').format('YYYY-MM-DD');
+                const date = moment(this.date, 'YYYY-MM-DD').add(1, 'day').format('YYYY-MM-DD');
                 // console.log(date);
-                this.$store.dispatch('getTasks', {date});
+                this.$store.dispatch('getTasks', { date });
             },
             subDay() {
-                let date = moment(this.date, 'YYYY-MM-DD').subtract(1, 'day').format('YYYY-MM-DD');
+                const date = moment(this.date, 'YYYY-MM-DD').subtract(1, 'day').format('YYYY-MM-DD');
                 // console.log(date);
-                this.$store.dispatch('getTasks', {date});
+                this.$store.dispatch('getTasks', { date });
             },
             showSubMenu(name) {
                 this.isOpened = (this.isOpened === null) ? name : null;

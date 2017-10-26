@@ -118,28 +118,32 @@
 </template>
 
 <script>
-	import NavMenuAuth from '../blocks/NavMenuAuth.vue';
-    import {HTTP} from '../../main.js';
-    import {required, email} from 'vuelidate/lib/validators'
+    import { required, email } from 'vuelidate/lib/validators';
+    import NavMenuAuth from '../blocks/NavMenuAuth';
+    import Http from '../../helpers/Http';
 
-	export default {
+    export default {
         props: ['teamId'],
         data() {
             return {
                 team: {
                     name: null,
                 },
-                showModal: false,
+                showModal       : false,
                 showConfirmModal: false,
-                members: "",
-                addedMembers: [],
-                existsMembers: {},
-                deletedMembers: [],
-            }
+                members         : '',
+                addedMembers    : [],
+                existsMembers   : {},
+                deletedMembers  : [],
+            };
         },
         created() {
-            HTTP.get('api/teams/' + this.teamId).then(response => this.team = response.data);
-            HTTP.get('api/teams/exists-members').then(response => this.existsMembers = response.data);
+            Http.get(`api/teams/${this.teamId}`).then((response) => {
+                this.team = response.data;
+            });
+            Http.get('api/teams/exists-members').then((response) => {
+                this.existsMembers = response.data;
+            });
         },
         computed: {
             formInvalid() {
@@ -149,52 +153,53 @@
         methods: {
             updateTeam() {
                 if (this.$v.$invalid) return;
-                HTTP.post('api/teams/' + this.team.id, {team: this.team, deletedMembers: this.deletedMembers, addedMembers: this.addedMembers}).then((response) => {
-                    if (this.members !== "") {
+                Http.post(`api/teams/${this.team.id}`, { team: this.team, deletedMembers: this.deletedMembers, addedMembers: this.addedMembers }).then((response) => {
+                    if (this.members !== '') {
                         this.inviteMembers(response.data.id);
                     }
                     this.$router.push('/teams');
                 });
             },
             deleteTeam() {
-                HTTP.post('api/teams/' + this.team.id + '/delete').then((response) => {
-                    this.showConfirmModal = false ;
+                Http.post(`api/teams/${this.team.id}/delete`).then(() => {
+                    this.showConfirmModal = false;
                     this.$router.go(-1);
                 });
             },
-            inviteMembers(team_id) {
-                HTTP.post('api/teams/invite', { members: this.members, team_id: team_id } );
+            inviteMembers(teamId) {
+                Http.post('api/teams/invite', { members: this.members, team_id: teamId });
             },
-            deleteMember(index, user_id) {
-                this.deletedMembers.push(user_id);
+            deleteMember(index, userId) {
+                this.deletedMembers.push(userId);
                 this.team.users.splice(index);
             },
             addMembers() {
                 this.addedMembers.map((memberId) => {
-                    let memberIndex = this.existsMembers.findIndex(obj => obj.id === memberId);
-                    let index = this.team.users.findIndex(obj => obj.id === memberId);
+                    const memberIndex = this.existsMembers.findIndex(obj => obj.id === memberId);
+                    const index = this.team.users.findIndex(obj => obj.id === memberId);
                     if (index === -1) {
-                        let member = this.existsMembers[memberIndex];
+                        const member = this.existsMembers[memberIndex];
                         this.team.users.push(member);
                     }
+                    return memberId;
                 });
                 this.showModal = false;
             },
         },
-		components: {
-			NavMenuAuth
-		},
+        components: {
+            NavMenuAuth,
+        },
         validations: {
             team: {
                 name: {
                     required,
-                }
+                },
             },
             members: {
                 email,
-            }
-        }
-	}
+            },
+        },
+    };
 </script>
 <style lang="scss" rel="stylesheet/css" scoped>
 	.page-title {

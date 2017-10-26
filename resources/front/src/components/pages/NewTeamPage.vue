@@ -78,59 +78,60 @@
 </template>
 
 <script>
-	import NavMenuAuth from '../blocks/NavMenuAuth.vue';
-    import {HTTP} from '../../main.js';
     import { required, email } from 'vuelidate/lib/validators';
+    import NavMenuAuth from '../blocks/NavMenuAuth';
+    import Http from '../../helpers/Http';
 
-	export default {
+    export default {
         data() {
             return {
                 team: {
                     name: null,
                 },
-                showModal: false,
-                members: "",
-                addedMembers: [],
+                showModal    : false,
+                members      : '',
+                addedMembers : [],
                 existsMembers: null,
-            }
+            };
         },
         computed: {
             formInvalid() {
                 return this.$v.$invalid;
-            }
+            },
         },
         methods: {
             addTeam() {
                 if (this.$v.$invalid) return;
-                HTTP.post('api/teams/new', {team: this.team, members: this.addedMembers}).then((response) => {
-                    console.log(response.data.id);
-                    if (this.members != "") {
+                Http.post('api/teams/new', { team: this.team, members: this.addedMembers }).then((response) => {
+                    if (this.members !== '') {
                         this.inviteMembers(response.data.id);
                     }
                     this.$router.push('/teams');
                 });
             },
-            inviteMembers(team_id) {
-                HTTP.post('api/teams/invite', { members: this.members, team_id: team_id } );
-            }
+            inviteMembers(teamId) {
+                Http.post('api/teams/invite', { members: this.members, team_id: teamId });
+            },
         },
         created() {
-            HTTP.get('api/teams/exists-members').then(response => this.existsMembers = response.data);
+            Http.get('api/teams/exists-members').then((response) => {
+                this.existsMembers = response.data;
+            });
         },
-		components: {
-			NavMenuAuth
-		},
+        components: {
+            NavMenuAuth,
+        },
         validations: {
             team: {
                 name: {
                     required,
-                }
+                },
             },
             members: {
                 email,
-            }
-        }
-	}
+            },
+        },
+    };
 </script>
 <style lang="scss" rel="stylesheet/css" scoped>
 	.page-title {

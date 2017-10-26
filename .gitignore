@@ -26,6 +26,7 @@ yarn-error.log
 /laravel-echo-server.json
 /public/mix.*.js
 yarn.lock
+storage/logs/*
 
 # Elastic Beanstalk Files
 .elasticbeanstalk/*

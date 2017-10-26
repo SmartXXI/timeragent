@@ -81,48 +81,50 @@
 </template>
 
 <script>
-	import NavMenuAuth from '../blocks/NavMenuAuth.vue';
-    import {HTTP} from '../../main.js';
     import { required } from 'vuelidate/lib/validators';
+    import NavMenuAuth from '../blocks/NavMenuAuth';
+    import Http from '../../helpers/Http';
 
-	export default {
+    export default {
         data() {
             return {
                 project: {
                     name: null,
                 },
-                teams: {},
-                showModal: false,
+                teams     : {},
+                showModal : false,
                 addedTeams: [],
-            }
+            };
         },
         computed: {
             formInvalid() {
                 return this.$v.$invalid;
-            }
+            },
         },
         created() {
-            HTTP.get('api/projects/teams').then(response => this.teams = response.data);
+            Http.get('api/projects/teams').then((response) => {
+                this.teams = response.data;
+            });
         },
         methods: {
             addProject() {
                 if (this.$v.$invalid) return;
-                HTTP.post('api/projects/new', { project: this.project, teams: this.addedTeams }).then((response) => {
+                Http.post('api/projects/new', { project: this.project, teams: this.addedTeams }).then(() => {
                     this.$router.push('/projects');
                 });
             },
         },
-		components: {
-			NavMenuAuth
-		},
+        components: {
+            NavMenuAuth,
+        },
         validations: {
             project: {
                 name: {
                     required,
-                }
-            }
-        }
-	}
+                },
+            },
+        },
+    };
 </script>
 <style lang="scss" rel="stylesheet/css" scoped>
 	.page-title {
