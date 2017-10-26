@@ -187,8 +187,8 @@
 </template>
 
 <script>
-    import NavMenu from '../blocks/NavMenu.vue';
-    import Bottom from '../blocks/footer.vue';
+    import NavMenu from '../blocks/NavMenu';
+    import Bottom from '../blocks/Footer';
 
     export default {
         components: {

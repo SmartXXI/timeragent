@@ -284,9 +284,9 @@
 </template>
 <script>
     //    import Template from './template';
-    import Navmenu from '../blocks/NavMenu.vue';
-    import Navmenuauth from '../blocks/NavMenuAuth.vue';
-    import Bottom from '../blocks/footer.vue';
+    import Navmenu from '../blocks/NavMenu';
+    import Navmenuauth from '../blocks/NavMenuAuth';
+    import Bottom from '../blocks/Footer';
 
     export default {
         name: 'home-page',

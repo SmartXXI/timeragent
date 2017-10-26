@@ -127,74 +127,78 @@
 </template>
 
 <script>
-	import NavMenuAuth from '../blocks/NavMenuAuth.vue';
-    import {HTTP} from '../../main.js';
-    import {required} from 'vuelidate/lib/validators';
+import { required } from 'vuelidate/lib/validators';
+import NavMenuAuth from '../blocks/NavMenuAuth';
+import Http from '../../helpers/Http';
 
-	export default {
-        props: ['projectId'],
-        data() {
-            return {
-                project: {
-                    name: null,
-                },
-                teams: {},
-                showModal: false,
-                showConfirmModal: false,
-                addedTeams: [],
-                deletedTeams: [],
-            }
-        },
-        created() {
-            HTTP.get('api/projects/teams').then(response => this.teams = response.data);
-            HTTP.get('api/projects/' + this.projectId).then(response => this.project = response.data);
-        },
-        computed: {
-            formInvalid() {
-                return this.$v.$invalid; 
-            },
-        },
-        methods: {
-            updateProject() {
-                if (this.$v.$invalid) return;
-                HTTP.post('api/projects/' + this.project.id, {project: this.project, addedTeams: this.addedTeams, deletedTeams: this.deletedTeams}).then((response) => {
-                    this.$router.push('/projects');
-                });
-            },
-            deleteProject() {
-                HTTP.post('api/projects/' + this.project.id + '/delete').then((response) => {
-                    this.showConfirmModal = false;
-                    this.$router.go(-1);
-                });
-            },
-            deleteTeam(index, team_id) {
-                this.deletedTeams.push(team_id);
-                this.project.teams.splice(index);
-            },
-            addTeams() {
-                this.addedTeams.map((teamId) => {
-                    let teamIndex = this.teams.findIndex(obj => obj.id === teamId);
-                    console.log(teamIndex);
-                    let index = this.project.teams.findIndex(obj => obj.id === teamId);
-                    if (index === -1) {
-                        let team = this.teams[teamIndex];
-                        this.project.teams.push(team);
-                    }
-                });
-                this.showModal = false;
-            },
-        },
-		components: {
-			NavMenuAuth
-		},
-        validations: {
+export default {
+    props: ['projectId'],
+    data() {
+        return {
             project: {
-                name: {
-                    required,
+                name: null,
+            },
+            teams           : {},
+            showModal       : false,
+            showConfirmModal: false,
+            addedTeams      : [],
+            deletedTeams    : [],
+        };
+    },
+    created() {
+        Http.get('api/projects/teams').then((response) => {
+            this.teams = response.data;
+        });
+        Http.get(`api/projects/${this.projectId}`).then((response) => {
+            this.project = response.data;
+        });
+    },
+    computed: {
+        formInvalid() {
+            return this.$v.$invalid;
+        },
+    },
+    methods: {
+        updateProject() {
+            if (this.$v.$invalid) return;
+            Http.post(`api/projects/${this.project.id}`, { project: this.project, addedTeams: this.addedTeams, deletedTeams: this.deletedTeams }).then(() => {
+                this.$router.push('/projects');
+            });
+        },
+        deleteProject() {
+            Http.post(`api/projects/${this.project.id}/delete`).then(() => {
+                this.showConfirmModal = false;
+                this.$router.go(-1);
+            });
+        },
+        deleteTeam(index, teamId) {
+            this.deletedTeams.push(teamId);
+            this.project.teams.splice(index);
+        },
+        addTeams() {
+            this.addedTeams.map((teamId) => {
+                const teamIndex = this.teams.findIndex(obj => obj.id === teamId);
+                const index = this.project.teams.findIndex(obj => obj.id === teamId);
+                if (index === -1) {
+                    const team = this.teams[teamIndex];
+                    this.project.teams.push(team);
                 }
-            }
-        }
-	}
+                return teamId;
+            });
+            this.showModal = false;
+        },
+    },
+    components: {
+        NavMenuAuth,
+    },
+    validations: {
+        project: {
+            name: {
+                required,
+            },
+        },
+    },
+};
 </script>
 <style lang="scss" rel="stylesheet/css" scoped>
 	.page-title {

@@ -44,32 +44,34 @@
 </template>
 
 <script>
-	import NavMenuAuth from '../blocks/NavMenuAuth.vue';
-    import {HTTP} from '../../main.js';
+    import NavMenuAuth from '../blocks/NavMenuAuth';
+    import Http from '../../helpers/Http';
 
-	export default {
+    export default {
         data() {
             return {
                 projects: {},
-            }
+            };
         },
         created() {
-            HTTP.get('api/projects').then(response => this.projects = response.data);
+            Http.get('api/projects').then((response) => {
+                this.projects = response.data;
+            });
         },
         computed: {
             user() {
                 return this.$store.state.user;
-            }
+            },
         },
         methods: {
             goToProject(projectId) {
-                this.$router.push({name: 'editProject', params: {projectId} })
-            }
+                this.$router.push({ name: 'editProject', params: { projectId } });
+            },
         },
-		components: {
-			NavMenuAuth,
-		}
-	}
+        components: {
+            NavMenuAuth,
+        },
+    };
 </script>
 <style lang="scss" rel="stylesheet/css" scoped>
 	.page-title {

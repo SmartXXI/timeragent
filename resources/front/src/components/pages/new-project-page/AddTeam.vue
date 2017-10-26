@@ -35,13 +35,13 @@
 </template>
 
 <script>
-	export default{
-		data() {
-			return {
-				showModal: false,
-			}
-		},
-	}
+    export default {
+        data() {
+            return {
+                showModal: false,
+            };
+        },
+    };
 </script>
 
 <style>

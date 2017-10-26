@@ -1,19 +1,19 @@
 import Vue from 'vue';
 import Router from 'vue-router';
 // import Home from '../components/pages/HomePage.vue';
-import Features from '../components/pages/FeaturesPage.vue';
-import Pricing from '../components/pages/PricingPage.vue';
-import Tracker from '../components/pages/TrackerPage.vue';
-import Projects from '../components/pages/ProjectsPage.vue';
-import NewProject from '../components/pages/NewProjectPage.vue';
-import Members from '../components/pages/MembersPage.vue';
-import Teams from '../components/pages/TeamsPage.vue';
-import NewTeam from '../components/pages/NewTeamPage.vue';
-import EditTeam from '../components/pages/EditTeamPage.vue';
-import EditProject from '../components/pages/EditProjectPage.vue';
+import Features from '../components/pages/FeaturesPage';
+import Pricing from '../components/pages/PricingPage';
+import Tracker from '../components/pages/TrackerPage';
+import Projects from '../components/pages/ProjectsPage';
+import NewProject from '../components/pages/NewProjectPage';
+import Members from '../components/pages/MembersPage';
+import Teams from '../components/pages/TeamsPage';
+import NewTeam from '../components/pages/NewTeamPage';
+import EditTeam from '../components/pages/EditTeamPage';
+import EditProject from '../components/pages/EditProjectPage';
 // import Clients from '../components/pages/ClientsPage.vue';
 // import NewClient from '../components/pages/NewClientPage.vue';
-import Profile from '../components/pages/ProfilePage.vue';
+import Profile from '../components/pages/ProfilePage';
 
 Vue.use(Router);
 

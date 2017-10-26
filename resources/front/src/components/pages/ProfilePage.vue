@@ -65,37 +65,39 @@
 </template>
 
 <script>
-	import NavMenuAuth from '../blocks/NavMenuAuth.vue';
-    import {HTTP} from '../../main.js';
-    import {required, email, numeric} from 'vuelidate/lib/validators';
+    import { required, email, numeric } from 'vuelidate/lib/validators';
+    import NavMenuAuth from '../blocks/NavMenuAuth';
+    import Http from '../../helpers/Http';
 
-	export default {
+    export default {
         data() {
             return {
                 user: {
                     name: null,
                 },
-            }
+            };
         },
         created() {
-            HTTP.get('api/user').then(response => this.user = response.data);
+            Http.get('api/user').then((response) => {
+                this.user = response.data;
+            });
         },
         computed: {
             formInvalid() {
-                return this.$v.$invalid; 
+                return this.$v.$invalid;
             },
         },
         methods: {
             updateUser() {
                 if (this.$v.$invalid) return;
-                HTTP.post('api/user', { user: this.user}).then((response) => {
+                Http.post('api/user', { user: this.user }).then(() => {
                     this.$router.push('/');
                 });
             },
         },
-		components: {
-			NavMenuAuth
-		},
+        components: {
+            NavMenuAuth,
+        },
         validations: {
             user: {
                 name: {
@@ -111,9 +113,9 @@
                 cost_rate: {
                     numeric,
                 },
-            }
-        }
-	}
+            },
+        },
+    };
 </script>
 <style lang="scss" rel="stylesheet/css" scoped>
 	.page-title {

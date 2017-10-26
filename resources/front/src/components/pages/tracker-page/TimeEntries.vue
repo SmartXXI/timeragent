@@ -48,17 +48,17 @@
 </template>
 
 <script>
-    import TimeEntryEditor from './TimeEntryEditor.vue';
-    import TasksList from './TaksList.vue';
-    import moment from 'moment';//eslint-disable-line
+    import moment from 'moment';
+    import TimeEntryEditor from './TimeEntryEditor';
+    import TasksList from './TaksList';
 
     export default {
         data() {
             return {
                 AddingTimeEntry: false,
-                checkedTasks: 0,
-                timerID: null,
-                time: null,
+                checkedTasks   : 0,
+                timerID        : null,
+                time           : null,
             };
         },
         computed: {
