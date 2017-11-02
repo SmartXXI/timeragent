@@ -88,4 +88,63 @@ export default {
         Http.get('api/user')
             .then(response => context.commit(types.GET_USER, response.data));
     },
+    getTeams(context) {
+        Http.get('api/teams').then((response) => {
+            context.commit(types.SET_TEAMS, response.data);
+        });
+    },
+    getProjects(context) {
+        Http.get('api/projects').then((response) => {
+            context.commit(types.SET_PROJECTS, response.data);
+        });
+    },
+    addTeam(context, payload) {
+        Http.post('api/teams/new', { team: payload.team, members: payload.addedMembers }).then((response) => {
+            if (payload.emailToInvite !== '') {
+                context.dispatch('inviteMembers', { teamId: response.data.id, emailToInvite: payload.emailToInvite });
+            }
+        });
+    },
+    inviteMembers(context, payload) {
+        Http.post('api/teams/invite', { members: payload.emailToInvite, team_id: payload.teamId });
+    },
+    addProject(context, payload) {
+        Http.post('api/projects/new', { project: payload.project, teams: payload.addedTeams });
+    },
+    getOneTeam(context, payload) {
+        Http.get(`api/teams/${payload.teamId}`).then((response) => {
+            context.commit(types.SET_ONE_TEAM, response.data);
+        });
+    },
+    updateTeam(context, payload) {
+        Http.post(`api/teams/${payload.team.id}`, { team: payload.team, deletedMembers: payload.deletedMembers, addedMembers: payload.addedMembers }).then((response) => {
+            if (payload.emailToInvite !== '') {
+                context.dispatch('inviteMembers', { teamId: response.data.id, emailToInvite: payload.emailToInvite });
+            }
+        });
+    },
+    deleteTeam(context, payload) {
+        Http.post(`api/teams/${payload.teamId}/delete`);
+    },
+    getOneProject(context, payload) {
+        Http.get(`api/projects/${payload.projectId}`).then((response) => {
+            context.commit(types.SET_ONE_PROJECT, response.data);
+        });
+    },
+    updateProject(context, payload) {
+        Http.post(`api/projects/${payload.projectId}`, { project: payload.project, addedTeams: payload.addedTeams, deletedTeams: payload.deletedTeams });
+    },
+    deleteProject(context, payload) {
+        Http.post(`api/projects/${payload.projectId}/delete`);
+    },
+    getOwnTeams(context) {
+        Http.get('api/projects/teams').then((response) => {
+            context.commit(types.SET_OWN_TEAMS, response.data);
+        });
+    },
+    getExistsMembers(context) {
+        Http.get('api/teams/exists-members').then((response) => {
+            context.commit(types.SET_EXISTS_MEMBERS, response.data);
+        });
+    },
 };

@@ -3,9 +3,9 @@
         <nav-menu-auth></nav-menu-auth>
         <div class="container">
                 <div class="pull-right">
-                    <button type="button" @click="$router.go(-1)" class="btn btn-wide btn-default btn-lg"> Cancel </button> 
+                    <button type="button" @click.prevent="$router.go(-1)" class="btn btn-wide btn-default btn-lg"> Cancel </button>
                     <button type="submit" class="btn btn-wide btn-primary btn-lg" title="Press Ctrl+Enter to save changes" 
-                    @click="updateTeam" :disabled="formInvalid"> Save </button> 
+                    @click.prevent="updateTeam" :disabled="formInvalid"> Save </button>
                 </div>
                 <span class="page-title"> Edit Team </span> 
             <div class="row">
@@ -37,7 +37,7 @@
                                 <ul class="list-group margin-top-small"> 
                                     <li v-for="(user, index) in team.users" class="list-group-item hoverable-element clearfix"> 
                                         <span class="fa fa-user"></span> {{ user.name }} <span class="pull-right"> 
-                                        <span class="fa fa-times hoverable-cross" @click="deleteMember(index, user.id)"></span> 
+                                        <span class="fa fa-times hoverable-cross" @click="deleteMember(index, user.id)"></span>
                                         </span> 
                                     </li>
                                 </ul>
@@ -49,7 +49,7 @@
                                     <div class="modal-content">
                                         <form> 
                                             <div class="modal-header"> 
-                                                <button type="button" class="close" @click="showConfirmModal = false"> 
+                                                <button type="button" class="close" @click.prevent="showConfirmModal = false">
                                                     <span>×</span>
                                                 </button> <h4 class="modal-title ng-binding">Delete team</h4> 
                                             </div>
@@ -61,8 +61,8 @@
                                                 </div>
                                             </div> 
                                             <div class="modal-footer">
-                                                <button type="submit" class="btn btn-primary" @click="deleteTeam">Delete</button>
-                                                <button type="submit" class="btn btn-default" @click="showConfirmModal = false ">Cancel</button>
+                                                <button class="btn btn-primary" @click.prevent="deleteTeam">Delete</button>
+                                                <button class="btn btn-default" @click.prevent="showConfirmModal = false ">Cancel</button>
                                             </div>
                                         </form>
                                     </div>
@@ -76,7 +76,7 @@
                                     <div class="modal-content">
                                         <form> 
                                             <div class="modal-header"> 
-                                                <button type="button" class="close" @click="showModal = false"> 
+                                                <button type="button" class="close" @click.prevent="showModal = false">
                                                     <span>×</span>
                                                 </button> <h4 class="modal-title ng-binding">Add Members</h4> 
                                             </div>
@@ -99,9 +99,9 @@
 
                                             </div> 
                                             <div class="modal-footer">
-                                                <button type="submit" class="btn btn-primary" @click="addMembers">Add</button>
+                                                <button type="submit" class="btn btn-primary" @click.prevent="addMembers">Add</button>
                                                 <!-- <button type="submit" class="btn btn-primary" @click="showModal = false">Add</button> -->
-                                                <button type="submit" class="btn btn-default" @click="showModal = false ">Cancel</button>
+                                                <button type="submit" class="btn btn-default" @click.prevent="showModal = false ">Cancel</button>
                                             </div>
                                         </form>
                                     </div>
@@ -119,55 +119,43 @@
 
 <script>
     import { required, email } from 'vuelidate/lib/validators';
+    import { mapGetters } from 'vuex';
     import NavMenuAuth from '../blocks/NavMenuAuth';
-    import Http from '../../helpers/Http';
 
     export default {
         props: ['teamId'],
         data() {
             return {
-                team: {
-                    name: null,
-                },
                 showModal       : false,
                 showConfirmModal: false,
                 members         : '',
                 addedMembers    : [],
-                existsMembers   : {},
                 deletedMembers  : [],
             };
         },
         created() {
-            Http.get(`api/teams/${this.teamId}`).then((response) => {
-                this.team = response.data;
-            });
-            Http.get('api/teams/exists-members').then((response) => {
-                this.existsMembers = response.data;
-            });
+            this.$store.dispatch('getOneTeam', { teamId: this.teamId });
+            this.$store.dispatch('getExistsMembers');
         },
         computed: {
             formInvalid() {
                 return this.$v.$invalid;
             },
+            ...mapGetters([
+                'team',
+                'existsMembers',
+            ]),
         },
         methods: {
             updateTeam() {
                 if (this.$v.$invalid) return;
-                Http.post(`api/teams/${this.team.id}`, { team: this.team, deletedMembers: this.deletedMembers, addedMembers: this.addedMembers }).then((response) => {
-                    if (this.members !== '') {
-                        this.inviteMembers(response.data.id);
-                    }
-                    this.$router.push('/teams');
-                });
+                this.$store.dispatch('updateTeam', { team: this.team, deletedMembers: this.deletedMembers, addedMembers: this.addedMembers, emailToInvite: this.members });
+                this.$router.push('/teams');
             },
             deleteTeam() {
-                Http.post(`api/teams/${this.team.id}/delete`).then(() => {
-                    this.showConfirmModal = false;
-                    this.$router.go(-1);
-                });
-            },
-            inviteMembers(teamId) {
-                Http.post('api/teams/invite', { members: this.members, team_id: teamId });
+                this.showConfirmModal = false;
+                this.$store.dispatch('deleteTeam', { teamId: this.team.id });
+                this.$router.push('/teams');
             },
             deleteMember(index, userId) {
                 this.deletedMembers.push(userId);

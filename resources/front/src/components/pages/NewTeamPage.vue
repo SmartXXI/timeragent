@@ -3,9 +3,9 @@
         <nav-menu-auth></nav-menu-auth>
         <div class="container">
                 <div class="pull-right">
-                    <button type="  button" class="btn btn-wide btn-default btn-lg" @click="$router.go(-1)"> Cancel </button> 
+                    <button type="  button" class="btn btn-wide btn-default btn-lg" @click.prevent="$router.go(-1)"> Cancel </button>
                     <button type="submit" class="btn btn-wide btn-primary btn-lg" title="Press Ctrl+Enter to save changes" 
-                    @click="addTeam" :disabled="formInvalid"> Save </button> 
+                    @click.prevent="addTeam" :disabled="formInvalid"> Save </button>
                 </div>
                 <span class="page-title"> New Team </span> 
             <div class="row">
@@ -39,7 +39,7 @@
                                     <div class="modal-content">
                                         <form> 
                                             <div class="modal-header"> 
-                                                <button type="button" class="close" @click="showModal = false"> 
+                                                <button type="button" class="close" @click.prevent="showModal = false">
                                                     <span>×</span>
                                                 </button> <h4 class="modal-title ng-binding">Add Members</h4> 
                                             </div>
@@ -60,8 +60,8 @@
                                                 </div>
                                             </div> 
                                             <div class="modal-footer">
-                                                <button type="submit" class="btn btn-primary" @click="showModal = false ">Add</button>
-                                                <button type="submit" class="btn btn-default" @click="showModal = false ">Cancel</button>
+                                                <button class="btn btn-primary" @click.prevent="showModal = false">Add</button>
+                                                <button class="btn btn-default" @click.prevent="showModal = false">Cancel</button>
                                             </div>
                                         </form>
                                     </div>
@@ -79,8 +79,8 @@
 
 <script>
     import { required, email } from 'vuelidate/lib/validators';
+    import { mapGetters } from 'vuex';
     import NavMenuAuth from '../blocks/NavMenuAuth';
-    import Http from '../../helpers/Http';
 
     export default {
         data() {
@@ -88,35 +88,28 @@
                 team: {
                     name: null,
                 },
-                showModal    : false,
-                members      : '',
-                addedMembers : [],
-                existsMembers: null,
+                showModal   : false,
+                members     : '',
+                addedMembers: [],
             };
         },
         computed: {
             formInvalid() {
                 return this.$v.$invalid;
             },
+            ...mapGetters([
+                'existsMembers',
+            ]),
         },
         methods: {
             addTeam() {
                 if (this.$v.$invalid) return;
-                Http.post('api/teams/new', { team: this.team, members: this.addedMembers }).then((response) => {
-                    if (this.members !== '') {
-                        this.inviteMembers(response.data.id);
-                    }
-                    this.$router.push('/teams');
-                });
-            },
-            inviteMembers(teamId) {
-                Http.post('api/teams/invite', { members: this.members, team_id: teamId });
+                this.$store.dispatch('addTeam', { team: this.team, addedMembers: this.addedMembers, emailToInvite: this.members });
+                this.$router.push('/teams');
             },
         },
         created() {
-            Http.get('api/teams/exists-members').then((response) => {
-                this.existsMembers = response.data;
-            });
+            this.$store.dispatch('getExistsMembers');
         },
         components: {
             NavMenuAuth,

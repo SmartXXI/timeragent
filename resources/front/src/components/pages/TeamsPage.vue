@@ -44,24 +44,18 @@
 </template>
 
 <script>
+    import { mapGetters } from 'vuex';
     import NavMenuAuth from '../blocks/NavMenuAuth';
-    import Http from '../../helpers/Http';
 
     export default {
-        data() {
-            return {
-                teams: {},
-            };
-        },
         created() {
-            Http.get('api/teams').then((response) => {
-                this.teams = response.data;
-            });
+            this.$store.dispatch('getTeams');
         },
         computed: {
-            user() {
-                return this.$store.state.user;
-            },
+            ...mapGetters([
+                'user',
+                'teams',
+            ]),
         },
         methods: {
             goToTeam(teamId) {

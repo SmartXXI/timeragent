@@ -83,7 +83,7 @@ export default {
         updateTask(task) {
             const lTask = task;
             lTask.spendTime = moment(lTask.spendTime, 'HH [h] mm [min]').format('HH:mm:ss');
-            this.$store.dispatch('updateTask', { lTask, index: this.index });
+            this.$store.dispatch('updateTask', { task: lTask, index: this.index });
             // this.task = Object.assign({}, task);
             this.isEditing = false;
         },

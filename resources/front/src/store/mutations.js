@@ -77,4 +77,22 @@ export default {
     [types.GET_USER](state, user) {
         Object.assign(state, { user });
     },
+    [types.SET_TEAMS](state, teams) {
+        Object.assign(state, { teams });
+    },
+    [types.SET_PROJECTS](state, projects) {
+        Object.assign(state, { projects });
+    },
+    [types.SET_ONE_TEAM](state, team) {
+        Object.assign(state, { team });
+    },
+    [types.SET_ONE_PROJECT](state, project) {
+        Object.assign(state, { project });
+    },
+    [types.SET_OWN_TEAMS](state, ownTeams) {
+        Object.assign(state, { ownTeams });
+    },
+    [types.SET_EXISTS_MEMBERS](state, existsMembers) {
+        Object.assign(state, { existsMembers });
+    },
 };

@@ -3,8 +3,8 @@
         <nav-menu-auth></nav-menu-auth>
         <div class="container">
                 <div class="pull-right">
-                    <button type="button" class="btn btn-wide btn-default btn-lg" @click="$router.go(-1)"> Cancel </button> 
-                    <button type="submit" class="btn btn-wide btn-primary btn-lg" title="Press Ctrl+Enter to save changes" @click="updateProject" :disabled="formInvalid"> Save </button> 
+                    <button class="btn btn-wide btn-default btn-lg" @click.prevent="$router.go(-1)"> Cancel </button>
+                    <button class="btn btn-wide btn-primary btn-lg" title="Press Ctrl+Enter to save changes" @click.prevent="updateProject" :disabled="formInvalid"> Save </button>
                 </div>
                 <span class="page-title"> Edit Project </span> 
             <div class="row">
@@ -41,7 +41,7 @@
                             <!-- <add-team></add-team> -->
                             <div class="tab-content"> 
                                 <div> 
-                                    <button type="button" class="btn btn-default" @click="showModal = true"> Add teams to project </button> 
+                                    <button type="button" class="btn btn-default" @click.prevent="showModal = true"> Add teams to project </button>
                                 </div>
                             </div>
                             <div> 
@@ -68,7 +68,7 @@
                                     <div class="modal-content">
                                         <form> 
                                             <div class="modal-header"> 
-                                                <button type="button" class="close" @click="showConfirmModal = false"> 
+                                                <button type="button" class="close" @click.prevent="showConfirmModal = false">
                                                     <span>×</span>
                                                 </button> <h4 class="modal-title ng-binding">Delete project</h4> 
                                             </div>
@@ -80,8 +80,8 @@
                                                 </div>
                                             </div> 
                                             <div class="modal-footer">
-                                                <button type="submit" class="btn btn-primary" @click="deleteProject">Delete</button>
-                                                <button type="submit" class="btn btn-default" @click="showConfirmModal = false ">Cancel</button>
+                                                <button class="btn btn-primary" @click.prevent="deleteProject">Delete</button>
+                                                <button class="btn btn-default" @click.prevent="showConfirmModal = false ">Cancel</button>
                                             </div>
                                         </form>
                                     </div>
@@ -96,7 +96,7 @@
                                     <div class="modal-content">
                                         <form> 
                                             <div class="modal-header"> 
-                                                <button type="button" class="close" @click="showModal = false"> 
+                                                <button type="button" class="close" @click.prevent="showModal = false">
                                                     <span>×</span>
                                                 </button> <h4 class="modal-title ng-binding">Add Project Teams</h4> 
                                             </div>
@@ -110,8 +110,8 @@
                                                 </div>
                                             </div> 
                                             <div class="modal-footer">
-                                                <button type="submit" class="btn btn-primary" @click="addTeams">Add</button>
-                                                <button type="submit" class="btn btn-default" @click="showModal = false ">Cancel</button>
+                                                <button type="submit" class="btn btn-primary" @click.prevent="addTeams">Add</button>
+                                                <button type="submit" class="btn btn-default" @click.prevent="showModal = false ">Cancel</button>
                                             </div>
                                         </form>
                                     </div>
@@ -128,17 +128,13 @@
 
 <script>
 import { required } from 'vuelidate/lib/validators';
+import { mapGetters } from 'vuex';
 import NavMenuAuth from '../blocks/NavMenuAuth';
-import Http from '../../helpers/Http';
 
 export default {
     props: ['projectId'],
     data() {
         return {
-            project: {
-                name: null,
-            },
-            teams           : {},
             showModal       : false,
             showConfirmModal: false,
             addedTeams      : [],
@@ -146,30 +142,28 @@ export default {
         };
     },
     created() {
-        Http.get('api/projects/teams').then((response) => {
-            this.teams = response.data;
-        });
-        Http.get(`api/projects/${this.projectId}`).then((response) => {
-            this.project = response.data;
-        });
+        this.$store.dispatch('getOwnTeams');
+        this.$store.dispatch('getOneProject', { projectId: this.projectId });
     },
     computed: {
         formInvalid() {
             return this.$v.$invalid;
         },
+        ...mapGetters([
+            'project',
+            'teams',
+        ]),
     },
     methods: {
         updateProject() {
             if (this.$v.$invalid) return;
-            Http.post(`api/projects/${this.project.id}`, { project: this.project, addedTeams: this.addedTeams, deletedTeams: this.deletedTeams }).then(() => {
-                this.$router.push('/projects');
-            });
+            this.$store.dispatch('updateProject', { projectId: this.project.id, project: this.project, addedTeams: this.addedTeams, deletedTeams: this.deletedTeams });
+            this.$router.push('/projects');
         },
         deleteProject() {
-            Http.post(`api/projects/${this.project.id}/delete`).then(() => {
-                this.showConfirmModal = false;
-                this.$router.go(-1);
-            });
+            this.showConfirmModal = false;
+            this.$store.dispatch('deleteProject', { projectId: this.project.id });
+            this.$router.push('/projects');
         },
         deleteTeam(index, teamId) {
             this.deletedTeams.push(teamId);

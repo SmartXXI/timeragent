@@ -75,10 +75,10 @@
                 </div>
             </div>
             <div class="actions margin-top-20">
-                <button v-if="editTask" @click="updateTask" title="Save editing" class="btn btn-primary" :disabled="formInvalid"> Save </button>
-                <button v-if="addingTimeEntry" @click="addTimeEntry" title="Add time entry" :disabled="formInvalid" class="btn btn-primary"> Save </button>
+                <button v-if="editTask" @click.prevent="updateTask" title="Save editing" class="btn btn-primary" :disabled="formInvalid"> Save </button>
+                <button v-if="addingTimeEntry" @click.prevent="addTimeEntry" title="Add time entry" :disabled="formInvalid" class="btn btn-primary"> Save </button>
                 <button
-                        @click="closeEditor"
+                        @click.prevent="closeEditor"
                         type="button"
                         class="btn btn-default"
                 >

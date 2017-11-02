@@ -45,23 +45,17 @@
 
 <script>
     import NavMenuAuth from '../blocks/NavMenuAuth';
-    import Http from '../../helpers/Http';
+    import { mapGetters } from 'vuex';
 
     export default {
-        data() {
-            return {
-                projects: {},
-            };
-        },
         created() {
-            Http.get('api/projects').then((response) => {
-                this.projects = response.data;
-            });
+            this.$store.dispatch('getProjects');
         },
         computed: {
-            user() {
-                return this.$store.state.user;
-            },
+            ...mapGetters([
+                'user',
+                'projects',
+            ]),
         },
         methods: {
             goToProject(projectId) {

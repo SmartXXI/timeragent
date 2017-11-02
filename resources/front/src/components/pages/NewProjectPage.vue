@@ -3,8 +3,8 @@
         <nav-menu-auth></nav-menu-auth>
         <div class="container">
                 <div class="pull-right">
-                    <button type="button" class="btn btn-wide btn-default btn-lg" @click="$router.go(-1)"> Cancel </button> 
-                    <button type="submit" class="btn btn-wide btn-primary btn-lg" title="Press Ctrl+Enter to save changes" @click="addProject" :disabled="formInvalid"> Save </button> 
+                    <button type="button" class="btn btn-wide btn-default btn-lg" @click.prevent="$router.go(-1)"> Cancel </button>
+                    <button type="submit" class="btn btn-wide btn-primary btn-lg" title="Press Ctrl+Enter to save changes" @click.prevent="addProject" :disabled="formInvalid"> Save </button>
                 </div>
                 <span class="page-title"> New Project </span> 
             <div class="row">
@@ -48,9 +48,9 @@
                             <div class="modal" v-if="showModal">
                                 <div class="modal-dialog">
                                     <div class="modal-content">
-                                        <form> 
+                                        <form>
                                             <div class="modal-header"> 
-                                                <button type="button" class="close" @click="showModal = false"> 
+                                                <button type="button" class="close" @click.prevent="showModal = false">
                                                     <span>×</span>
                                                 </button> <h4 class="modal-title ng-binding">Add Project Teams</h4> 
                                             </div>
@@ -64,8 +64,8 @@
                                                 </div>
                                             </div> 
                                             <div class="modal-footer">
-                                                <button type="submit" class="btn btn-primary" @click="showModal = false">Add</button>
-                                                <button type="submit" class="btn btn-default" @click="showModal = false ">Cancel</button>
+                                                <button class="btn btn-primary" @click.prevent="showModal = false">Add</button>
+                                                <button class="btn btn-default" @click.prevent="showModal = false">Cancel</button>
                                             </div>
                                         </form>
                                     </div>
@@ -82,8 +82,8 @@
 
 <script>
     import { required } from 'vuelidate/lib/validators';
+    import { mapGetters } from 'vuex';
     import NavMenuAuth from '../blocks/NavMenuAuth';
-    import Http from '../../helpers/Http';
 
     export default {
         data() {
@@ -91,7 +91,6 @@
                 project: {
                     name: null,
                 },
-                teams     : {},
                 showModal : false,
                 addedTeams: [],
             };
@@ -100,18 +99,18 @@
             formInvalid() {
                 return this.$v.$invalid;
             },
+            ...mapGetters([
+                'teams',
+            ]),
         },
         created() {
-            Http.get('api/projects/teams').then((response) => {
-                this.teams = response.data;
-            });
+            this.$store.dispatch('getOwnTeams');
         },
         methods: {
             addProject() {
                 if (this.$v.$invalid) return;
-                Http.post('api/projects/new', { project: this.project, teams: this.addedTeams }).then(() => {
-                    this.$router.push('/projects');
-                });
+                this.$store.dispatch('addProject', { project: this.project, addedTeams: this.addedTeams });
+                this.$router.push('/projects');
             },
         },
         components: {
