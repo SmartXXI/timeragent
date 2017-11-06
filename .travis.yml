@@ -55,4 +55,9 @@ before_script:
 
 script:
   - vendor/bin/phpunit
-  - cd resources/front && ./node_modules/.bin/karma start test/unit/karma.conf.js --single-run --browsers PhantomJS --log-level=debug
+  - pwd
+  - cd resources/front
+  - pwd
+  - cd resources/front && ls -la ./
+  - cd resources/front && ls -la ./ && ./node_modules/ && ./node_modules/.bin/
+  - cd resources/front && ls -la ./node_modules/.bin && ./node_modules/.bin/karma start test/unit/karma.conf.js --single-run --browsers PhantomJS --log-level=debug
