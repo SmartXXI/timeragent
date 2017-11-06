@@ -51,4 +51,4 @@ before_install:
 
 script:
   - vendor/bin/phpunit
-  - npm test
+  - cd resources/front && npm test
