@@ -109,8 +109,28 @@
         methods: {
             addProject() {
                 if (this.$v.$invalid) return;
-                this.$store.dispatch('addProject', { project: this.project, addedTeams: this.addedTeams });
-                this.$router.push('/projects');
+                this.$store.dispatch('addProject', { project: this.project, addedTeams: this.addedTeams })
+                .then(() => {
+                    this.showSuccess();
+                    this.$router.push('/projects');
+                })
+                .catch(() => {
+                    this.showError();
+                });
+            },
+            showSuccess() {
+                this.$notify({
+                    title  : 'Success',
+                    message: 'Project saved successful',
+                    type   : 'success',
+                });
+            },
+            showError() {
+                this.$notify({
+                    title  : 'Error',
+                    message: 'Oops, something went wrong...',
+                    type   : 'error',
+                });
             },
         },
         components: {

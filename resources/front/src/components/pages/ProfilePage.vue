@@ -66,32 +66,52 @@
 
 <script>
     import { required, email, numeric } from 'vuelidate/lib/validators';
+    import { mapGetters } from 'vuex';
     import NavMenuAuth from '../blocks/NavMenuAuth';
-    import Http from '../../helpers/Http';
 
     export default {
         data() {
             return {
-                user: {
-                    name: null,
-                },
+//                user: {
+//                    name: null,
+//                },
             };
         },
         created() {
-            Http.get('api/user').then((response) => {
-                this.user = response.data;
-            });
+            this.$store.dispatch('getUser');
         },
         computed: {
             formInvalid() {
                 return this.$v.$invalid;
             },
+            ...mapGetters([
+                'user',
+            ]),
         },
         methods: {
             updateUser() {
                 if (this.$v.$invalid) return;
-                Http.post('api/user', { user: this.user }).then(() => {
-                    this.$router.push('/');
+                this.$store.dispatch('updateUser', { user: this.user })
+                .then(() => {
+                    this.showSuccess();
+                    this.$router.go(-1);
+                })
+                .catch(() => {
+                    this.showError();
+                });
+            },
+            showSuccess() {
+                this.$notify({
+                    title  : 'Success',
+                    message: 'User updated successful',
+                    type   : 'success',
+                });
+            },
+            showError() {
+                this.$notify({
+                    title  : 'Error',
+                    message: 'Oops, something went wrong...',
+                    type   : 'error',
                 });
             },
         },

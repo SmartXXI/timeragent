@@ -149,13 +149,25 @@
         methods: {
             updateTeam() {
                 if (this.$v.$invalid) return;
-                this.$store.dispatch('updateTeam', { team: this.team, deletedMembers: this.deletedMembers, addedMembers: this.addedMembers, emailToInvite: this.members });
-                this.$router.push('/teams');
+                this.$store.dispatch('updateTeam', { team: this.team, deletedMembers: this.deletedMembers, addedMembers: this.addedMembers, emailToInvite: this.members })
+                .then(() => {
+                    this.showSuccess();
+                    this.$router.push('/teams');
+                })
+                .catch(() => {
+                    this.showError();
+                });
             },
             deleteTeam() {
                 this.showConfirmModal = false;
-                this.$store.dispatch('deleteTeam', { teamId: this.team.id });
-                this.$router.push('/teams');
+                this.$store.dispatch('deleteTeam', { teamId: this.team.id })
+                .then(() => {
+                    this.showSuccess();
+                    this.$router.push('/teams');
+                })
+                .catch(() => {
+                    this.showError();
+                });
             },
             deleteMember(index, userId) {
                 this.deletedMembers.push(userId);
@@ -172,6 +184,20 @@
                     return memberId;
                 });
                 this.showModal = false;
+            },
+            showSuccess() {
+                this.$notify({
+                    title  : 'Success',
+                    message: 'Operation successful',
+                    type   : 'success',
+                });
+            },
+            showError() {
+                this.$notify({
+                    title  : 'Error',
+                    message: 'Oops, something went wrong...',
+                    type   : 'error',
+                });
             },
         },
         components: {

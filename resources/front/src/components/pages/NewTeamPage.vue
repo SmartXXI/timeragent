@@ -104,8 +104,28 @@
         methods: {
             addTeam() {
                 if (this.$v.$invalid) return;
-                this.$store.dispatch('addTeam', { team: this.team, addedMembers: this.addedMembers, emailToInvite: this.members });
-                this.$router.push('/teams');
+                this.$store.dispatch('addTeam', { team: this.team, addedMembers: this.addedMembers, emailToInvite: this.members })
+                .then(() => {
+                    this.showSuccess();
+                    this.$router.push('/teams');
+                })
+                .catch(() => {
+                    this.showError();
+                });
+            },
+            showSuccess() {
+                this.$notify({
+                    title  : 'Success',
+                    message: 'Team saved successful',
+                    type   : 'success',
+                });
+            },
+            showError() {
+                this.$notify({
+                    title  : 'Error',
+                    message: 'Oops, something went wrong...',
+                    type   : 'error',
+                });
             },
         },
         created() {

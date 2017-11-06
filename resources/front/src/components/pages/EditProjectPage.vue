@@ -157,13 +157,40 @@ export default {
     methods: {
         updateProject() {
             if (this.$v.$invalid) return;
-            this.$store.dispatch('updateProject', { projectId: this.project.id, project: this.project, addedTeams: this.addedTeams, deletedTeams: this.deletedTeams });
-            this.$router.push('/projects');
+            this.$store.dispatch('updateProject', { projectId: this.project.id, project: this.project, addedTeams: this.addedTeams, deletedTeams: this.deletedTeams })
+            .then(() => {
+                this.showSuccess();
+                this.$router.push('/projects');
+            })
+            .catch((error) => {
+                this.showError(error);
+            });
+//            this.$router.push('/projects');
+        },
+        showSuccess() {
+            this.$notify({
+                title  : 'Success',
+                message: 'Operation successful',
+                type   : 'success',
+            });
+        },
+        showError() {
+            this.$notify({
+                title  : 'Error',
+                message: 'Oops, something went wrong...',
+                type   : 'error',
+            });
         },
         deleteProject() {
             this.showConfirmModal = false;
-            this.$store.dispatch('deleteProject', { projectId: this.project.id });
-            this.$router.push('/projects');
+            this.$store.dispatch('deleteProject', { projectId: this.project.id })
+            .then(() => {
+                this.showSuccess();
+                this.$router.push('/projects');
+            })
+            .catch(() => {
+                this.showError();
+            });
         },
         deleteTeam(index, teamId) {
             this.deletedTeams.push(teamId);

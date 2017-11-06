@@ -44,8 +44,8 @@
 </template>
 
 <script>
-    import NavMenuAuth from '../blocks/NavMenuAuth';
     import { mapGetters } from 'vuex';
+    import NavMenuAuth from '../blocks/NavMenuAuth';
 
     export default {
         created() {
