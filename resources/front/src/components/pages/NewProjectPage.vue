@@ -84,8 +84,10 @@
     import { required } from 'vuelidate/lib/validators';
     import { mapGetters } from 'vuex';
     import NavMenuAuth from '../blocks/NavMenuAuth';
+    import notification from '../../mixins/notification';
 
     export default {
+        mixins: [notification],
         data() {
             return {
                 project: {
@@ -111,25 +113,11 @@
                 if (this.$v.$invalid) return;
                 this.$store.dispatch('addProject', { project: this.project, addedTeams: this.addedTeams })
                 .then(() => {
-                    this.showSuccess();
+                    this.showSuccess('Project saved successful');
                     this.$router.push('/projects');
                 })
                 .catch(() => {
                     this.showError();
-                });
-            },
-            showSuccess() {
-                this.$notify({
-                    title  : 'Success',
-                    message: 'Project saved successful',
-                    type   : 'success',
-                });
-            },
-            showError() {
-                this.$notify({
-                    title  : 'Error',
-                    message: 'Oops, something went wrong...',
-                    type   : 'error',
                 });
             },
         },

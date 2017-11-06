@@ -68,15 +68,10 @@
     import { required, email, numeric } from 'vuelidate/lib/validators';
     import { mapGetters } from 'vuex';
     import NavMenuAuth from '../blocks/NavMenuAuth';
+    import notification from './../../mixins/notification';
 
     export default {
-        data() {
-            return {
-//                user: {
-//                    name: null,
-//                },
-            };
-        },
+        mixins: [notification],
         created() {
             this.$store.dispatch('getUser');
         },
@@ -93,25 +88,11 @@
                 if (this.$v.$invalid) return;
                 this.$store.dispatch('updateUser', { user: this.user })
                 .then(() => {
-                    this.showSuccess();
+                    this.showSuccess('Profile saved successful');
                     this.$router.go(-1);
                 })
                 .catch(() => {
                     this.showError();
-                });
-            },
-            showSuccess() {
-                this.$notify({
-                    title  : 'Success',
-                    message: 'User updated successful',
-                    type   : 'success',
-                });
-            },
-            showError() {
-                this.$notify({
-                    title  : 'Error',
-                    message: 'Oops, something went wrong...',
-                    type   : 'error',
                 });
             },
         },

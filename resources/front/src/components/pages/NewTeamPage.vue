@@ -81,8 +81,10 @@
     import { required, email } from 'vuelidate/lib/validators';
     import { mapGetters } from 'vuex';
     import NavMenuAuth from '../blocks/NavMenuAuth';
+    import notification from '../../mixins/notification';
 
     export default {
+        mixins: [notification],
         data() {
             return {
                 team: {
@@ -106,25 +108,11 @@
                 if (this.$v.$invalid) return;
                 this.$store.dispatch('addTeam', { team: this.team, addedMembers: this.addedMembers, emailToInvite: this.members })
                 .then(() => {
-                    this.showSuccess();
+                    this.showSuccess('Team saved successful');
                     this.$router.push('/teams');
                 })
                 .catch(() => {
                     this.showError();
-                });
-            },
-            showSuccess() {
-                this.$notify({
-                    title  : 'Success',
-                    message: 'Team saved successful',
-                    type   : 'success',
-                });
-            },
-            showError() {
-                this.$notify({
-                    title  : 'Error',
-                    message: 'Oops, something went wrong...',
-                    type   : 'error',
                 });
             },
         },
