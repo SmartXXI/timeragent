@@ -4,6 +4,9 @@ php:
   - 7.1
   - 7.2
 
+addons:
+  chrome: stable
+
 env:
   APP_ENV: testing
   CACHE_DRIVER: redis
@@ -17,19 +20,22 @@ branches:
   - master
   
 before_install:
-  - export DISPLAY=:99.0
-  - sh -e /etc/init.d/xvfb start
-  - wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
-  - sudo sh -c 'echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list'
-  - sudo apt-get update
-  - sudo apt-get install google-chrome-stable
-  - export CHROME_BIN=chromium-browser
+  - phpenv config-rm xdebug.ini || true
+  - echo "extension = memcached.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+  - printf "\n" | pecl install -f redis
+  - travis_retry composer self-update
+#  - wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
+#  - sudo sh -c 'echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list'
+#  - sudo apt-get update
+#  - sudo apt-get install google-chrome-stable
+#  - export CHROME_BIN=chromium-browser
 
 install:
   - . $HOME/.nvm/nvm.sh
   - nvm install 8.7.0
   - nvm use 8.7.0
   - npm i
+  - npm i -g karma
   - composer self-update
   - composer install --prefer-dist --no-interaction
 
@@ -43,12 +49,15 @@ services:
   - memcached
   - redis-server
 
-before_install:
-  - phpenv config-rm xdebug.ini || true
-  - echo "extension = memcached.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
-  - printf "\n" | pecl install -f redis
-  - travis_retry composer self-update
+before_script:
+  - "export DISPLAY=:99.0"
+  - "sh -e /etc/init.d/xvfb start"
+  - sleep 3 # give xvfb some time to start
 
 script:
   - vendor/bin/phpunit
-  - npm test
+  - cd resources/front
+  - npm cache clean
+  - npm i
+  - node_modules/.bin/karma start test/unit/karma.conf.js --single-run --browsers PhantomJS --log-level=debug
+

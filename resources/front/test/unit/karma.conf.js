@@ -14,6 +14,9 @@ module.exports = function moduleExports(config) {
         browsers     : ['PhantomJS'],
         frameworks   : ['mocha', 'sinon-chai', 'phantomjs-shim', 'sinon'],
         reporters    : ['spec', 'coverage'],
+        plugins : [
+            'karma-mocha',
+        ],
         files        : [
             '../../node_modules/es6-promise/dist/es6-promise.auto.js',
             './index.js'
