@@ -4,6 +4,9 @@ php:
   - 7.1
   - 7.2
 
+# addons:
+# chrome: stable
+
 env:
   APP_ENV: testing
   CACHE_DRIVER: redis
@@ -46,10 +49,10 @@ services:
   - redis-server
 
 before_script:
-- export DISPLAY=:99.0
-- sh -e /etc/init.d/xvfb start
+  - "export DISPLAY=:99.0"
+  - "sh -e /etc/init.d/xvfb start"
+  - sleep 3 # give xvfb some time to start
 
 script:
   - vendor/bin/phpunit
-  - cd resources/front
-  - node_modules/.bin/karma start test/unit/karma.conf.js --single-run --browsers PhantomJS --log-level=debug
+  - cd resources/front && ./node_modules/.bin/karma start test/unit/karma.conf.js --single-run --browsers PhantomJS --log-level=debug
