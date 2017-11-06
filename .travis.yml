@@ -59,6 +59,5 @@ script:
   - cd resources/front
   - npm cache clean
   - npm i
-  - ls -la node_modules/.bin/
-  - karma start test/unit/karma.conf.js --single-run --browsers PhantomJS --log-level=debug
+  - node_modules/.bin/karma start test/unit/karma.conf.js --single-run --browsers PhantomJS --log-level=debug
 
