@@ -92,12 +92,12 @@ export default {
         return Http.post('api/user', { user: payload.user });
     },
     getTeams(context) {
-        Http.get('api/teams').then((response) => {
+        return Http.get('api/teams').then((response) => {
             context.commit(types.SET_TEAMS, response.data);
         });
     },
     getProjects(context) {
-        Http.get('api/projects').then((response) => {
+        return Http.get('api/projects').then((response) => {
             context.commit(types.SET_PROJECTS, response.data);
         });
     },
