@@ -4,8 +4,8 @@ php:
   - 7.1
   - 7.2
 
-# addons:
-# chrome: stable
+addons:
+  chrome: stable
 
 env:
   APP_ENV: testing
@@ -24,17 +24,18 @@ before_install:
   - echo "extension = memcached.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
   - printf "\n" | pecl install -f redis
   - travis_retry composer self-update
-  - wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
-  - sudo sh -c 'echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list'
-  - sudo apt-get update
-  - sudo apt-get install google-chrome-stable
-  - export CHROME_BIN=chromium-browser
+#  - wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
+#  - sudo sh -c 'echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list'
+#  - sudo apt-get update
+#  - sudo apt-get install google-chrome-stable
+#  - export CHROME_BIN=chromium-browser
 
 install:
   - . $HOME/.nvm/nvm.sh
   - nvm install 8.7.0
   - nvm use 8.7.0
   - npm i
+  - npm i -g karma
   - composer self-update
   - composer install --prefer-dist --no-interaction
 
@@ -55,9 +56,9 @@ before_script:
 
 script:
   - vendor/bin/phpunit
-  - pwd
   - cd resources/front
   - pwd
-  - cd resources/front && ls -la ./
-  - cd resources/front && ls -la ./ && ./node_modules/ && ./node_modules/.bin/
-  - cd resources/front && ls -la ./node_modules/.bin && ./node_modules/.bin/karma start test/unit/karma.conf.js --single-run --browsers PhantomJS --log-level=debug
+  - ls -la ./ && ./node_modules/ && ./node_modules/.bin/
+  - ./node_modules/.bin/karma start test/unit/karma.conf.js --single-run --browsers PhantomJS --log-level=debug
+  - karma start test/unit/karma.conf.js --single-run --browsers PhantomJS --log-level=debug
+
