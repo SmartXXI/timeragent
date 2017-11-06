@@ -130,9 +130,11 @@
 import { required } from 'vuelidate/lib/validators';
 import { mapGetters } from 'vuex';
 import NavMenuAuth from '../blocks/NavMenuAuth';
+import notification from '../../mixins/notification';
 
 export default {
-    props: ['projectId'],
+    props : ['projectId'],
+    mixins: [notification],
     data() {
         return {
             showModal       : false,
@@ -157,13 +159,25 @@ export default {
     methods: {
         updateProject() {
             if (this.$v.$invalid) return;
-            this.$store.dispatch('updateProject', { projectId: this.project.id, project: this.project, addedTeams: this.addedTeams, deletedTeams: this.deletedTeams });
-            this.$router.push('/projects');
+            this.$store.dispatch('updateProject', { projectId: this.project.id, project: this.project, addedTeams: this.addedTeams, deletedTeams: this.deletedTeams })
+            .then(() => {
+                this.showSuccess('Project saved successful');
+                this.$router.push('/projects');
+            })
+            .catch((error) => {
+                this.showError(error);
+            });
         },
         deleteProject() {
             this.showConfirmModal = false;
-            this.$store.dispatch('deleteProject', { projectId: this.project.id });
-            this.$router.push('/projects');
+            this.$store.dispatch('deleteProject', { projectId: this.project.id })
+            .then(() => {
+                this.showSuccess('Project deleted successful');
+                this.$router.push('/projects');
+            })
+            .catch(() => {
+                this.showError();
+            });
         },
         deleteTeam(index, teamId) {
             this.deletedTeams.push(teamId);

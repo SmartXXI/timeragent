@@ -121,9 +121,11 @@
     import { required, email } from 'vuelidate/lib/validators';
     import { mapGetters } from 'vuex';
     import NavMenuAuth from '../blocks/NavMenuAuth';
+    import notification from '../../mixins/notification';
 
     export default {
-        props: ['teamId'],
+        props : ['teamId'],
+        mixins: [notification],
         data() {
             return {
                 showModal       : false,
@@ -149,13 +151,25 @@
         methods: {
             updateTeam() {
                 if (this.$v.$invalid) return;
-                this.$store.dispatch('updateTeam', { team: this.team, deletedMembers: this.deletedMembers, addedMembers: this.addedMembers, emailToInvite: this.members });
-                this.$router.push('/teams');
+                this.$store.dispatch('updateTeam', { team: this.team, deletedMembers: this.deletedMembers, addedMembers: this.addedMembers, emailToInvite: this.members })
+                .then(() => {
+                    this.showSuccess('Team saved successful');
+                    this.$router.push('/teams');
+                })
+                .catch(() => {
+                    this.showError();
+                });
             },
             deleteTeam() {
                 this.showConfirmModal = false;
-                this.$store.dispatch('deleteTeam', { teamId: this.team.id });
-                this.$router.push('/teams');
+                this.$store.dispatch('deleteTeam', { teamId: this.team.id })
+                .then(() => {
+                    this.showSuccess('Team deleted successful');
+                    this.$router.push('/teams');
+                })
+                .catch(() => {
+                    this.showError();
+                });
             },
             deleteMember(index, userId) {
                 this.deletedMembers.push(userId);

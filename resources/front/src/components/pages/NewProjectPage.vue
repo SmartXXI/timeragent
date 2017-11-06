@@ -84,8 +84,10 @@
     import { required } from 'vuelidate/lib/validators';
     import { mapGetters } from 'vuex';
     import NavMenuAuth from '../blocks/NavMenuAuth';
+    import notification from '../../mixins/notification';
 
     export default {
+        mixins: [notification],
         data() {
             return {
                 project: {
@@ -109,8 +111,14 @@
         methods: {
             addProject() {
                 if (this.$v.$invalid) return;
-                this.$store.dispatch('addProject', { project: this.project, addedTeams: this.addedTeams });
-                this.$router.push('/projects');
+                this.$store.dispatch('addProject', { project: this.project, addedTeams: this.addedTeams })
+                .then(() => {
+                    this.showSuccess('Project saved successful');
+                    this.$router.push('/projects');
+                })
+                .catch(() => {
+                    this.showError();
+                });
             },
         },
         components: {
