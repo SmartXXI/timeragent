@@ -46,10 +46,15 @@
 <script>
     import { mapGetters } from 'vuex';
     import NavMenuAuth from '../blocks/NavMenuAuth';
+    import notification from '../../mixins/notification';
 
     export default {
+        mixins: [notification],
         created() {
-            this.$store.dispatch('getTeams');
+            this.$store.dispatch('getTeams')
+            .catch(() => {
+                this.showError('Something went wrong in loading teams...');
+            });
         },
         computed: {
             ...mapGetters([

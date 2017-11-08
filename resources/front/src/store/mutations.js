@@ -77,6 +77,9 @@ export default {
     [types.GET_USER](state, user) {
         Object.assign(state, { user });
     },
+    [types.UPDATE_USER](state, user) {
+        Object.assign(state, { user });
+    },
     [types.SET_TEAMS](state, teams) {
         Object.assign(state, { teams });
     },

@@ -16,6 +16,7 @@
     "dependencies": {
         "axios": "^0.16.2",
         "babel-preset-flow-vue": "^1.0.0",
+        "element-ui": "^2.0.2",
         "es6-promise": "^4.1.1",
         "eslint-config-vue": "^2.0.2",
         "eslint-plugin-vue": "^2.1.0",

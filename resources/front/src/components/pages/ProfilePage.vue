@@ -66,32 +66,33 @@
 
 <script>
     import { required, email, numeric } from 'vuelidate/lib/validators';
+    import { mapGetters } from 'vuex';
     import NavMenuAuth from '../blocks/NavMenuAuth';
-    import Http from '../../helpers/Http';
+    import notification from './../../mixins/notification';
 
     export default {
-        data() {
-            return {
-                user: {
-                    name: null,
-                },
-            };
-        },
+        mixins: [notification],
         created() {
-            Http.get('api/user').then((response) => {
-                this.user = response.data;
-            });
+            this.$store.dispatch('getUser');
         },
         computed: {
             formInvalid() {
                 return this.$v.$invalid;
             },
+            ...mapGetters([
+                'user',
+            ]),
         },
         methods: {
             updateUser() {
                 if (this.$v.$invalid) return;
-                Http.post('api/user', { user: this.user }).then(() => {
-                    this.$router.push('/');
+                this.$store.dispatch('updateUser', { user: this.user })
+                .then(() => {
+                    this.showSuccess('Profile saved successful');
+                    this.$router.go(-1);
+                })
+                .catch(() => {
+                    this.showError();
                 });
             },
         },
