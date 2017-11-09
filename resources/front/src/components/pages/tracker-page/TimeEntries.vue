@@ -1,29 +1,29 @@
 <template>
     <div>
-        <div class="col-md-12">
-            <div class="panel panel-default panel-time-entries">
-                <div class="panel-heading flex-container">
-                    <label class="table-checkbox">
-                        <input type="checkbox" v-bind:disabled="!tasksExists" 
-                         v-bind:checked="isChecked">
-                    </label>
-                    <span v-if="checkedTasks">Selected {{ checkedTasks }} </span>
-                    <!-- ngIf: !controller.selectedItemsCount -->
-                    <div v-if="!isChecked" class="actions full-width">
-                        <button
-                                @click="showEditor"
-                                class="btn btn-default" type="button"
-                        >
-                            Add Time Entry
-                        </button>
-                        <button class="btn btn-default disabled" type="button">
-                            Add Break
-                        </button>
-                        <button class="btn btn-icon-default flex-item-pull-right hidden"><i
-                                class="fa fa-sort-amount-desc"></i></button>
-                    </div>
-                </div>
-                <div class="panel-body clear-padding">
+        <el-col :span="24">
+            <el-card>
+                <el-row justify="start">
+                    <el-col :span="1">
+                            <el-checkbox v-bind:disabled="!tasksExists"
+                                         v-bind:checked="isChecked"></el-checkbox>
+                    </el-col>
+                    <el-col :span="6">
+                        <div v-if="!isChecked" class="actions full-width">
+                            <el-button
+                                    @click="showEditor"
+                                    type="primary" plain
+                            >
+                                Add Time Entry
+                            </el-button>
+                            <el-button plain disabled>
+                                Add Break
+                            </el-button>
+                            <button class="btn btn-icon-default flex-item-pull-right hidden"><i
+                                    class="fa fa-sort-amount-desc"></i></button>
+                        </div>
+                    </el-col>
+                </el-row>
+                <div>
                         <time-entry-editor
                                 v-if="AddingTimeEntry"
                                 @close-editor="closeEditor"
@@ -32,18 +32,14 @@
                         ></time-entry-editor>
 
                     <div class="tasks-section">
-                        <transition name="task">
-                            <tasks-list v-if="tasksExists"></tasks-list>
-                        </transition>
+                        <tasks-list v-if="tasksExists"></tasks-list>
                     </div>
-                    <transition name="task">
-                        <div v-if="!tasksExists" class="well text-center">
-                            No work time is recorded for this day.
-                        </div>
-                    </transition>
+                    <div v-if="!tasksExists" class="well text-center">
+                        No work time is recorded for this day.
+                    </div>
                 </div>
-            </div>
-        </div>
+            </el-card>
+        </el-col>
     </div>
 </template>
 
@@ -115,6 +111,14 @@
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss" rel="stylesheet/css" scoped>
+
+    .el-checkbox {
+        margin: 10px 10px 10px 15px;
+    }
+
+    .tasks-section {
+        margin-top: 20px;
+    }
 
     .page-title {
         padding: 0;
