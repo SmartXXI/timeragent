@@ -18,8 +18,6 @@
                             <el-button plain disabled>
                                 Add Break
                             </el-button>
-                            <button class="btn btn-icon-default flex-item-pull-right hidden"><i
-                                    class="fa fa-sort-amount-desc"></i></button>
                         </div>
                     </el-col>
                 </el-row>

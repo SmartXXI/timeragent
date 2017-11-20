@@ -5,24 +5,20 @@
 				<el-checkbox v-model="tasks[index].checked"></el-checkbox>
 			</el-col>
 			<el-col :span="10">
-				<span v-if="task.description != null " class="description">{{ task.description }}</span>
-				<span v-else > (no description) </span>
+				<span v-if="task.description != null " class="description" @dblclick="showEditor">{{ task.description }}</span>
+				<span v-else @dblclick="showEditor"> (no description) </span>
 				<transition name="editor">
-					<span v-if="task.active" class=" label label-success">Active</span>
+					<el-tag v-if="task.active" type="success" size="medium" class="active-tag" color="#5daf34">Active</el-tag>
 				</transition>
 			</el-col>
 			<el-col :span="4">
 				<small v-if="task.startTime !== null" class="text-muted"> {{ time(task.startTime) }} - <span v-if="task.endTime == null">now</span> <span v-else >{{ time(task.endTime) }}</span> </small>
 			</el-col>
 			<el-col :span="4">
-				<!-- <span v-if="task.startTime !== null"><span v-if="task.spendTime !== null">{{ spendTime }}</span></span> -->
 				<span v-if="task.startTime !== null"><span >{{ spendTime }}</span></span>
 			</el-col>
 			<el-col :span="2">
 				<span title="Stop task">
-					<!--<button v-if="this.task.active" @click="stopTask" class="btn btn-icon-danger">-->
-						<!--<i class="fa fa-stop"></i>-->
-					<!--</button> -->
 					<el-button type="danger" plain v-if="this.task.active" @click="stopTask" class="stop-button">
 						<i class="el-icon-close"></i>
 					</el-button>
@@ -69,7 +65,6 @@
 <script>
 import moment from 'moment';
 import TimeEntryEditor from './TimeEntryEditor';
-import ElCheckbox from '../../../../node_modules/element-ui/packages/checkbox/src/checkbox';
 
 export default {
     props: ['task', 'index', 'tasks'],
@@ -90,7 +85,6 @@ export default {
             }
             const hours = spendTime.hours();
             const minutes = spendTime.minutes();
-//            return (hours > 0 ? hours + ' h ' : '') + minutes + ' min ';//eslint-disable-line
             return `${(hours > 0 ? `${hours} h ` : '')} ${minutes} min`;
         },
     },
@@ -131,11 +125,10 @@ export default {
             return moment();
         },
         time(time) {
-            return moment(time, 'HH:mm:ss').format('HH:mm'); //eslint-disable-line
+            return moment(time, 'HH:mm:ss').format('HH:mm');
         },
     },
     components: {
-        ElCheckbox,
         TimeEntryEditor,
     },
 };
@@ -160,6 +153,10 @@ export default {
 
 	.stop-button {
 		padding: 3px;
+	}
+
+	.active-tag {
+		color: #fff;
 	}
 
 	.col {

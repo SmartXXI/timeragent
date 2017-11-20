@@ -1,45 +1,79 @@
 <template>
     <div>
-        <nav-menu-auth></nav-menu-auth>
-        <div class="container">
-                <span class="page-title"> Teams </span> 
-            <div class="row">
-            	<div class="col-md-12"> 
-            		<div class="panel panel-default"> 
-            			<div class="panel-heading flex-container-space-between">  
-            				<div class="actions pull-left">  
-                                <router-link to="/teams/new" class="btn btn-primary"><span class="fa fa-plus"></span> New Team</router-link>  
-            				</div>  
-            				<div class="table-container"> 
-            					<div class="text-muted table-cell ng-binding"></div>
-            				</div> 
-            			</div>
-                        <div class="panel-body form clear-padding">
-                        <table class="table teams" v-if="teams.length">
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Owner(Team Lead)</th>
-                                <th>Members</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="team in teams" >
-                                <td>{{ team.name }}</td> 
-                                <td>{{ team.owner_name }}</td> 
-                                <td><div v-for="user in team.users">{{ user.name }}</div></td>
-                                <div v-if="user.id == team.owner_id" class="edit-button" @click="goToTeam(team.id)"><a><i class="fa fa-pencil" aria-hidden="true"></i></a></div>
-                            </tr>
-                        </tbody>
-                        </table>
-                        </div>  
-            			<div class="panel-body form clear-padding" v-if="!teams.length">
-            				<div class="well text-center" > No teams have been added yet. </div>
-            			</div> 
-            		</div>
-            	</div>
-            </div>
-        </div>
+        <el-container direction="vertical">
+            <nav-menu-auth></nav-menu-auth>
+            <!--<div class="container">-->
+            <el-main>
+                <el-row>
+                    <el-col :span="16" :offset="4">
+                        <span class="page-title"> Teams </span>
+                        <el-card>
+                            <div slot="header" class="clearfix">
+                                <router-link
+                                        to="/teams/new"
+                                        class="el-button el-button--primary is-plain">
+                                    <i class="el-icon-plus"></i> New Team
+                                </router-link>
+                            </div>
+                            <el-table
+                                    :data="teams"
+                                    stripe
+                                    :default-sort = "{prop: 'name'}">
+                                <el-table-column
+                                        prop="name"
+                                        label="Name"
+                                        sortable>
+                                </el-table-column>
+                                <el-table-column
+                                        prop="owner_name"
+                                        label="Owner(Team lead)">
+                                </el-table-column>
+                                <el-table-column label="Members">
+                                    <template slot-scope="scope">
+                                        <div v-if="scope.row.users.length < 1 "> No members</div>
+                                        <div v-if="scope.row.users.length === 1">{{ scope.row.users[0].name }}</div>
+                                        <div v-if="scope.row.users.length === 2">
+                                            {{ scope.row.users[0].name }} and {{ scope.row.users[1].name }}
+                                        </div>
+                                        <div v-if="scope.row.users.length === 3">
+                                            {{ scope.row.users[0].name }}, {{ scope.row.users[1].name }} and {{ scope.row.users[2].name }}
+                                        </div>
+                                        <div v-if="scope.row.users.length > 3">
+                                            {{ scope.row.users[0].name }}, {{ scope.row.users[1].name }}, {{ scope.row.users[2].name }} and
+                                            <el-button type="text" @click="showMembers(scope.row.users)">others...</el-button>
+                                        </div>
+                                    </template>
+                                </el-table-column>
+                                <el-table-column
+                                        label=""
+                                        width="80">
+                                    <template slot-scope="scope">
+                                        <div v-if="user.id == scope.row.owner_id">
+                                            <el-button type="plain" size="mini" @click="goToTeam(scope.row.id)">Edit</el-button>
+                                        </div>
+                                    </template>
+                                </el-table-column>
+                            </el-table>
+                            <!--members modal-->
+                            <el-dialog title="Members" :visible.sync="membersTableVisible">
+                                <el-table :data="members"
+                                          :default-sort="{name: 'name'}">
+                                    <el-table-column property="name"
+                                                     label="Name"
+                                                     sortable
+                                    ></el-table-column>
+                                    <el-table-column property="email" label="Email"></el-table-column>
+                                </el-table>
+                                <span slot="footer" class="dialog-footer">
+                                        <el-button @click="membersTableVisible = false">Close</el-button>
+                                </span>
+                            </el-dialog>
+                        </el-card>
+                    </el-col>
+                </el-row>
+            </el-main>
+            <!--</div>-->
+        </el-container>
     </div>
 </template>
 
@@ -50,6 +84,12 @@
 
     export default {
         mixins: [notification],
+        data() {
+            return {
+                membersTableVisible: false,
+                members            : [],
+            };
+        },
         created() {
             this.$store.dispatch('getTeams')
             .catch(() => {
@@ -66,6 +106,10 @@
             goToTeam(teamId) {
                 this.$router.push({ name: 'editTeam', params: { teamId } });
             },
+            showMembers(members) {
+                this.members = members;
+                this.membersTableVisible = true;
+            },
         },
         components: {
             NavMenuAuth,
@@ -73,6 +117,22 @@
     };
 </script>
 <style lang="scss" rel="stylesheet/css" scoped>
+
+    a.el-button {
+        text-decoration: none;
+    }
+
+    a.el-button:hover {
+        text-decoration: none;
+    }
+    a.el-button:focus {
+        text-decoration: none;
+    }
+
+    .el-icon-plus {
+        font-size: 18px;
+    }
+
 	.page-title {
 	    padding: 0;
 	    font-size: 28px;

@@ -1,66 +1,87 @@
 <template>
     <div>
+        <el-container direction="vertical">
         <nav-menu-auth></nav-menu-auth>
-        <div class="container">
+        <el-main>
+            <el-row>
+                <el-col :span="16" :offset="4">
                 <div class="pull-right">
-                    <button type="button" class="btn btn-wide btn-default btn-lg" @click="$router.go(-1)"> Cancel </button> 
-                    <button type="submit" class="btn btn-wide btn-primary btn-lg" title="Press Ctrl+Enter to save changes" @click="updateUser" :disabled="formInvalid"> Save </button>
+                    <!--<button type="button" class="btn btn-wide btn-default btn-lg" @click="$router.go(-1)"> Cancel </button> -->
+                    <el-button type="plain"
+                               @click="$router.go(-1)"
+                    > Cancel </el-button>
+                    <!--<button type="submit" class="btn btn-wide btn-primary btn-lg" title="Press Ctrl+Enter to save changes" @click="updateUser" :disabled="formInvalid"> Save </button>-->
+                    <el-button type="success"
+                               @click="updateUser"
+                               :disabled="formInvalid"
+                    > Save </el-button>
                 </div>
                 <span class="page-title"> My Profile </span>
-            <div class="row">
-            	<div class="col-md-12"> 
-            		<div class="panel panel-default"> 
-                        <div class="col-md-8">
-                            <div class="form-group row">
-                                <div class="col-xs-8"> <label class="control-label" for="user-name">Name</label>
-                                    <input id="user-name" class="form-control" :class="{ 'has-error': $v.user.name.$error }"
-                                    placeholder="Enter your name" v-model="user.name" @input="$v.user.name.$touch()">
+            	<el-col :span="24">
+            		<el-card>
+                        <el-row>
+                        <el-col :span="16" :offset="4">
+                            <el-row>
+                                <label>Name</label>
+                                    <el-input :class="{ 'has-error': $v.user.name.$error }"
+                                              placeholder="Enter your name"
+                                              v-model="user.name"
+                                              @input="$v.user.name.$touch()"
+                                    ></el-input>
                                     <i class="fa fa-exclamation-circle error-icon" v-if="$v.user.name.$error">
                                         <div class="errors">
                                             <span class="error-message" v-if="!$v.user.name.required">Field is required</span>
                                         </div> 
                                     </i>
-                                </div>
-                            </div>
-                            <div class="form-group row">
-                                <div class="col-xs-8"> <label class="control-label" for="user-email">Email</label>
-                                    <input id="user-email" class="form-control" :class="{ 'has-error': $v.user.email.$error }"
-                                    placeholder="Enter your email" v-model="user.email" @input="$v.user.email.$touch()">
+                            </el-row>
+                            <el-row>
+                                <label>Email</label>
+                                    <el-input :class="{ 'has-error': $v.user.email.$error }"
+                                              placeholder="Enter your email"
+                                              v-model="user.email"
+                                              @input="$v.user.email.$touch()"
+                                    ></el-input>
                                     <i class="fa fa-exclamation-circle error-icon" v-if="$v.user.email.$error">
                                         <div class="errors">
                                             <span class="error-message" v-if="!$v.user.email.required">Field is required</span>
                                             <span class="error-message" v-if="!$v.user.email.email">Invalid email</span>
                                         </div>
                                     </i>
-                                </div>
-                            </div>
-                            <div class="form-group row">
-                                <div class="col-xs-8"> <label class="control-label" for="user-billable-rate">Billable rate</label>
-                                    <input id="user-billable-rate" class="form-control" :class="{ 'has-error': $v.user.billable_rate.$error }"
-                                    placeholder="Enter your billable rate" v-model="user.billable_rate" @input="$v.user.billable_rate.$touch()">
+                            </el-row>
+                            <el-row>
+                                <label>Billable rate</label>
+                                    <el-input :class="{ 'has-error': $v.user.billable_rate.$error }"
+                                              placeholder="Enter your billable rate"
+                                              v-model="user.billable_rate"
+                                              @input="$v.user.billable_rate.$touch()"
+                                    ></el-input>
                                     <i class="fa fa-exclamation-circle error-icon" v-if="$v.user.billable_rate.$error">
                                         <div class="errors">
                                             <span class="error-message" v-if="!$v.user.billable_rate.required">Invalid data</span>
                                         </div>
                                     </i>
-                                </div>
-                            </div>
-                            <div class="form-group row">
-                                <div class="col-xs-8"> <label class="control-label" for="user-cost-rate">Cost rate</label>
-                                    <input id="user-cost-rate" class="form-control" :class="{ 'has-error': $v.user.cost_rate.$error }"
-                                    placeholder="Enter your billable rate" v-model="user.cost_rate" @input="$v.user.cost_rate.$touch()">
+                            </el-row>
+                            <el-row>
+                                <label class="control-label" for="user-cost-rate">Cost rate</label>
+                                    <el-input :class="{ 'has-error': $v.user.cost_rate.$error }"
+                                              placeholder="Enter your billable rate"
+                                              v-model="user.cost_rate"
+                                              @input="$v.user.cost_rate.$touch()"
+                                    ></el-input>
                                     <i class="fa fa-exclamation-circle error-icon" v-if="$v.user.cost_rate.$error">
                                         <div class="errors">
                                             <span class="error-message" v-if="!$v.user.cost_rate.numeric">Invalid data</span>
                                         </div>
                                     </i>
-                                </div>
-                            </div>
-                        </div>
-            		</div>
-            	</div>
-            </div>
-        </div>
+                            </el-row>
+                        </el-col>
+                        </el-row>
+            		</el-card>
+            	</el-col>
+                </el-col>
+            </el-row>
+        </el-main>
+        </el-container>
     </div>
 </template>
 
@@ -119,6 +140,11 @@
     };
 </script>
 <style lang="scss" rel="stylesheet/css" scoped>
+
+    .el-row {
+        margin-top: 20px;
+    }
+
 	.page-title {
 	    padding: 0;
 	    font-size: 28px;

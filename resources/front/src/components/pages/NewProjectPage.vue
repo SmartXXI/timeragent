@@ -1,82 +1,81 @@
 <template>
     <div>
+        <el-container direction="vertical">
         <nav-menu-auth></nav-menu-auth>
-        <div class="container">
+        <el-main>
+            <el-row>
+                <el-col :span="16" :offset="4">
                 <div class="pull-right">
-                    <button type="button" class="btn btn-wide btn-default btn-lg" @click.prevent="$router.go(-1)"> Cancel </button>
-                    <button type="submit" class="btn btn-wide btn-primary btn-lg" title="Press Ctrl+Enter to save changes" @click.prevent="addProject" :disabled="formInvalid"> Save </button>
+                    <el-button type="plain"
+                               @click.prevent="$router.go(-1)"
+                    > Cancel </el-button>
+                    <el-button type="success"
+                               title="Click to save"
+                               @click.prevent="addProject"
+                               :disabled="formInvalid"
+                    > Save </el-button>
                 </div>
-                <span class="page-title"> New Project </span> 
-            <div class="row">
-            	<div class="col-md-12"> 
-            		<div class="panel panel-default"> 
-                        <div class="col-md-8">
-                            <div class="form-group row">
-                                <div class="col-xs-8"> <label class="control-label" for="project-name">Name</label> 
-                                    <input id="project-name" class="form-control" :class="{ 'has-error': $v.project.name.$error}"
-                                    placeholder="Enter project name" v-model="project.name" @input="$v.project.name.$touch()">
+                <span class="page-title"> New Project </span>
+            	<el-col :span="24">
+            		<el-card>
+                        <el-row>
+                            <el-col :span="16" :offset="4">
+                                <div>
+                                    <label>Name</label>
+                                    <el-input :class="{ 'has-error': $v.project.name.$error}"
+                                           placeholder="Enter project name"
+                                           v-model="project.name"
+                                           @input="$v.project.name.$touch()"
+                                    ></el-input>
                                         <i class="fa fa-exclamation-circle error-icon" v-if="$v.project.name.$error">
                                         <div class="errors">
                                             <span class="error-message" v-if="!$v.project.name.required">Field is required</span>
                                         </div> 
                                     </i>
                                 </div>
-                                <div class="col-xs-4">
-                                    <label class="control-label" for="project-status" disabled="disabled">Status</label> 
-                                    <div class="dropdown"> 
-                                        <button id="project-status" type="button" class="btn-block-justify form-control dropdown-toggle ng-binding" data-toggle="dropdown" disabled="disabled">  
-                                        <i class="fa fa-angle-down pull-right"></i> </button> 
-                                        <ul class="dropdown-menu full-width"> 
-                                            <li role="presentation"> <a href=""> Active </a></li>
-                                            <li role="presentation"> <a href=""> Done </a></li>
-                                            <li role="presentation"> <a href=""> Archived </a></li>
-                                        </ul> 
-                                    </div>
-                                </div>  
-                            </div>
 
-                            <ul class="nav nav-tabs"> 
-                                <li class="active"> <a >Team</a> </li> 
-                            </ul>
+                                <el-tabs v-model="activeTabName">
+                                    <el-tab-pane label="Team" name="team">
+                                        <div>
+                                            <el-button type="primary"
+                                                       plain
+                                                       @click="showModal = true"
+                                            > Add teams to project </el-button>
+                                        </div>
+                                        <!--<el-tree :data="teamsData2"-->
+                                                 <!--show-checkbox-->
+                                                 <!--ref="tree"-->
+                                        <!--&gt;</el-tree>-->
+                                        <!--<el-button type="plain" @click="getCheckedNodes">Get users</el-button>-->
+                                    </el-tab-pane>
+                                </el-tabs>
                             <!-- <add-team></add-team> -->
-                            <div class="tab-content"> 
-                                <div> 
-                                    <button type="button" class="btn btn-default" @click="showModal = true"> Add teams to project </button> 
-                                </div>
-                            </div>
+                                <el-dialog title="Add teams"
+                                           :visible.sync="showModal"
+                                >
+                                    <el-row>
+                                        <el-col :span="15"
+                                                :offset="4"
+                                        >
+                                            <el-transfer v-model="addedTeams"
+                                                         :data="teamsData"
+                                                         :titles="['All Teams', 'To Add']">
 
-                            <div class="modal" v-if="showModal">
-                                <div class="modal-dialog">
-                                    <div class="modal-content">
-                                        <form>
-                                            <div class="modal-header"> 
-                                                <button type="button" class="close" @click.prevent="showModal = false">
-                                                    <span>×</span>
-                                                </button> <h4 class="modal-title ng-binding">Add Project Teams</h4> 
-                                            </div>
-                                            <div class="modal-body">
-                                                <div class="row">
-                                                    <div class="col-sm-12">
-                                                        <!-- <ul> -->
-                                                            <div v-for="team in teams"> <input type="checkbox" :name="team.id" :value="team.id" v-model="addedTeams"> {{ team.name }} </div>
-                                                        <!-- </ul> -->
-                                                    </div>
-                                                </div>
-                                            </div> 
-                                            <div class="modal-footer">
-                                                <button class="btn btn-primary" @click.prevent="showModal = false">Add</button>
-                                                <button class="btn btn-default" @click.prevent="showModal = false">Cancel</button>
-                                            </div>
-                                        </form>
-                                    </div>
-                                </div>
-                                <div class="modal-backdrop" ></div>
-                            </div>
-                        </div>
-            		</div>
-            	</div>
-            </div>
-        </div>
+                                            </el-transfer>
+                                        </el-col>
+                                    </el-row>
+                                    <span slot="footer">
+                                        <el-button type="plain" @click="showModal = false">Close</el-button>
+                                    </span>
+                                </el-dialog>
+                            </el-col>
+                        </el-row>
+            		</el-card>
+            	</el-col>
+                </el-col>
+            </el-row>
+        </el-main>
+        </el-container>
     </div>
 </template>
 
@@ -93,8 +92,9 @@
                 project: {
                     name: null,
                 },
-                showModal : false,
-                addedTeams: [],
+                showModal    : false,
+                addedTeams   : [],
+                activeTabName: 'team',
             };
         },
         computed: {
@@ -102,8 +102,40 @@
                 return this.$v.$invalid;
             },
             ...mapGetters([
-                'teams',
+                'ownTeams',
             ]),
+            teamsData() {
+                const data = [];
+                const teams = this.ownTeams;
+                teams.forEach((team) => {
+                    data.push({
+                        key  : team.id,
+                        label: team.name,
+                    });
+                });
+                return data;
+            },
+//            teamsData2() {
+//                const data = [];
+//                const teams = this.ownTeams;
+//                teams.forEach((team) => {
+//                    const children = [];
+//                    team.users.forEach((user) => {
+//                        children.push({
+////                            id   : `${user.id}.${team.id}`,
+//                            id   : user.id,
+//                            label: user.name,
+//                        });
+//                    });
+//                    data.push({
+//                        id      : team.id,
+//                        label   : team.name,
+//                        children: children,
+//                    });
+//                });
+//                console.log(data);
+//                return data;
+//            },
         },
         created() {
             this.$store.dispatch('getOwnTeams');
@@ -120,6 +152,9 @@
                     this.showError();
                 });
             },
+//            getCheckedNodes() {
+//                console.log(this.$refs.tree.getCheckedNodes());
+//            },
         },
         components: {
             NavMenuAuth,
@@ -134,6 +169,11 @@
     };
 </script>
 <style lang="scss" rel="stylesheet/css" scoped>
+
+    .el-tabs {
+        margin-top: 30px;
+    }
+
 	.page-title {
 	    padding: 0;
 	    font-size: 28px;

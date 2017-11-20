@@ -17,7 +17,9 @@ class ProjectController extends Controller
         $projects = $projects->merge($own_projects);
         $projects->map(function (Project $project) {
             $project->owner_name = User::find($project->owner_id)->name;
-            $project->teams = $project->teams;
+            $project->teams->map(function (Team $team) {
+                $team->owner_name = User::find($team->owner_id)->name;
+            });
             return $project;
         });
 		return $projects;
@@ -48,6 +50,7 @@ class ProjectController extends Controller
         $project->teams->map(function(Team $team) {
             $team->users;
         });
+        $project->users;
         return $project;
     }
 

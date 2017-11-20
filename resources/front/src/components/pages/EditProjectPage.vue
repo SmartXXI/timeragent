@@ -1,128 +1,120 @@
 <template>
     <div>
+        <el-container direction="vertical">
         <nav-menu-auth></nav-menu-auth>
-        <div class="container">
+        <el-main>
+            <el-row>
+                <el-col :span="16" :offset="4">
                 <div class="pull-right">
-                    <button class="btn btn-wide btn-default btn-lg" @click.prevent="$router.go(-1)"> Cancel </button>
-                    <button class="btn btn-wide btn-primary btn-lg" title="Press Ctrl+Enter to save changes" @click.prevent="updateProject" :disabled="formInvalid"> Save </button>
+                    <el-button type="plain"
+                               @click.prevent="$router.go(-1)"
+                    > Cancel </el-button>
+                    <!--<button class="btn btn-wide btn-primary btn-lg" title="Press Ctrl+Enter to save changes" @click.prevent="updateProject" :disabled="formInvalid"> Save </button>-->
+                    <el-button type="success"
+                               @click.prevent="updateProject"
+                               :disabled="formInvalid"
+                    > Save </el-button>
                 </div>
-                <span class="page-title"> Edit Project </span> 
-            <div class="row">
-            	<div class="col-md-12"> 
-            		<div class="panel panel-default"> 
-                        <div class="col-md-8">
-                            <div class="form-group row">
-                                <div class="col-xs-8"> <label class="control-label" for="project-name">Name</label> 
-                                    <input id="project-name" class="form-control" :class="{ 'has-error': $v.project.name.$error }"
-                                    placeholder="Enter project name" v-model="project.name" @input="$v.project.name.$touch()">
+                <span class="page-title"> Edit Project </span>
+            	<el-col :span="24">
+            		<el-card>
+                          <el-row>
+                        <el-col :span="16" :offset="4">
+                            <div>
+                                <label>Name</label>
+                                    <el-input :class="{ 'has-error': $v.project.name.$error }"
+                                              placeholder="Enter project name"
+                                              v-model="project.name"
+                                              @input="$v.project.name.$touch()"
+                                    ></el-input>
                                     <i class="fa fa-exclamation-circle error-icon" v-if="$v.project.name.$error">
                                         <div class="errors">
                                             <span class="error-message" v-if="!$v.project.name.required">Field is required</span>
                                         </div> 
                                     </i>
-                                </div>
-                                <div class="col-xs-4">
-                                    <label class="control-label" for="project-status" disabled="disabled">Status</label> 
-                                    <div class="dropdown"> 
-                                        <button id="project-status" type="button" class="btn-block-justify form-control dropdown-toggle ng-binding" data-toggle="dropdown" disabled="disabled">  
-                                        <i class="fa fa-angle-down pull-right"></i> </button> 
-                                        <ul class="dropdown-menu full-width"> 
-                                            <li role="presentation"> <a href=""> Active </a></li>
-                                            <li role="presentation"> <a href=""> Done </a></li>
-                                            <li role="presentation"> <a href=""> Archived </a></li>
-                                        </ul> 
+                            </div>
+
+                            <el-tabs v-model="activeTabName">
+                                <el-tab-pane label="Teams" name="team">
+                                    <div>
+                                        <el-button type="primary"
+                                                   plain
+                                                   @click="showModal = true"
+                                        > Add teams to project </el-button>
                                     </div>
-                                </div>  
-                            </div>
 
-                            <ul class="nav nav-tabs"> 
-                                <li class="active"> <a >Team</a> </li> 
-                            </ul>
+                                    <div>
+
+                                    </div>
+                                </el-tab-pane>
+                            </el-tabs>
                             <!-- <add-team></add-team> -->
-                            <div class="tab-content"> 
-                                <div> 
-                                    <button type="button" class="btn btn-default" @click.prevent="showModal = true"> Add teams to project </button>
-                                </div>
-                            </div>
-                            <div> 
-                                <ul class="list-group margin-top-small"> 
-                                    <li v-for="(team, index) in project.teams" class="list-group-item hoverable-element clearfix"> 
-                                        <span class="fa fa-users"></span> {{ team.name }} <span class="pull-right"> 
-                                        <span class="fa fa-times hoverable-cross" @click="deleteTeam(index, team.id)"></span> 
-                                        </span>
 
-                                        <ul class="list-group margin-top-small"> 
-                                            <li v-for="member in team.users" class="list-group-item hoverable-element clearfix"> 
-                                                <span class="fa fa-user"></span> {{ member.name }} <span class="pull-right"> 
-                                                </span> 
-                                            </li>
-                                        </ul> 
-                                    </li>
-                                </ul>
+                            <div class="teams">
+                                <el-collapse v-model="activePanels">
+                                    <el-collapse-item v-for="(team, index) in project.teams" :key="team.id" :title="team.name" :name="team.name">
+                                        <el-table :data="team.users"
+                                                  :default-sort="{ prop: 'name' }"
+                                        >
+                                            <el-table-column label="Name" prop="name"></el-table-column>
+                                            <el-table-column label="Cost rate">
+                                                <template slot-scope="scope">
+                                                    <span v-for="user in project.users" :scope="scope">
+                                                        <span v-if="user.id === scope.row.id && user.pivot.cost_rate != ''">
+                                                            $ {{ user.pivot.cost_rate }}
+                                                        </span>
+                                                    </span>
+                                                </template>
+                                            </el-table-column>
+                                        </el-table>
+                                        <el-col :span="8" :offset="17">
+                                            <div>
+                                                <el-button type="text" class="delete_button" @click="deleteTeam(index, team.id)"> <i class="el-icon-close"></i> Delete team from project</el-button>
+                                            </div>
+                                        </el-col>
+                                    </el-collapse-item>
+                                </el-collapse>
                             </div>
-                            <div><a @click="showConfirmModal = true">Delete Project</a></div>
+                            <div><el-button type="text" class="delete_button" @click="showConfirmModal = true">Delete Project</el-button></div>
 
                             <!-- Confirm delete project modal form -->
-                            <div class="modal" v-if="showConfirmModal">
-                                <div class="modal-dialog">
-                                    <div class="modal-content">
-                                        <form> 
-                                            <div class="modal-header"> 
-                                                <button type="button" class="close" @click.prevent="showConfirmModal = false">
-                                                    <span>×</span>
-                                                </button> <h4 class="modal-title ng-binding">Delete project</h4> 
-                                            </div>
-                                            <div class="modal-body">
-                                                <div class="row">
-                                                    <div class="col-sm-12">
-                                                       <span>It will not be undone, continue?</span>
-                                                    </div>
-                                                </div>
-                                            </div> 
-                                            <div class="modal-footer">
-                                                <button class="btn btn-primary" @click.prevent="deleteProject">Delete</button>
-                                                <button class="btn btn-default" @click.prevent="showConfirmModal = false ">Cancel</button>
-                                            </div>
-                                        </form>
-                                    </div>
-                                </div>
-                                <div class="modal-backdrop" ></div>
-                            </div>
+                            <el-dialog
+                                    title="Delete team"
+                                    :visible.sync="showConfirmModal"
+                                    width="30%">
+                                <p>It will not be undone. Please enter project name to continue: <br>({{ project.name }})</p>
+                                <el-input v-model="projectName"
+                                          placeholder="Enter team name"></el-input>
+                                <span slot="footer" class="dialog-footer">
+                                    <el-button @click.prevent="showConfirmModal = false">Cancel</el-button>
+                                    <el-button :disabled="!confirmDeleteProject" type="danger" @click.prevent="deleteTeam">Delete</el-button>
+                                </span>
+                            </el-dialog>
+
 
                             <!-- Adding teams modal form -->
+                            <el-dialog title="Add teams" :visible.sync="showModal">
 
-                            <div class="modal" v-if="showModal">
-                                <div class="modal-dialog">
-                                    <div class="modal-content">
-                                        <form> 
-                                            <div class="modal-header"> 
-                                                <button type="button" class="close" @click.prevent="showModal = false">
-                                                    <span>×</span>
-                                                </button> <h4 class="modal-title ng-binding">Add Project Teams</h4> 
-                                            </div>
-                                            <div class="modal-body">
-                                                <div class="row">
-                                                    <div class="col-sm-12">
-                                                        <!-- <ul> -->
-                                                            <div v-for="team in teams"> <input type="checkbox" :name="team.id" :value="team.id" v-model="addedTeams"> {{ team.name }} </div>
-                                                        <!-- </ul> -->
-                                                    </div>
-                                                </div>
-                                            </div> 
-                                            <div class="modal-footer">
-                                                <button type="submit" class="btn btn-primary" @click.prevent="addTeams">Add</button>
-                                                <button type="submit" class="btn btn-default" @click.prevent="showModal = false ">Cancel</button>
-                                            </div>
-                                        </form>
-                                    </div>
-                                </div>
-                                <div class="modal-backdrop" ></div>
-                            </div>
-                        </div>
-            		</div>
-            	</div>
-            </div>
-        </div>
+                                <el-row class="transfer">
+                                    <el-col :span="16" :offset="4">
+                                        <el-transfer v-model="addedTeams"
+                                                     :data="teamsData"
+                                                     :titles="['My Teams', 'To Add']"></el-transfer>
+                                    </el-col>
+                                </el-row>
+                                <span slot="footer">
+                                        <el-button @click="showModal = false">Close</el-button>
+                                        <el-button type="success" @click="addTeams">Add</el-button>
+                                    </span>
+                            </el-dialog>
+                        </el-col>
+                          </el-row>
+            		</el-card>
+            	</el-col>
+                </el-col>
+            </el-row>
+        </el-main>
+        </el-container>
     </div>
 </template>
 
@@ -141,6 +133,9 @@ export default {
             showConfirmModal: false,
             addedTeams      : [],
             deletedTeams    : [],
+            activeTabName   : 'team',
+            activePanels    : [],
+            projectName     : '',
         };
     },
     created() {
@@ -153,8 +148,22 @@ export default {
         },
         ...mapGetters([
             'project',
-            'teams',
+            'ownTeams',
         ]),
+        confirmDeleteProject() {
+            return this.projectName === this.project.name;
+        },
+        teamsData() {
+            const data = [];
+            const teams = this.ownTeams;
+            teams.forEach((team) => {
+                data.push({
+                    key  : team.id,
+                    label: team.name,
+                });
+            });
+            return data;
+        },
     },
     methods: {
         updateProject() {
@@ -169,6 +178,7 @@ export default {
             });
         },
         deleteProject() {
+            if (!this.confirmDeleteProject) return;
             this.showConfirmModal = false;
             this.$store.dispatch('deleteProject', { projectId: this.project.id })
             .then(() => {
@@ -185,10 +195,10 @@ export default {
         },
         addTeams() {
             this.addedTeams.map((teamId) => {
-                const teamIndex = this.teams.findIndex(obj => obj.id === teamId);
+                const teamIndex = this.ownTeams.findIndex(obj => obj.id === teamId);
                 const index = this.project.teams.findIndex(obj => obj.id === teamId);
                 if (index === -1) {
-                    const team = this.teams[teamIndex];
+                    const team = this.ownTeams[teamIndex];
                     this.project.teams.push(team);
                 }
                 return teamId;
@@ -209,6 +219,19 @@ export default {
 };
 </script>
 <style lang="scss" rel="stylesheet/css" scoped>
+
+    .el-tabs {
+        margin-top: 30px;
+    }
+
+    .teams {
+        margin-top: 40px;
+    }
+
+    .delete_button {
+        color: #FA5555;
+    }
+
 	.page-title {
 	    padding: 0;
 	    font-size: 28px;
