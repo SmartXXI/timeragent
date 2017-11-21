@@ -87,7 +87,7 @@
                                           placeholder="Enter team name"></el-input>
                                 <span slot="footer" class="dialog-footer">
                                     <el-button @click.prevent="showConfirmModal = false">Cancel</el-button>
-                                    <el-button :disabled="!confirmDeleteProject" type="danger" @click.prevent="deleteTeam">Delete</el-button>
+                                    <el-button :disabled="!confirmDeleteProject" type="danger" @click.prevent="deleteProject">Delete</el-button>
                                 </span>
                             </el-dialog>
 
