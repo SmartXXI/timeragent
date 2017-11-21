@@ -81,4 +81,12 @@
     a {
         cursor : pointer;
     }
+
+    .el-table td:first-child .cell, .el-table th:first-child .cell {
+        padding-left: 10px;
+    }
+
+    .el-collapse-item__header {
+        padding: 0 10px;
+    }
 </style>

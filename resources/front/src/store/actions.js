@@ -150,4 +150,7 @@ export default {
             context.commit(types.SET_EXISTS_MEMBERS, response.data);
         });
     },
+    logout() {
+        return Http.post('logout');
+    },
 };

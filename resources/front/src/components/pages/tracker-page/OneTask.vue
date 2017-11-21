@@ -1,61 +1,77 @@
 <template>
 	<div>
-		<div v-if="!isEditing" class="row">
-			<div class="col col-xs-1">
-				<input type="checkbox" 
-					v-model="tasks[index].checked"
-				>
-			</div>
-			<div class="col col-xs-3" @click="showEditor">
-				<span v-if="task.description != null " class="description">{{ task.description }}</span>
-				<span v-else > (no description) </span>
+		<el-row v-if="!isEditing">
+			<el-col :span="2">
+				<el-checkbox v-model="tasks[index].checked"></el-checkbox>
+			</el-col>
+			<el-col :span="10">
+				<span v-if="task.description != null " class="description" @dblclick="showEditor">{{ task.description }}</span>
+				<span v-else @dblclick="showEditor"> (no description) </span>
 				<transition name="editor">
-					<span v-if="task.active" class=" label label-success">Active</span>
+					<el-tag v-if="task.active" type="success" size="medium" class="active-tag" color="#5daf34">Active</el-tag>
 				</transition>
-			</div>
-			<div class="col col-xs-3" @click="showEditor">
+			</el-col>
+			<el-col :span="4">
 				<small v-if="task.startTime !== null" class="text-muted"> {{ time(task.startTime) }} - <span v-if="task.endTime == null">now</span> <span v-else >{{ time(task.endTime) }}</span> </small>
-			</div> 
-			<div class="col col-xs-3" @click="showEditor">
-				<!-- <span v-if="task.startTime !== null"><span v-if="task.spendTime !== null">{{ spendTime }}</span></span> -->
+			</el-col>
+			<el-col :span="4">
 				<span v-if="task.startTime !== null"><span >{{ spendTime }}</span></span>
-			</div>	
-			<div class="col col-xs-1">
-				<span title="Stop timer"> 
-					<button v-if="this.task.active" @click="stopTask" class="btn btn-icon-danger">
-						<i class="fa fa-stop"></i> 
-					</button>
+			</el-col>
+			<el-col :span="2">
+				<span title="Stop task">
+					<el-button type="danger" plain v-if="this.task.active" @click="stopTask" class="stop-button">
+						<i class="el-icon-close"></i>
+					</el-button>
 				</span>
-				<span title="Continue task"> 
-					<button v-if="!this.task.active" @click="continueTask" class="btn btn-icon-success">
-						<i class="fa fa-play"></i> 
-					</button>
+				<span title="Continue task">
+					<el-button type="success" plain class="start-button">
+                    	<i class="el-icon-caret-right" v-if="!this.task.active" @click="continueTask"></i>
+					</el-button>
 				</span>
-			</div>
-			<div class="col col-xs-1">
+			</el-col>
+			<el-col :span="2">
 				<span>
-					<button @click="deleteTask" class="btn btn-icon-danger"><i class="fa fa-times" ></i></button>
+					<el-dropdown :hide-on-click="false">
+                        <span class="el-dropdown-link">
+                            <i class="el-icon-more"></i>
+                        </span>
+                        <el-dropdown-menu slot="dropdown">
+                            <el-dropdown-item>
+                                <span @click.prevent="showEditor"><i class="el-icon-edit" ></i> Edit</span>
+                            </el-dropdown-item>
+                            <el-dropdown-item>
+                                <span  @click.prevent="dialogVisible = true"><i class="el-icon-delete" ></i> Delete</span>
+                            </el-dropdown-item>
+                        </el-dropdown-menu>
+                    </el-dropdown>
 				</span>
-			</div>			
-		</div>
-		<transition name="editor">
+			</el-col>
+		</el-row>
 			<time-entry-editor v-if="isEditing" @update-task="updateTask" @close-editor="closeEditor" :editTask="true" :task="task"></time-entry-editor>
-		</transition>
-
-		
-	</div>
+        <!--Confirm dialog-->
+        <el-dialog
+                title="Delete time entry"
+                :visible.sync="dialogVisible"
+                width="30%">
+            <span>It will not be undone. Continue?</span>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="dialogVisible = false">No</el-button>
+                <el-button type="primary" @click="deleteTask">Yes</el-button>
+            </span>
+        </el-dialog>
+    </div>
 </template>
 
 <script>
+import moment from 'moment';
 import TimeEntryEditor from './TimeEntryEditor';
-import moment from 'moment';//eslint-disable-line
-import { mapActions } from 'vuex';//eslint-disable-line
 
 export default {
     props: ['task', 'index', 'tasks'],
     data() {
         return {
-            isEditing: false,
+            isEditing    : false,
+            dialogVisible: false,
         };
     },
     computed: {
@@ -69,7 +85,6 @@ export default {
             }
             const hours = spendTime.hours();
             const minutes = spendTime.minutes();
-//            return (hours > 0 ? hours + ' h ' : '') + minutes + ' min ';//eslint-disable-line
             return `${(hours > 0 ? `${hours} h ` : '')} ${minutes} min`;
         },
     },
@@ -96,6 +111,7 @@ export default {
             this.$store.dispatch('createTask');
         },
         deleteTask() {
+            this.dialogVisible = false;
             if (this.task.active === 1 && moment().diff(moment(this.task.startTime, 'HH:mm:ss'), 'seconds') < 60) {
                 this.stopTask();
             } else if (this.task.active === 1) {
@@ -109,7 +125,7 @@ export default {
             return moment();
         },
         time(time) {
-            return moment(time, 'HH:mm:ss').format('HH:mm'); //eslint-disable-line
+            return moment(time, 'HH:mm:ss').format('HH:mm');
         },
     },
     components: {
@@ -118,7 +134,31 @@ export default {
 };
 </script>
 
-<style lang="scss" rel="stylesheet/css">
+<style lang="scss" rel="stylesheet/css" scoped>
+    .el-icon-more {
+        margin: 5px;
+    }
+	.el-col {
+		padding: 15px;
+	}
+
+    .el-icon-caret-right {
+        font-size: 20px;
+        cursor: pointer;
+    }
+
+	.start-button {
+		padding: 0;
+	}
+
+	.stop-button {
+		padding: 3px;
+	}
+
+	.active-tag {
+		color: #fff;
+	}
+
 	.col {
 			padding: 20px 35px;
 			padding-right: 0; 

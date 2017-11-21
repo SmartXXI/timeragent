@@ -1,79 +1,83 @@
 <template>
     <div>
+        <el-container direction="vertical">
         <nav-menu-auth></nav-menu-auth>
-        <div class="container">
+        <el-main>
+            <el-row>
+                <el-col :span="16" :offset="4">
                 <div class="pull-right">
-                    <button type="  button" class="btn btn-wide btn-default btn-lg" @click.prevent="$router.go(-1)"> Cancel </button>
-                    <button type="submit" class="btn btn-wide btn-primary btn-lg" title="Press Ctrl+Enter to save changes" 
-                    @click.prevent="addTeam" :disabled="formInvalid"> Save </button>
+                    <el-button type="plain"
+                               @click.prevent="$router.go(-1)"
+                    > Cancel </el-button>
+                    <el-button type="success"
+                            title="Click to save changes"
+                            @click.prevent="addTeam"
+                            :disabled="formInvalid"
+                    > Save </el-button>
                 </div>
-                <span class="page-title"> New Team </span> 
-            <div class="row">
-            	<div class="col-md-12"> 
-            		<div class="panel panel-default"> 
-                        <div class="col-md-8">
-                            <div class="form-group row">
-                                <div class="col-xs-12"> <label class="control-label" for="project-name">Name</label> 
-                                    <input id="project-name" class="form-control" :class="{ 'has-error': $v.team.name.$error }"
-                                    placeholder="Enter team name" v-model="team.name" @input="$v.team.name.$touch()"> 
+                <span class="page-title"> New Team </span>
+                    <el-col :span="24">
+                        <el-card>
+                            <el-row>
+                            <el-col :span="16" :offset="4">
+                                <div>
+                                    <label>Name</label>
+                                    <el-input :class="{ 'has-error': $v.team.name.$error }"
+                                              placeholder="Enter team name"
+                                              v-model="team.name"
+                                              @input="$v.team.name.$touch()"
+                                    ></el-input>
                                     <i class="fa fa-exclamation-circle error-icon" v-if="$v.team.name.$error">
-                                    <div class="errors">
-                                        <span class="error-message" v-if="!$v.team.name.required">Field is required</span>
-                                    </div>
-                            </i>
+                                        <div class="errors">
+                                            <span class="error-message" v-if="!$v.team.name.required">Field is required</span>
+                                        </div>
+                                    </i>
                                 </div>
-                            </div>
 
-                            <ul class="nav nav-tabs"> 
-                                <li class="active"> <a >Members</a> </li> 
-                            </ul>
-                            <!-- <add-members></add-members> -->
-                            <div class="tab-content"> 
-                                <div> 
-                                    <button type="button" class="btn btn-default" @click="showModal = true"> Add members to team </button> 
-                                </div>
-                            </div>
+                                <el-tabs v-model="activeTabName">
+                                    <el-tab-pane label="Members" name="members">
+                                        <div>
+                                            <el-button type="primary" plain @click="showModal = true"> Add members to team </el-button>
+                                        </div>
+                                    </el-tab-pane>
+                                </el-tabs>
 
-                            <div class="modal" v-if="showModal">
-                                <div class="modal-dialog">
-                                    <div class="modal-content">
-                                        <form> 
-                                            <div class="modal-header"> 
-                                                <button type="button" class="close" @click.prevent="showModal = false">
-                                                    <span>×</span>
-                                                </button> <h4 class="modal-title ng-binding">Add Members</h4> 
-                                            </div>
-                                            <div class="modal-body">
-                                                <div class="row">
-                                                    <div class="col-sm-12">
-                                                        <input type="text" class="form-control" :class="{ 'has-error': $v.members.$error }"
-                                                        placeholder="Enter user email..." v-model="members" @input="$v.members.$touch()">
-                                        <i class="fa fa-exclamation-circle error-icon" v-if="$v.members.$error">
-                                            <div class="errors">
-                                                <span class="error-message" v-if="!$v.members.email">Invalid email</span>
-                                            </div>
-                                        </i>
-
-                                                        <div class="members-list" v-for="member in existsMembers"> 
-                                                            <input type="checkbox" :name="member.id" :value="member.id" v-model="addedMembers"> {{ member.name }} </div>
-                                                    </div>
+                                <!--new modal form-->
+                                <el-dialog title="Add members" :visible.sync="showModal">
+                                    <el-row>
+                                        <el-col :span="15" :offset="4">
+                                            <el-input :class="{ 'has-error': $v.members.$error }"
+                                                      placeholder="Enter user email..."
+                                                      v-model="members"
+                                                      @input="$v.members.$touch()"
+                                            ></el-input>
+                                            <i class="fa fa-exclamation-circle error-icon" v-if="$v.members.$error">
+                                                <div class="errors">
+                                                    <span class="error-message" v-if="!$v.members.email">Invalid email</span>
                                                 </div>
-                                            </div> 
-                                            <div class="modal-footer">
-                                                <button class="btn btn-primary" @click.prevent="showModal = false">Add</button>
-                                                <button class="btn btn-default" @click.prevent="showModal = false">Cancel</button>
-                                            </div>
-                                        </form>
-                                    </div>
-                                </div>
-                                <div class="modal-backdrop" ></div>
-                            </div>
-                            <!-- add members -->
-                        </div>
-            		</div>
-            	</div>
-            </div>
-        </div>
+                                            </i>
+                                        </el-col>
+                                    </el-row>
+                                    <el-row class="transfer">
+                                        <el-col :span="16" :offset="4">
+                                            <el-transfer v-model="addedMembers"
+                                                         :data="membersData"
+                                                         :titles="['Exists Members', 'To Add']"></el-transfer>
+                                        </el-col>
+                                    </el-row>
+                                    <span slot="footer">
+                                        <el-button @click="showModal = false">Close</el-button>
+                                    </span>
+                                </el-dialog>
+                                <!-- add members -->
+                            </el-col>
+                            </el-row>
+                        </el-card>
+                    </el-col>
+                </el-col>
+            </el-row>
+        </el-main>
+        </el-container>
     </div>
 </template>
 
@@ -90,9 +94,10 @@
                 team: {
                     name: null,
                 },
-                showModal   : false,
-                members     : '',
-                addedMembers: [],
+                showModal    : false,
+                members      : '',
+                addedMembers : [],
+                activeTabName: 'members',
             };
         },
         computed: {
@@ -102,6 +107,17 @@
             ...mapGetters([
                 'existsMembers',
             ]),
+            membersData() {
+                const data = [];
+                const members = this.existsMembers;
+                members.forEach((member) => {
+                    data.push({
+                        key  : member.id,
+                        label: member.name,
+                    });
+                });
+                return data;
+            },
         },
         methods: {
             addTeam() {
@@ -135,6 +151,14 @@
     };
 </script>
 <style lang="scss" rel="stylesheet/css" scoped>
+    .transfer {
+        margin-top: 20px;
+    }
+
+    .el-tabs {
+        margin-top: 30px;
+    }
+
 	.page-title {
 	    padding: 0;
 	    font-size: 28px;

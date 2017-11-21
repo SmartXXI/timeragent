@@ -1,45 +1,66 @@
 <template>
     <div>
+        <el-container direction="vertical">
         <nav-menu-auth></nav-menu-auth>
-        <div class="container">
+        <el-main>
+            <el-row>
+                <el-col :span="16" :offset="4">
                 <span class="page-title"> Projects </span> 
-            <div class="row">
-            	<div class="col-md-12"> 
-            		<div class="panel panel-default"> 
-            			<div class="panel-heading flex-container-space-between">  
-            				<div class="actions pull-left">  
-                                <router-link to="projects/new" class="btn btn-primary"><span class="fa fa-plus"></span> New Project</router-link>  
-            				</div>  
-            				<div class="table-container"> 
-            					<div class="text-muted table-cell ng-binding"></div>
-            				</div> 
+
+            		<el-card>
+            			<div slot="header" class="clearfix">
+                                <router-link to="projects/new"
+                                             class="el-button el-button--primary is-plain"
+                                >
+                                <i class="el-icon-plus"></i> New Project</router-link>
             			</div>
-                        <div class="panel-body form clear-padding">
-                        <table class="table projects" v-if="projects.length">
-                            <thead>
-                                <tr>
-                                    <th>Name</th>
-                                    <th>Owner</th>
-                                    <th>Teams</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr v-for="project in projects">
-                                    <td>{{ project.name }}</td> 
-                                    <td>{{ project.owner_name }}</td> 
-                                    <td>{{ project.teams.length }}</td>
-                                    <div v-if="user.id == project.owner_id" class="edit-button" @click="goToProject(project.id)"><a><i class="fa fa-pencil" aria-hidden="true"></i></a></div> 
-                                </tr>
-                            </tbody>
-                        </table>
-                        </div>  
-            			<div class="panel-body form clear-padding" v-if="!projects.length">
-            				<div class="well text-center" > No projects have been added yet. </div>
-            			</div> 
-            		</div>
-            	</div>
-            </div>
-        </div>
+                        <el-table :data="projects"
+                                  stripe
+                                  :default-sort="{ prop: 'name' }"
+                        >
+                            <el-table-column prop="name"
+                                             label="Name"
+                                             sortable
+                            ></el-table-column>
+                            <el-table-column prop="owner_name"
+                                             label="Owner"
+                            ></el-table-column>
+                            <el-table-column label="Teams">
+                                <template slot-scope="scope">
+                                    <div v-if="scope.row.teams.length === 1">{{ scope.row.teams[0].name }}</div>
+                                    <div v-if="scope.row.teams.length === 2">{{ scope.row.teams[0].name }} and {{ scope.row.teams[1].name }}</div>
+                                    <div v-if="scope.row.teams.length === 3">{{ scope.row.teams[0].name }}, {{ scope.row.teams[1].name }} and {{ scope.row.teams[2].name }}</div>
+                                    <div v-if="scope.row.teams.length > 3">{{ scope.row.teams[0].name }}, {{ scope.row.teams[1].name }}, {{ scope.row.teams[2].name }} and
+                                    <el-button type="text" @click="showTeams(scope.row.teams)">others...</el-button></div>
+                                </template>
+                            </el-table-column>
+                            <el-table-column
+                                    width="80">
+                                <template slot-scope="scope">
+                                    <div v-if="user.id == scope.row.owner_id">
+                                        <el-button type="plain" size="mini" @click="goToProject(scope.row.id)">Edit</el-button>
+                                    </div>
+                                </template>
+                            </el-table-column>
+                        </el-table>
+                        <el-dialog title="Teams" :visible.sync="teamsTableVisible">
+                            <el-table :data="teams"
+                                      :default-sort="{prop: 'name'}">
+                                <el-table-column property="name"
+                                                 label="Name"
+                                                 sortable
+                                ></el-table-column>
+                                <el-table-column property="owner_name" label="Owner(Team lead)"></el-table-column>
+                            </el-table>
+                            <span slot="footer" class="dialog-footer">
+                                        <el-button @click="teamsTableVisible = false">Close</el-button>
+                                </span>
+                        </el-dialog>
+            		</el-card>
+                </el-col>
+            </el-row>
+        </el-main>
+        </el-container>
     </div>
 </template>
 
@@ -50,6 +71,12 @@
 
     export default {
         mixins: [notification],
+        data() {
+            return {
+                teamsTableVisible: false,
+                teams            : [],
+            };
+        },
         created() {
             this.$store.dispatch('getProjects')
             .catch(() => {
@@ -66,6 +93,10 @@
             goToProject(projectId) {
                 this.$router.push({ name: 'editProject', params: { projectId } });
             },
+            showTeams(teams) {
+                this.teams = teams;
+                this.teamsTableVisible = true;
+            },
         },
         components: {
             NavMenuAuth,
@@ -73,6 +104,22 @@
     };
 </script>
 <style lang="scss" rel="stylesheet/css" scoped>
+
+    a.el-button {
+        text-decoration: none;
+    }
+
+    a.el-button:hover {
+        text-decoration: none;
+    }
+    a.el-button:focus {
+        text-decoration: none;
+    }
+
+    .el-icon-plus {
+        font-size: 18px;
+    }
+
 	.page-title {
 	    padding: 0;
 	    font-size: 28px;

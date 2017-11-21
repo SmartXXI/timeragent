@@ -16,8 +16,8 @@ class CreateProjectsUsersTable extends Migration
         Schema::create('projects_users', function (Blueprint $table) {
             $table->integer('project_id')->unsigned();
             $table->integer('user_id')->unsigned();
-            $table->float('billable_rate')->unsigned();
-            $table->float('cost_rate')->unsigned();
+            $table->float('billable_rate')->nullable()->unsigned();
+            $table->float('cost_rate')->nullable()->unsigned();
             $table->timestamps();
 
             $table->foreign('project_id')

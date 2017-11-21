@@ -1,119 +1,115 @@
 <template>
     <div>
+        <el-container direction="vertical">
         <nav-menu-auth></nav-menu-auth>
-        <div class="container">
-                <div class="pull-right">
-                    <button type="button" @click.prevent="$router.go(-1)" class="btn btn-wide btn-default btn-lg"> Cancel </button>
-                    <button type="submit" class="btn btn-wide btn-primary btn-lg" title="Press Ctrl+Enter to save changes" 
-                    @click.prevent="updateTeam" :disabled="formInvalid"> Save </button>
-                </div>
-                <span class="page-title"> Edit Team </span> 
-            <div class="row">
-            	<div class="col-md-12"> 
-            		<div class="panel panel-default"> 
-                        <div class="col-md-8">
-                            <div class="form-group row">
-                                <div class="col-xs-12"> <label class="control-label" for="project-name">Name</label> 
-                                    <input id="project-name" class="form-control" :class="{ 'has-error': $v.team.name.$error }"
-                                     placeholder="Enter team name" v-model="team.name" @input="$v.team.name.$touch()">
-                                    <i class="fa fa-exclamation-circle error-icon" v-if="$v.team.name.$error">
-                                        <div class="errors">
-                                            <span class="error-message" v-if="!$v.team.name.required">Field is required</span>
+        <el-main>
+            <el-row>
+                <el-col :span="16" :offset="4">
+                    <div class="pull-right">
+                        <el-button type="plain"
+                                   @click.prevent="$router.go(-1)"
+                        > Cancel </el-button>
+                        <el-button type="success"
+                                   title="Click to save"
+                                    @click.prevent="updateTeam"
+                                   :disabled="formInvalid"
+                        > Save </el-button>
+                    </div>
+                    <span class="page-title"> Edit Team </span>
+                    <el-col :span="24">
+                        <el-card>
+                            <el-row>
+                            <el-col :span="16" :offset="4">
+                                <div>
+                                    <label >Name</label>
+                                        <el-input :class="{ 'has-error': $v.team.name.$error }"
+                                                  placeholder="Enter team name"
+                                                  v-model="team.name"
+                                                  @input="$v.team.name.$touch()"
+                                        ></el-input>
+                                        <i class="fa fa-exclamation-circle error-icon" v-if="$v.team.name.$error">
+                                            <div class="errors">
+                                                <span class="error-message" v-if="!$v.team.name.required">Field is required</span>
+                                            </div>
+                                        </i>
+                                </div>
+
+                                <el-tabs v-model="activeTabName">
+                                    <el-tab-pane label="Members" name="members">
+                                        <div>
+                                            <el-button type="primary"
+                                                       plain
+                                                       @click="showModal = true"
+                                            >Add members to team</el-button>
                                         </div>
-                                    </i> 
-                                </div>
-                            </div>
+                                        <div>
+                                            <el-table :data="team.users"
+                                                      :default-sort = "{prop: 'name'}">
+                                                <el-table-column prop="name"></el-table-column>
+                                                <el-table-column
+                                                        width="80">
+                                                    <template slot-scope="scope">
+                                                        <div>
+                                                            <el-button type="plain" size="mini" icon="el-icon-delete" @click="deleteMember(scope.$index, scope.row.id)"></el-button>
+                                                        </div>
+                                                    </template>
+                                                </el-table-column>
+                                            </el-table>
+                                        </div>
+                                    </el-tab-pane>
+                                </el-tabs>
+                                <div><el-button type="text" class="delete_button" @click="showConfirmModal = true">Delete team</el-button></div>
+                                <!-- Confirm delete team modal form -->
 
-                            <ul class="nav nav-tabs"> 
-                                <li class="active"> <a >Members</a> </li> 
-                            </ul>
-                            <!-- <add-members></add-members> -->
-                            <div class="tab-content"> 
-                                <div> 
-                                    <button type="button" class="btn btn-default" @click="showModal = true"> Add members to team </button> 
-                                </div>
-                            </div>
-                            <div> 
-                                <ul class="list-group margin-top-small"> 
-                                    <li v-for="(user, index) in team.users" class="list-group-item hoverable-element clearfix"> 
-                                        <span class="fa fa-user"></span> {{ user.name }} <span class="pull-right"> 
-                                        <span class="fa fa-times hoverable-cross" @click="deleteMember(index, user.id)"></span>
-                                        </span> 
-                                    </li>
-                                </ul>
-                            </div>
-                            <div><a @click="showConfirmModal = true">Delete team</a></div>
-                            <!-- Confirm delete team modal form -->
-                            <div class="modal" v-if="showConfirmModal">
-                                <div class="modal-dialog">
-                                    <div class="modal-content">
-                                        <form> 
-                                            <div class="modal-header"> 
-                                                <button type="button" class="close" @click.prevent="showConfirmModal = false">
-                                                    <span>×</span>
-                                                </button> <h4 class="modal-title ng-binding">Delete team</h4> 
-                                            </div>
-                                            <div class="modal-body">
-                                                <div class="row">
-                                                    <div class="col-sm-12">
-                                                       <span>It will not be undone, continue?</span>
-                                                    </div>
+                                <el-dialog
+                                        title="Delete team"
+                                        :visible.sync="showConfirmModal"
+                                        width="30%">
+                                    <p>It will not be undone. Please enter team name to continue: <br>({{ team.name }})</p>
+                                    <el-input v-model="teamName"
+                                              placeholder="Enter team name"></el-input>
+                                    <span slot="footer" class="dialog-footer">
+                                    <el-button @click.prevent="showConfirmModal = false">Cancel</el-button>
+                                    <el-button :disabled="!confirmDeleteTeam" type="danger" @click.prevent="deleteTeam">Delete</el-button>
+                                </span>
+                                </el-dialog>
+
+                                <!-- add members -->
+                                <el-dialog title="Add members" :visible.sync="showModal">
+                                    <el-row>
+                                        <el-col :span="15" :offset="4">
+                                            <el-input :class="{ 'has-error': $v.members.$error }"
+                                                      placeholder="Enter user email..."
+                                                      v-model="members"
+                                                      @input="$v.members.$touch()"
+                                            ></el-input>
+                                            <i class="fa fa-exclamation-circle error-icon" v-if="$v.members.$error">
+                                                <div class="errors">
+                                                    <span class="error-message" v-if="!$v.members.email">Invalid email</span>
                                                 </div>
-                                            </div> 
-                                            <div class="modal-footer">
-                                                <button class="btn btn-primary" @click.prevent="deleteTeam">Delete</button>
-                                                <button class="btn btn-default" @click.prevent="showConfirmModal = false ">Cancel</button>
-                                            </div>
-                                        </form>
-                                    </div>
-                                </div>
-                                <div class="modal-backdrop" ></div>
-                            </div>
-
-                            <!-- Adding members modal form -->
-                            <div class="modal" v-if="showModal">
-                                <div class="modal-dialog">
-                                    <div class="modal-content">
-                                        <form> 
-                                            <div class="modal-header"> 
-                                                <button type="button" class="close" @click.prevent="showModal = false">
-                                                    <span>×</span>
-                                                </button> <h4 class="modal-title ng-binding">Add Members</h4> 
-                                            </div>
-                                            <div class="modal-body">
-                                                <div class="row">
-                                                    <div class="col-sm-12">
-                                                        <input type="text" class="form-control" :class="{ 'has-error': $v.members.$error }"
-                                                         placeholder="Enter user email..." v-model="members" @input="$v.members.$touch()">
-                                                         <i class="fa fa-exclamation-circle error-icon" v-if="$v.members.$error">
-                                                             <div class="errors">
-                                                                 <span class="error-message" v-if="!$v.members.email">Invalid email</span>
-                                                             </div>
-                                                         </i>
-                                                    </div>
-                                                </div>
-
-                                            <div class="members-list" v-for="member in existsMembers"> 
-                                                <input type="checkbox" :name="member.id" :value="member.id" v-model="addedMembers"> {{ member.name }} 
-                                            </div>
-
-                                            </div> 
-                                            <div class="modal-footer">
-                                                <button type="submit" class="btn btn-primary" @click.prevent="addMembers">Add</button>
-                                                <!-- <button type="submit" class="btn btn-primary" @click="showModal = false">Add</button> -->
-                                                <button type="submit" class="btn btn-default" @click.prevent="showModal = false ">Cancel</button>
-                                            </div>
-                                        </form>
-                                    </div>
-                                </div>
-                                <div class="modal-backdrop" ></div>
-                            </div>
-                            <!-- add members -->
-                        </div>
-            		</div>
-            	</div>
-            </div>
-        </div>
+                                            </i>
+                                        </el-col>
+                                    </el-row>
+                                    <el-row class="transfer">
+                                        <el-col :span="16" :offset="4">
+                                            <el-transfer v-model="addedMembers"
+                                                         :data="membersData"
+                                                         :titles="['Exists Members', 'To Add']"></el-transfer>
+                                        </el-col>
+                                    </el-row>
+                                    <span slot="footer">
+                                        <el-button @click="showModal = false">Close</el-button>
+                                        <el-button type="success" @click="addMembers">Add</el-button>
+                                    </span>
+                                </el-dialog>
+                            </el-col>
+                            </el-row>
+                        </el-card>
+                    </el-col>
+                </el-col>
+            </el-row>
+        </el-main>
+        </el-container>
     </div>
 </template>
 
@@ -133,6 +129,8 @@
                 members         : '',
                 addedMembers    : [],
                 deletedMembers  : [],
+                activeTabName   : 'members',
+                teamName        : '',
             };
         },
         created() {
@@ -147,6 +145,20 @@
                 'team',
                 'existsMembers',
             ]),
+            confirmDeleteTeam() {
+                return this.teamName === this.team.name;
+            },
+            membersData() {
+                const data = [];
+                const members = this.existsMembers;
+                members.forEach((member) => {
+                    data.push({
+                        key  : member.id,
+                        label: member.name,
+                    });
+                });
+                return data;
+            },
         },
         methods: {
             updateTeam() {
@@ -161,6 +173,7 @@
                 });
             },
             deleteTeam() {
+                if (!this.confirmDeleteTeam) return;
                 this.showConfirmModal = false;
                 this.$store.dispatch('deleteTeam', { teamId: this.team.id })
                 .then(() => {
@@ -173,7 +186,7 @@
             },
             deleteMember(index, userId) {
                 this.deletedMembers.push(userId);
-                this.team.users.splice(index);
+                this.team.users.splice(index, 1);
             },
             addMembers() {
                 this.addedMembers.map((memberId) => {
@@ -204,6 +217,18 @@
     };
 </script>
 <style lang="scss" rel="stylesheet/css" scoped>
+    .transfer {
+        margin-top: 20px;
+    }
+
+    .el-tabs {
+        margin-top: 30px;
+    }
+
+    .delete_button {
+        color: #FA5555;
+    }
+
 	.page-title {
 	    padding: 0;
 	    font-size: 28px;

@@ -1,37 +1,40 @@
 <template>
     <div>
     <div class="timer-timeentry-editor">
-        <form class="form-horizontal">
-            <div class="row">
-                <div class="col-xs-8">
+        <el-form>
+            <el-row>
+                <el-col :span="16">
                     <div class="flex-container">
-                        <button type="button"
-                                class="btn btn-icon-default dropdown-toggle flex-item-no-shrink"
-                                title="Select recent task">
-                            <i class="fa fa-tasks"></i>
-                        </button>
-                        <div class="full-width">
-                            <input class="form-control" type="text" placeholder="Enter description" v-model="localTask.description" autofocus>
-                        </div>
+                        <el-col :span="22">
+                            <el-form-item>
+                                <el-input placeholder="Enter description"
+                                          v-model="localTask.description"
+                                          prefix-icon="el-icon-edit-outline"
+                                          autofocus></el-input>
+                            </el-form-item>
+                        </el-col>
                     </div>
-                </div>
-                <div class="col-xs-4">
-                    <select class="form-control" v-model="localTask.project_id" :disabled="projects.length > 0 ? false : true">
-                        <option value="">No project</option>
-                        <option v-for="(project, index) in projects" :value="project.id">{{ project.name }}</option>
-                    </select>
-                </div>
-                <div></div>
-            </div>
-            <div class="row margin-top-20">
-                <div class="col-xs-8">
+                </el-col>
+                <el-col :span="8">
+                    <el-select v-model="localTask.project_id" :disabled="projects.length > 0 ? false : true">
+                        <el-option value="" label="No project"></el-option>
+                        <el-option v-for="(project, index) in projects" :label="project.name" :value="project.id" :key="project.id"></el-option>
+                    </el-select>
+                </el-col>
+            </el-row>
+            <el-row>
+                <el-col class="time-pickers" :span="18">
                     <div class="flex-container-space-between">
                         <div class="time-editor-input-group flex-container">
-                            <button type="button" class="btn btn-icon-default" title="Pick start time">
-                                <i class="fa fa-clock-o"></i>
-                            </button>
-                            <input class="form-control" :class="{'has-error': $v.localTask.startTime.$error }"
-                             placeholder="HH:mm" v-model="localTask.startTime" @input="$v.localTask.startTime.$touch()">
+                            <el-time-picker
+                                    :class="{'has-error': $v.localTask.startTime.$error }"
+                                    placeholder="Stop time"
+                                    v-model="localTask.startTime"
+                                    @input="$v.localTask.startTime.$touch()"
+                                    value-format="HH:mm"
+                                    format="HH:mm"
+                                    @blur="clearStartTime"
+                            ></el-time-picker>
                              <!-- errors block -->
                             <i class="fa fa-exclamation-circle error-icon" v-if="$v.localTask.startTime.$error">
                                 <div class="errors">
@@ -42,11 +45,15 @@
                             
                         </div>
                         <div class="time-editor-input-group flex-container">
-                            <button type="button" class="btn btn-icon-default" title="Pick end time">
-                                <i class="fa fa-clock-o"></i>
-                            </button>
-                            <input class="form-control" placeholder="HH:mm" v-model="localTask.endTime"
-                            :class="{ 'has-error': $v.localTask.endTime.$error }" @input="$v.localTask.endTime.$touch()">
+                            <el-time-picker
+                                    :class="{ 'has-error': $v.localTask.endTime.$error }"
+                                    placeholder="End time"
+                                    v-model="localTask.endTime"
+                                    @input="$v.localTask.endTime.$touch()"
+                                    value-format="HH:mm"
+                                    format="HH:mm"
+                                    @blur="clearEndTime"
+                            ></el-time-picker>
                             <!-- errors block -->
                             <i class="fa fa-exclamation-circle error-icon" v-if="$v.localTask.endTime.$error">
                                 <div class="errors">
@@ -56,37 +63,37 @@
                             </i>
                         </div>
                         <div class="time-editor-input-group flex-container">
-                            <button type="button" class="btn btn-icon-default" title="Duration is linked to start time and end time values.">
-                                <i class="fa fa-clock-o"></i>
-                            </button>
-                            <input class="form-control" placeholder="0 h 0 min" v-model="spendTime"
-                            :class="{ 'has-error': $v.localTask.spendTime.$error }" @input="$v.localTask.spendTime.$touch()">
+                            <el-input
+                                    :class="{ 'has-error': $v.localTask.spendTime.$error }"
+                                    placeholder="Spend time (1 h 0 min)"
+                                    @input="$v.localTask.spendTime.$touch()"
+                                    v-model="spendTime"
+                            ></el-input>
                             <!-- errors block -->
-                            <i class="fa fa-exclamation-circle error-icon" v-if="$v.localTask.endTime.$error">
+                            <i class="fa fa-exclamation-circle error-icon" v-if="$v.localTask.spendTime.$error">
                                 <div class="errors">
-                                    <span class="error-message" v-if="!$v.localTask.endTime.required">Field is required</span>
+                                    <span class="error-message" v-if="!$v.localTask.spendTime.required">Field is required</span>
                                 </div>
                             </i>
                         </div>
                     </div>
-                </div>
-                <div class="col-xs-4">
-                    <select class="form-control"></select>
-                </div>
-            </div>
-            <div class="actions margin-top-20">
-                <button v-if="editTask" @click.prevent="updateTask" title="Save editing" class="btn btn-primary" :disabled="formInvalid"> Save </button>
-                <button v-if="addingTimeEntry" @click.prevent="addTimeEntry" title="Add time entry" :disabled="formInvalid" class="btn btn-primary"> Save </button>
-                <button
-                        @click.prevent="closeEditor"
-                        type="button"
-                        class="btn btn-default"
-                >
-                    Cancel
-                </button>
-            </div>
-        </form>
-        </div>
+                </el-col>
+            </el-row>
+            <el-row class="actions">
+                <el-col class="action-buttons">
+                    <el-button type="success" size="middle" v-if="editTask" @click.prevent="updateTask" title="Save editing" :disabled="formInvalid"> Save </el-button>
+                    <el-button type="success" size="middle" v-if="addingTimeEntry" @click.prevent="addTimeEntry" title="Add time entry" :disabled="formInvalid"> Save </el-button>
+                    <el-button
+                            type="plain"
+                            size="middle"
+                            @click.prevent="closeEditor"
+                    >
+                        Cancel
+                    </el-button>
+                </el-col>
+            </el-row>
+        </el-form>
+    </div>
     </div>
 </template>
 
@@ -152,6 +159,12 @@
             });
         },
         methods: {
+            clearStartTime(comp) {
+                if (comp.userInput === '') this.localTask.startTime = '';
+            },
+            clearEndTime(comp) {
+                if (comp.userInput === '') this.localTask.endTime = '';
+            },
             closeEditor() {
                 this.localTask = Object.assign({}, this.oldTask);
                 this.$emit('close-editor');
@@ -169,13 +182,17 @@
                 startTime: {
                     required,
                     validTime(value) {
-                        return moment(value, 'HH:mm:ss').isBefore(moment()) || value === '';
+                        return moment(value, 'HH:mm:ss').isBefore(moment()) && value !== '';
                     },
                 },
                 endTime: {
                     required,
                     validTime(value) {
-                        return moment(value, 'HH:mm:ss').isBefore(moment()) || value === '';
+                        let isAfter = true;
+                        if (this.localTask.startTime !== '') {
+                            isAfter = moment(value, 'HH:mm:ss').isAfter(moment(this.localTask.startTime, 'HH:mm:ss'));
+                        }
+                        return moment(value, 'HH:mm:ss').isBefore(moment()) && value !== '' && isAfter;
                     },
                 },
                 spendTime: {
@@ -188,6 +205,19 @@
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss" rel="stylesheet/css" scoped>
+    .el-icon-edit-outline {
+        font-size: 20px;
+        margin: 10px;
+    }
+
+    .el-select {
+        width: 100%;
+    }
+
+    .actions {
+        margin-top: 20px;
+    }
+
     .form-control {
         width: 100%;
         height: 34px;
@@ -267,7 +297,7 @@
     }
 
     .timer-timeentry-editor {
-        padding: 20px;
+        padding: 20px 0 20px 0;
     }
 
 </style>

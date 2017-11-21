@@ -1,164 +1,90 @@
 <template>
     <div>
-        <header>
-            <nav class="navbar navbar-default container">
-                <!-- BEGIN LOGO -->
-                <span class="logo">
-                    <router-link to="/">
-                        <img class="logo" src="../../assets/images/logo.svg" alt="logo"/>
-                    </router-link>
-
-                </span>
-                <!-- END LOGO -->
-                <!-- BEGIN TIMER ACTIONS -->
-                <span class="timer-actions">
-                    <div class="timer-buttons">
-                        <button title="Start timer" class="btn btn-timer-start" v-if="!timerStarted"
-                                @click="startTimer">
-                            <i class="fa fa-play"></i>
-                        </button>
-                        <button class="btn btn-tier-continue" v-if="timerStarted">
-                            <i class="fa fa-plus"></i>
-                        </button>
-                        <button title="Stop timer" class="btn btn-timer-stop" @click="stopTimer"
-                                :disabled="!timerStarted">
-                            <i class="fa fa-stop"></i>
-                        </button>
-                    </div>
-                </span>
-                <!-- END TIMER ACTIONS -->
-                <!-- BEGIN NAVIGATION MENU -->
-                <div class="main-menu">
-                    <ul class="nav navbar-nav">
-                        <router-link tag="li" to="/" exact>
-                            <router-link to="/" class="navbar-link bold text-uppercase" exact>
-                                <span>time</span>
-                            </router-link>
+        <el-header>
+            <el-row>
+                <el-col :span="16" :offset="4">
+                    <span class="logo">
+                        <router-link to="/">
+                            <img class="logo" src="../../assets/images/logo.svg" alt="logo"/>
                         </router-link>
-                        <li class="dropdown">
-                            <a href class="dropdown-toggle bold text-uppercase"
-                               v-on:click.prevent="showSubMenu('Reports')"
-                               v-bind:class="{ expanded: isOpened == 'Reports'}"
-                               @blur="hideSubMenu"
-                            >
-                                <span>Reports</span>
-                                <span><i class="fa fa-angle-down"></i></span>
-                            </a>
-                            <ul class="dropdown-menu"
-                                v-bind:class="{ open: isOpened == 'Reports'}">
-                                <li>
-                                    <a href="">
-                                        <span>projectsSummary</span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="">
-                                        <span>tasksSummary</span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="">
-                                        <span>teamSummary</span>
-                                    </a>
-                                </li>
-                                <li role="separator" class="divider"></li>
-                                <li>
-                                    <a href="">
-                                        <span>detailedReport</span>
-                                    </a>
-                                </li>
-                            </ul>
-                        </li>
-                        <li class="dropdown"
-                            :class="{
-                                'router-link-active': subIsActive('/teams') ||
-                                subIsActive('/projects') ||
-                                subIsActive('/clients')
-                        }">
-                            <a href class="dropdown-toggle bold text-uppercase"
-                               v-on:click.prevent="showSubMenu('Manage')"
-                               v-bind:class="{ expanded: isOpened == 'Manage'}"
-                               @blur="hideSubMenu"
-                            >
-                                <span>Manage</span>
-                                <span><i class="fa fa-angle-down"></i></span>
-                            </a>
-                            <ul class="dropdown-menu dropdown-menu-default"
-                                v-bind:class=" { open : isOpened == 'Manage' }">
-                                <li>
-                                    <router-link to="/teams">
-                                        Teams
-                                    </router-link>
-                                </li>
-                                <li class="divider"></li>
-                                <li>
-                                    <router-link to="/clients">
-                                        <span>Clients</span>
-                                    </router-link>
-                                </li>
-                                <li>
-                                    <router-link to="/projects">
-                                        <span>Projects</span>
-                                    </router-link>
-                                </li>
-                            </ul>
-                        </li>
-                    </ul>
-                </div>
-                <!-- END NAVIGATION MENU -->
-                <!-- BEGIN SIDE MENU -->
-                <ul class="nav navbar-nav pull-right user-menu">
-                    <li>
-                        <a href="https://timeragent.com/help" target="_blank" title="Help">
-                            <i class="fa fa-question-circle"></i>
-                        </a>
-                    </li>
-                    <!-- BEGIN LOGIN MENU -->
-                    <li class="dropdown pull-right"
-                        :class="{
-                                'router-link-active': subIsActive('/profile')
-                        }"
-                    >
-                        <a href=""
-                           class="dropdown-toggle"
-                           data-toggle="dropdown"
-                           data-close-others="true"
-                           v-on:click.prevent="showSubMenu('User')"
-                           v-bind:class="{ expanded: isOpened == 'User'}"
-                           @blur="hideSubMenu"
+                    </span>
+                    <el-col :span="2" :offset="2" class="control-buttons" v-if="$route.path == '/'">
+                        <el-button title="Start timer"
+                                   type="success"
+                                   plain
+                                   size="mini"
+                                   v-if="!timerStarted"
+                                   @click="startTimer">
+                            <i class="fa fa-play"></i>
+                        </el-button>
+                        <!--<button class="btn btn-tier-continue" v-if="timerStarted">-->
+                        <!--<i class="fa fa-plus"></i>-->
+                        <!--</button>-->
+                        <el-button title="Stop timer"
+                                   type="danger"
+                                   plain
+                                   size="mini"
+                                   @click="stopTimer"
+                                   v-if="timerStarted"
+                                   :disabled="!timerStarted">
+                            <i class="fa fa-stop"></i>
+                        </el-button>
+                    </el-col>
+                    <el-menu
+                            class="el-menu-demo"
+                            :router="true" :default-active="$route.path"
+                            mode="horizontal"
                         >
-                            <span class="login-info">
-                                <span v-if="user" class="bold text-overflow">{{ user.name }}</span>
-                            </span>
-                            <span><i class="fa fa-angle-down"></i></span>
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-default login-dropdown-menu pull-right"
-                            v-bind:class=" { open : isOpened == 'User' }">
-
-                            <li>
-                                <router-link to="/profile">
-                                    <span>My Profile</span>
+                        <el-menu-item index="/">
+                            <router-link to="/">
+                                <span>Time</span>
+                            </router-link>
+                        </el-menu-item>
+                        <!--<el-menu-item index="2">Processing Center</el-menu-item>-->
+                        <el-submenu index="3">
+                            <template slot="title">Manage</template>
+                            <el-menu-item index="/teams">
+                                <router-link to="/teams">
+                                    Teams
                                 </router-link>
-                            </li>
-
-                            <li>
-                                <a href="">
-                                    Log off
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
-                    <!-- END LOGIN MENU -->
-                </ul>
-                <!-- END SIDE MENU -->
-            </nav>
-        </header>
+                            </el-menu-item>
+                            <!--<el-menu-item index="/clients">-->
+                                <!--<router-link to="/clients">-->
+                                    <!--<span>Clients</span>-->
+                                <!--</router-link>-->
+                            <!--</el-menu-item>-->
+                            <el-menu-item index="/projects">
+                                <router-link to="/projects">
+                                    <span>Projects</span>
+                                </router-link>
+                            </el-menu-item>
+                        </el-submenu>
+                        <el-submenu index="4">
+                            <template slot="title">{{ user.name }}</template>
+                            <el-menu-item index="/profile">
+                                <router-link to="/profile">
+                                    Profile
+                                </router-link>
+                            </el-menu-item>
+                            <el-menu-item index="" @click="logout">
+                                <router-link to="" >
+                                    <span>Log out</span>
+                                </router-link>
+                            </el-menu-item>
+                        </el-submenu>
+                    </el-menu>
+                </el-col>
+            </el-row>
+        </el-header>
 
     </div>
 </template>
 
 <script>
+    import ElRow from 'element-ui/packages/row/src/row';
+
     export default {
+        components: { ElRow },
         data() {
             return {
                 isOpened: null,
@@ -200,15 +126,41 @@
                     this.isOpened = null;
                 }, 300);
             },
+            logout() {
+                this.$store.dispatch('logout');
+                this.$router.go('/');
+            },
         },
     };
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss" rel="stylesheet/scss" scoped>
+
+    .control-buttons {
+        padding: 17px;
+    }
     .logo {
         width  : 240px;
         height : 70px;
+        float: left;
+    }
+
+    .el-menu-demo {
+        float: right;
+        margin-right: 8em;
+    }
+
+    .el-header {
+        background-color: #fff;
+    }
+
+    a {
+        text-decoration: none;
+    }
+
+    a:hover {
+        text-decoration: none;
     }
 
     body {
@@ -245,7 +197,7 @@
 
             display          : block;
             flex-grow        : 0;
-            background-color : #464646;
+            /*background-color : #464646;*/
             box-shadow       : 0 2px 3px 0 rgba(47, 47, 47, .25) !important;
 
             .fa {
