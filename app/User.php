@@ -30,7 +30,7 @@ class User extends Authenticatable
     ];
 
     public function projects() {
-        return $this->belongsToMany('App\Project', 'projects_users', 'user_id', 'project_id')
+        return $this->belongsToMany('App\Project', 'project_user', 'user_id', 'project_id')
             ->withPivot('billable_rate', 'cost_rate')
             ->withTimestamps();
     }

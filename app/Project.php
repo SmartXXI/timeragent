@@ -24,7 +24,7 @@ class Project extends Model
     }
 
     public function users() {
-    	return $this->belongsToMany('App\User', 'projects_users', 'project_id', 'user_id')
+    	return $this->belongsToMany('App\User', 'project_user', 'project_id', 'user_id')
     		->withPivot('billable_rate', 'cost_rate')
     		->withTimestamps();
     }
@@ -34,9 +34,9 @@ class Project extends Model
     	return $this;
     }
 
-    public function detachUser($user_id, $pivot = [])
+    public function detachUser($user_id, $team_id)
     {
-        $this->users()->detach($user_id, $pivot);
+        $this->users()->wherePivot('team_id', $team_id)->detach($user_id);
         return $this;
     }
 

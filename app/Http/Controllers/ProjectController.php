@@ -31,18 +31,33 @@ class ProjectController extends Controller
     	$data['owner_id'] = Auth::user()->id;
     	$project = Project::create($data);
 
-    	foreach($request->teams as $team_id) {   
-    		$project->attachTeam($team_id);
+    	if ($request->teams) {
+            foreach($request->teams as $team_id) {
+                $project->attachTeam($team_id);
 
-            $team = Team::find($team_id);
+                $team = Team::find($team_id);
 
-            foreach ($team->users as $user) {
+                foreach ($team->users as $user) {
+                    $project->attachUser($user->id, [
+                            'billable_rate' => $user->billable_rate,
+                            'cost_rate' => $user->cost_rate,
+                            'team_id' => $team_id,
+                        ]
+                    );
+                }
+            }
+        }
+
+        if ($request->members) {
+            foreach ($request->members as $member) {
+                $user = User::find($member);
                 $project->attachUser($user->id, [
                     'billable_rate' => $user->billable_rate,
-                    'cost_rate' => $user->cost_rate]
-                );
-            } 
-    	}
+                    'cost_rate' => $user->cost_rate,
+                ]);
+            }
+        }
+
     	return $project;
     }
 
@@ -61,7 +76,7 @@ class ProjectController extends Controller
                 $team = Team::find($team_id);
                 $users = $team->users;
                 foreach ($users as $user) {
-                    $project->detachUser($user->id);
+                    $project->detachUser($user->id, $team_id);
                 }
                 $project->detachTeam($team_id);
             }
