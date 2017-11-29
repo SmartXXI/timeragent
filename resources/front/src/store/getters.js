@@ -20,6 +20,9 @@ export default {
     ownTeams(state) {
         return state.ownTeams;
     },
+    ownUsers(state) {
+        return state.ownUsers;
+    },
     existsMembers(state) {
         return state.existsMembers;
     },

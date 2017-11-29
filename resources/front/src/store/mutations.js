@@ -95,6 +95,9 @@ export default {
     [types.SET_OWN_TEAMS](state, ownTeams) {
         Object.assign(state, { ownTeams });
     },
+    [types.SET_OWN_USERS](state, ownUsers) {
+        Object.assign(state, { ownUsers });
+    },
     [types.SET_EXISTS_MEMBERS](state, existsMembers) {
         Object.assign(state, { existsMembers });
     },

@@ -13,4 +13,5 @@ export const SET_PROJECTS = 'SET_PROJECTS';
 export const SET_ONE_TEAM = 'SET_ONE_TEAM';
 export const SET_ONE_PROJECT = 'SET_ONE_PROJECT';
 export const SET_OWN_TEAMS = 'SET_OWN_TEAMS';
+export const SET_OWN_USERS = 'SET_OWN_USERS';
 export const SET_EXISTS_MEMBERS = 'SET_EXISTS_MEMBERS';

@@ -35,35 +35,47 @@
                                 </div>
 
                                 <el-tabs v-model="activeTabName">
-                                    <el-tab-pane label="Team" name="team">
+                                    <el-tab-pane label="Teams" name="teams">
                                         <div>
-                                            <el-button type="primary"
-                                                       plain
-                                                       @click="showModal = true"
-                                            > Add teams to project </el-button>
+                                            <!--<el-button type="primary"-->
+                                                       <!--plain-->
+                                                       <!--@click="showModal = true"-->
+                                            <!--&gt; Add teams to project </el-button>-->
                                         </div>
-                                        <!--<el-tree :data="teamsData2"-->
+                                        <!--<el-tree :data="teamsData"-->
                                                  <!--show-checkbox-->
                                                  <!--ref="tree"-->
                                         <!--&gt;</el-tree>-->
-                                        <!--<el-button type="plain" @click="getCheckedNodes">Get users</el-button>-->
+                                        <el-row>
+                                            <el-col :offset="4">
+                                                <el-transfer v-model="addedTeams"
+                                                             :data="teamsData"
+                                                             :titles="['All Teams', 'To Add']"
+                                                             :render-content="renderTeams"
+                                                >
+                                                </el-transfer>
+                                            </el-col>
+                                        </el-row>
+                                    </el-tab-pane>
+                                    <el-tab-pane label="Users" name="users">
+                                        <el-row>
+                                            <el-col :offset="4">
+                                                <el-transfer v-model="addedMembers"
+                                                             :data="usersData"
+                                                             :titles="['All Teams', 'To Add']">
+
+                                                </el-transfer>
+                                            </el-col>
+                                        </el-row>
                                     </el-tab-pane>
                                 </el-tabs>
-                            <!-- <add-team></add-team> -->
-                                <el-dialog title="Add teams"
+                                <el-dialog title="Members"
                                            :visible.sync="showModal"
+                                           width="40%"
                                 >
-                                    <el-row>
-                                        <el-col :span="15"
-                                                :offset="4"
-                                        >
-                                            <el-transfer v-model="addedTeams"
-                                                         :data="teamsData"
-                                                         :titles="['All Teams', 'To Add']">
-
-                                            </el-transfer>
-                                        </el-col>
-                                    </el-row>
+                                            <el-table :data="membersDataTable">
+                                                <el-table-column label="Name" prop="name"></el-table-column>
+                                            </el-table>
                                     <span slot="footer">
                                         <el-button type="plain" @click="showModal = false">Close</el-button>
                                     </span>
@@ -92,9 +104,11 @@
                 project: {
                     name: null,
                 },
-                showModal    : false,
-                addedTeams   : [],
-                activeTabName: 'team',
+                showModal       : false,
+                addedTeams      : [],
+                addedMembers    : [],
+                activeTabName   : 'teams',
+                membersDataTable: [],
             };
         },
         computed: {
@@ -103,6 +117,7 @@
             },
             ...mapGetters([
                 'ownTeams',
+                'ownUsers',
             ]),
             teamsData() {
                 const data = [];
@@ -111,39 +126,35 @@
                     data.push({
                         key  : team.id,
                         label: team.name,
+                        users: team.users,
                     });
                 });
                 return data;
             },
-//            teamsData2() {
-//                const data = [];
-//                const teams = this.ownTeams;
-//                teams.forEach((team) => {
-//                    const children = [];
-//                    team.users.forEach((user) => {
-//                        children.push({
-////                            id   : `${user.id}.${team.id}`,
-//                            id   : user.id,
-//                            label: user.name,
-//                        });
-//                    });
-//                    data.push({
-//                        id      : team.id,
-//                        label   : team.name,
-//                        children: children,
-//                    });
-//                });
-//                console.log(data);
-//                return data;
-//            },
+            usersData() {
+                const data = [];
+                const users = this.ownUsers;
+                users.forEach((user) => {
+                    data.push({
+                        key  : user.id,
+                        label: user.name,
+                    });
+                });
+                return data;
+            },
         },
         created() {
             this.$store.dispatch('getOwnTeams');
+            this.$store.dispatch('getOwnUsers');
         },
         methods: {
             addProject() {
                 if (this.$v.$invalid) return;
-                this.$store.dispatch('addProject', { project: this.project, addedTeams: this.addedTeams })
+                this.$store.dispatch('addProject', {
+                    project     : this.project,
+                    addedTeams  : this.addedTeams,
+                    addedMembers: this.addedMembers,
+                })
                 .then(() => {
                     this.showSuccess('Project saved successful');
                     this.$router.push('/projects');
@@ -152,9 +163,22 @@
                     this.showError();
                 });
             },
-//            getCheckedNodes() {
-//                console.log(this.$refs.tree.getCheckedNodes());
-//            },
+            renderTeams(h, option) {
+                return h('span', [h('el-button', {
+                    class: {
+                        'member-item': true,
+                    },
+                    attrs: {
+                        type: 'text',
+                    },
+                    on: {
+                        click: () => {
+                            this.membersDataTable = option.users;
+                            this.showModal = true;
+                        },
+                    },
+                }, option.label)]);
+            },
         },
         components: {
             NavMenuAuth,

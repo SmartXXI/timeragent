@@ -39,6 +39,7 @@ Route::middleware('auth:api')->post('/teams/{team}', 'TeamController@update');
 Route::middleware('auth:api')->get('/projects', 'ProjectController@getProjects');
 Route::middleware('auth:api')->post('/projects/new', 'ProjectController@createProject');
 Route::middleware('auth:api')->get('/projects/teams', 'TeamController@getOwnTeams');
+Route::middleware('auth:api')->get('/projects/users', 'TeamController@getOwnUsers');
 Route::middleware('auth:api')->get('/projects/{project}', 'ProjectController@edit');
 Route::middleware('auth:api')->post('/projects/{project}', 'ProjectController@update');
 Route::middleware('auth:api')->post('/projects/{project}/delete', 'ProjectController@delete');

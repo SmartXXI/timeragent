@@ -59,6 +59,17 @@ class TeamController extends Controller
         });
     	return $teams;
     }
+    public function getOwnUsers() {
+        $user = Auth::user();
+        $teams = $user->teams;
+        $users = [];
+        foreach ($teams as $team) {
+            foreach ($team->users as $user) {
+                if(array_search($user->id, array_column($users, 'id')) === FALSE) $users[] = $user;
+            }
+        }
+        return $users;
+    }
     public function edit(Request $request, Team $team) {
         $team->users;
         return $team;

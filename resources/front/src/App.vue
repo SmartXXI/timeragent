@@ -89,4 +89,13 @@
     .el-collapse-item__header {
         padding: 0 10px;
     }
+
+    .member-item {
+        padding: 0;
+    }
+
+    .rate {
+        float: right;
+        margin-right: 10px;
+    }
 </style>

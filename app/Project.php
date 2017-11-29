@@ -25,9 +25,24 @@ class Project extends Model
 
     public function users() {
     	return $this->belongsToMany('App\User', 'project_user', 'project_id', 'user_id')
-    		->withPivot('billable_rate', 'cost_rate')
+    		->withPivot('billable_rate', 'cost_rate', 'team_id')
     		->withTimestamps();
     }
+
+    public function usersWithTeam($team_id) {
+        return $this->belongsToMany('App\User', 'project_user', 'project_id', 'user_id')
+            ->wherePivot('team_id', $team_id)
+            ->withPivot('billable_rate', 'cost_rate', 'team_id')
+            ->withTimestamps();
+    }
+
+    public function usersWithoutTeam() {
+        return $this->belongsToMany('App\User', 'project_user', 'project_id', 'user_id')
+            ->wherePivot('team_id', NULL)
+            ->withPivot('billable_rate', 'cost_rate', 'team_id')
+            ->withTimestamps();
+    }
+
     public function attachUser($user_id, $pivot = [])
     {
     	$this->users()->attach($user_id, $pivot);

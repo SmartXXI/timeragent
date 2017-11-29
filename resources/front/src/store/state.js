@@ -15,5 +15,6 @@ export default {
     team         : {},
     project      : {},
     ownTeams     : [],
+    ownUsers     : [],
     existsMembers: [],
 };

@@ -112,7 +112,7 @@ export default {
         Http.post('api/teams/invite', { members: payload.emailToInvite, team_id: payload.teamId });
     },
     addProject(context, payload) {
-        return Http.post('api/projects/new', { project: payload.project, teams: payload.addedTeams });
+        return Http.post('api/projects/new', { project: payload.project, projectTeams: payload.projectTeams, projectUsers: payload.projectUsers });
     },
     getOneTeam(context, payload) {
         Http.get(`api/teams/${payload.teamId}`).then((response) => {
@@ -135,7 +135,14 @@ export default {
         });
     },
     updateProject(context, payload) {
-        return Http.post(`api/projects/${payload.projectId}`, { project: payload.project, addedTeams: payload.addedTeams, deletedTeams: payload.deletedTeams });
+        return Http.post(`api/projects/${payload.projectId}`, {
+            project     : payload.project,
+            // addedTeams  : payload.addedTeams,
+            // deletedTeams: payload.deletedTeams,
+            projectTeams: payload.projectTeams,
+            // addedMembers: payload.addedMembers,
+            projectUsers: payload.projectUsers,
+        });
     },
     deleteProject(context, payload) {
         return Http.post(`api/projects/${payload.projectId}/delete`);
@@ -143,6 +150,11 @@ export default {
     getOwnTeams(context) {
         Http.get('api/projects/teams').then((response) => {
             context.commit(types.SET_OWN_TEAMS, response.data);
+        });
+    },
+    getOwnUsers(context) {
+        Http.get('api/projects/users').then((response) => {
+            context.commit(types.SET_OWN_USERS, response.data);
         });
     },
     getExistsMembers(context) {

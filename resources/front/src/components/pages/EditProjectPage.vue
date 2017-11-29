@@ -9,13 +9,21 @@
                     <el-button type="plain"
                                @click.prevent="$router.go(-1)"
                     > Cancel </el-button>
-                    <!--<button class="btn btn-wide btn-primary btn-lg" title="Press Ctrl+Enter to save changes" @click.prevent="updateProject" :disabled="formInvalid"> Save </button>-->
                     <el-button type="success"
+                               title="Save project"
+                               v-if="$route.name === 'editProject'"
                                @click.prevent="updateProject"
                                :disabled="formInvalid"
                     > Save </el-button>
+                    <el-button v-if="$route.name === 'newProject'"
+                               type="success"
+                               title="Add Project"
+                               @click.prevent="addProject"
+                               :disabled="formInvalid"
+                    > Save </el-button>
                 </div>
-                <span class="page-title"> Edit Project </span>
+                <span v-if="$route.name === 'editProject'" class="page-title"> Edit Project </span>
+                <span v-if="$route.name === 'newProject'" class="page-title"> New Project </span>
             	<el-col :span="24">
             		<el-card>
                           <el-row>
@@ -35,46 +43,79 @@
                             </div>
 
                             <el-tabs v-model="activeTabName">
-                                <el-tab-pane label="Teams" name="team">
-                                    <div>
-                                        <el-button type="primary"
-                                                   plain
-                                                   @click="showModal = true"
-                                        > Add teams to project </el-button>
-                                    </div>
+                                <el-tab-pane label="Teams" name="teams">
+                                    <!--<div>-->
+                                        <!--<el-button type="primary"-->
+                                                   <!--plain-->
+                                                   <!--@click="showModal = true"-->
+                                        <!--&gt; Add teams to project </el-button>-->
+                                    <!--</div>-->
 
-                                    <div>
+                                    <el-row>
+                                        <el-col :offset="4">
+                                            <!--<el-transfer v-model="addedTeams"-->
+                                            <el-transfer v-model="projectTeams"
+                                                         :data="teamsData"
+                                                         :titles="['My Teams', 'To Add']"
+                                                         :render-content="renderTeams"
+                                            >
+                                            </el-transfer>
 
-                                    </div>
-                                </el-tab-pane>
-                            </el-tabs>
-                            <!-- <add-team></add-team> -->
+                                            <!-- Show team members modal form -->
+                                            <el-dialog title="Members"
+                                                       :visible.sync="showModal"
+                                                       width="40%">
+                                                <el-table :data="membersDataTable">
+                                                    <el-table-column label="Name" prop="name"></el-table-column>
+                                                </el-table>
+                                                <span slot="footer">
+                                                    <el-button @click="showModal = false">Close</el-button>
+                                                </span>
+                                            </el-dialog>
+                                        </el-col>
+                                    </el-row>
 
-                            <div class="teams">
-                                <el-collapse v-model="activePanels">
-                                    <el-collapse-item v-for="(team, index) in project.teams" :key="team.id" :title="team.name" :name="team.name">
-                                        <el-table :data="team.users"
-                                                  :default-sort="{ prop: 'name' }"
-                                        >
-                                            <el-table-column label="Name" prop="name"></el-table-column>
-                                            <el-table-column label="Cost rate">
-                                                <template slot-scope="scope">
+                                    <div class="teams" v-if="isEditing">
+                                        <el-collapse v-model="activePanels">
+                                            <el-collapse-item v-for="(team, index) in project.teams" :key="team.id" :title="team.name" :name="team.name">
+                                                <el-table :data="team.users"
+                                                          :default-sort="{ prop: 'name' }"
+                                                >
+                                                    <el-table-column label="Name" prop="name"></el-table-column>
+                                                    <el-table-column label="Cost rate">
+                                                        <template slot-scope="scope">
                                                     <span v-for="user in project.users" :scope="scope">
                                                         <span v-if="user.id === scope.row.id && user.pivot.cost_rate != ''">
                                                             $ {{ user.pivot.cost_rate }}
                                                         </span>
                                                     </span>
-                                                </template>
-                                            </el-table-column>
-                                        </el-table>
-                                        <el-col :span="8" :offset="17">
-                                            <div>
-                                                <el-button type="text" class="delete_button" @click="deleteTeam(index, team.id)"> <i class="el-icon-close"></i> Delete team from project</el-button>
-                                            </div>
+                                                        </template>
+                                                    </el-table-column>
+                                                </el-table>
+                                                <el-col :span="8" :offset="17">
+                                                    <div>
+                                                        <el-button type="text" class="delete_button" @click="deleteTeam(index, team.id)"> <i class="el-icon-close"></i> Delete team from project</el-button>
+                                                    </div>
+                                                </el-col>
+                                            </el-collapse-item>
+                                        </el-collapse>
+                                    </div>
+                                </el-tab-pane>
+                                <el-tab-pane label="Users" name="users">
+                                    <el-row>
+                                        <el-col :offset="4">
+                                            <el-transfer v-model="projectUsers"
+                                                         :data="usersData"
+                                                         :titles="['All Users', 'To Add']"
+                                                         :render-content="renderUsers">
+
+                                            </el-transfer>
                                         </el-col>
-                                    </el-collapse-item>
-                                </el-collapse>
-                            </div>
+                                    </el-row>
+                                </el-tab-pane>
+                            </el-tabs>
+
+                            <div v-if="isEditing">
                             <div><el-button type="text" class="delete_button" @click="showConfirmModal = true">Delete Project</el-button></div>
 
                             <!-- Confirm delete project modal form -->
@@ -90,23 +131,7 @@
                                     <el-button :disabled="!confirmDeleteProject" type="danger" @click.prevent="deleteProject">Delete</el-button>
                                 </span>
                             </el-dialog>
-
-
-                            <!-- Adding teams modal form -->
-                            <el-dialog title="Add teams" :visible.sync="showModal">
-
-                                <el-row class="transfer">
-                                    <el-col :span="16" :offset="4">
-                                        <el-transfer v-model="addedTeams"
-                                                     :data="teamsData"
-                                                     :titles="['My Teams', 'To Add']"></el-transfer>
-                                    </el-col>
-                                </el-row>
-                                <span slot="footer">
-                                        <el-button @click="showModal = false">Close</el-button>
-                                        <el-button type="success" @click="addTeams">Add</el-button>
-                                    </span>
-                            </el-dialog>
+                            </div>
                         </el-col>
                           </el-row>
             		</el-card>
@@ -123,24 +148,40 @@ import { required } from 'vuelidate/lib/validators';
 import { mapGetters } from 'vuex';
 import NavMenuAuth from '../blocks/NavMenuAuth';
 import notification from '../../mixins/notification';
+import ElTabPane from "../../../node_modules/element-ui/packages/tabs/src/tab-pane.vue";
 
 export default {
     props : ['projectId'],
     mixins: [notification],
     data() {
         return {
+            isCreating      : false,
+            isEditing       : false,
             showModal       : false,
             showConfirmModal: false,
-            addedTeams      : [],
-            deletedTeams    : [],
-            activeTabName   : 'team',
+//            addedTeams      : [],
+//            addedMembers    : [],
+//            deletedTeams    : [],
+            activeTabName   : 'teams',
             activePanels    : [],
             projectName     : '',
+            membersDataTable: [],
+            projectTeams    : [],
+            projectUsers    : [],
+            teamsGenerated  : false,
+            usersGenerated  : false,
         };
     },
     created() {
         this.$store.dispatch('getOwnTeams');
-        this.$store.dispatch('getOneProject', { projectId: this.projectId });
+        this.$store.dispatch('getOwnUsers');
+        if (this.$route.name === 'newProject') {
+            this.isCreating = true;
+        }
+        if (this.$route.name === 'editProject') {
+            this.isEditing = true;
+            this.$store.dispatch('getOneProject', { projectId: this.projectId });
+        }
     },
     computed: {
         formInvalid() {
@@ -149,6 +190,7 @@ export default {
         ...mapGetters([
             'project',
             'ownTeams',
+            'ownUsers',
         ]),
         confirmDeleteProject() {
             return this.projectName === this.project.name;
@@ -160,15 +202,74 @@ export default {
                 data.push({
                     key  : team.id,
                     label: team.name,
+                    users: team.users,
+                });
+            });
+            if (this.isEditing) {
+                if (!this.teamsGenerated) {
+                    this.project.teams.map((team) => {
+                        this.projectTeams.push(team.id);
+                        return team;
+                    });
+                    this.teamsGenerated = true;
+                }
+            }
+            return data;
+        },
+        usersData() {
+            const data = [];
+            const users = this.ownUsers;
+            users.forEach((user) => {
+                let userIsInProject = null;
+                if (this.$route.name === 'editProject') {
+                    userIsInProject = this.project.users.find((userInProject) => {
+                        return user.id === userInProject.id ? userInProject : null;
+                    });
+                    if (!this.usersGenerated) {
+                        this.project.users.map((user) => {
+                            this.projectUsers.push(user.id);
+                            return user;
+                        });
+                        this.usersGenerated = true;
+                    }
+                }
+                data.push({
+                    key          : user.id,
+                    label        : user.name,
+                    cost_rate    : (userIsInProject) ? userIsInProject.pivot.cost_rate : null,
+                    billable_rate: (userIsInProject) ? userIsInProject.pivot.billable_rate : null,
                 });
             });
             return data;
         },
     },
     methods: {
+        addProject() {
+            if (this.$v.$invalid) return;
+            this.$store.dispatch('addProject', {
+                project     : this.project,
+                projectTeams: this.projectTeams,
+                projectUsers: this.projectUsers,
+            })
+                .then(() => {
+                    this.showSuccess('Project saved successful');
+                    this.$router.push('/projects');
+                })
+                .catch(() => {
+                    this.showError();
+                });
+        },
         updateProject() {
             if (this.$v.$invalid) return;
-            this.$store.dispatch('updateProject', { projectId: this.project.id, project: this.project, addedTeams: this.addedTeams, deletedTeams: this.deletedTeams })
+            this.$store.dispatch('updateProject', {
+                projectId   : this.project.id,
+                project     : this.project,
+//                addedTeams  : this.addedTeams,
+//                deletedTeams: this.deletedTeams,
+                projectTeams: this.projectTeams,
+//                addedMembers: this.addedMembers,
+                projectUsers: this.projectUsers,
+            })
             .then(() => {
                 this.showSuccess('Project saved successful');
                 this.$router.push('/projects');
@@ -189,24 +290,60 @@ export default {
                 this.showError();
             });
         },
-        deleteTeam(index, teamId) {
-            this.deletedTeams.push(teamId);
-            this.project.teams.splice(index);
+//        deleteTeam(index, teamId) {
+//            this.deletedTeams.push(teamId);
+//            this.project.teams.splice(index);
+//        },
+//        addTeams() {
+//            this.addedTeams.map((teamId) => {
+//                const teamIndex = this.ownTeams.findIndex(obj => obj.id === teamId);
+//                const index = this.project.teams.findIndex(obj => obj.id === teamId);
+//                if (index === -1) {
+//                    const team = this.ownTeams[teamIndex];
+//                    this.project.teams.push(team);
+//                }
+//                return teamId;
+//            });
+//            this.showModal = false;
+//        },
+        renderTeams(h, option) {
+            return h('span', [h('el-button', {
+                class: {
+                    'member-item': true,
+                },
+                attrs: {
+                    type: 'text',
+                },
+                on: {
+                    click: () => {
+                        this.membersDataTable = option.users;
+                        this.showModal = true;
+                    },
+                },
+            }, option.label)]);
         },
-        addTeams() {
-            this.addedTeams.map((teamId) => {
-                const teamIndex = this.ownTeams.findIndex(obj => obj.id === teamId);
-                const index = this.project.teams.findIndex(obj => obj.id === teamId);
-                if (index === -1) {
-                    const team = this.ownTeams[teamIndex];
-                    this.project.teams.push(team);
-                }
-                return teamId;
-            });
-            this.showModal = false;
+        renderUsers(h, option) {
+            return h('span', [
+                option.label,
+                h('span',
+                    {
+                        class: {
+                            rate: true,
+                        },
+                        attrs: {
+                            title: 'Project rate',
+                        },
+                    },
+                    [
+                        (option.cost_rate) ? ' $' : '',
+                        option.cost_rate,
+                    ]
+                ),
+            ]);
         },
     },
     components: {
+        ElTabPane,
         NavMenuAuth,
     },
     validations: {
