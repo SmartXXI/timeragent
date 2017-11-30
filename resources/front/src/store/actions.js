@@ -102,7 +102,7 @@ export default {
         });
     },
     addTeam(context, payload) {
-        return Http.post('api/teams/new', { team: payload.team, members: payload.addedMembers }).then((response) => {
+        return Http.post('api/teams/new', { team: payload.team, teamUsers: payload.teamUsers }).then((response) => {
             if (payload.emailToInvite !== '') {
                 context.dispatch('inviteMembers', { teamId: response.data.id, emailToInvite: payload.emailToInvite });
             }
@@ -120,11 +120,20 @@ export default {
         });
     },
     updateTeam(context, payload) {
-        return Http.post(`api/teams/${payload.team.id}`, { team: payload.team, deletedMembers: payload.deletedMembers, addedMembers: payload.addedMembers }).then((response) => {
+        return Http.post(`api/teams/${payload.team.id}`, {
+            team          : payload.team,
+            deletedMembers: payload.deletedMembers,
+            addedMembers  : payload.addedMembers,
+            teamUsers     : payload.teamUsers,
+        })
+        .then((response) => {
             if (payload.emailToInvite !== '') {
                 context.dispatch('inviteMembers', { teamId: response.data.id, emailToInvite: payload.emailToInvite });
             }
         });
+    },
+    clearTeam(context) {
+        context.commit(types.CLEAR_TEAM);
     },
     deleteTeam(context, payload) {
         return Http.post(`api/teams/${payload.teamId}/delete`);
@@ -143,6 +152,9 @@ export default {
             // addedMembers: payload.addedMembers,
             projectUsers: payload.projectUsers,
         });
+    },
+    clearProject(context) {
+        context.commit(types.CLEAR_PROJECT);
     },
     deleteProject(context, payload) {
         return Http.post(`api/projects/${payload.projectId}/delete`);

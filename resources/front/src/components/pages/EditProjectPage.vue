@@ -11,19 +11,19 @@
                     > Cancel </el-button>
                     <el-button type="success"
                                title="Save project"
-                               v-if="$route.name === 'editProject'"
+                               v-if="isEditing"
                                @click.prevent="updateProject"
                                :disabled="formInvalid"
                     > Save </el-button>
-                    <el-button v-if="$route.name === 'newProject'"
+                    <el-button v-if="isCreating"
                                type="success"
                                title="Add Project"
                                @click.prevent="addProject"
                                :disabled="formInvalid"
                     > Save </el-button>
                 </div>
-                <span v-if="$route.name === 'editProject'" class="page-title"> Edit Project </span>
-                <span v-if="$route.name === 'newProject'" class="page-title"> New Project </span>
+                <span v-if="isEditing" class="page-title"> Edit Project </span>
+                <span v-if="isCreating" class="page-title"> New Project </span>
             	<el-col :span="24">
             		<el-card>
                           <el-row>
@@ -75,31 +75,31 @@
                                         </el-col>
                                     </el-row>
 
-                                    <div class="teams" v-if="isEditing">
-                                        <el-collapse v-model="activePanels">
-                                            <el-collapse-item v-for="(team, index) in project.teams" :key="team.id" :title="team.name" :name="team.name">
-                                                <el-table :data="team.users"
-                                                          :default-sort="{ prop: 'name' }"
-                                                >
-                                                    <el-table-column label="Name" prop="name"></el-table-column>
-                                                    <el-table-column label="Cost rate">
-                                                        <template slot-scope="scope">
-                                                    <span v-for="user in project.users" :scope="scope">
-                                                        <span v-if="user.id === scope.row.id && user.pivot.cost_rate != ''">
-                                                            $ {{ user.pivot.cost_rate }}
-                                                        </span>
-                                                    </span>
-                                                        </template>
-                                                    </el-table-column>
-                                                </el-table>
-                                                <el-col :span="8" :offset="17">
-                                                    <div>
-                                                        <el-button type="text" class="delete_button" @click="deleteTeam(index, team.id)"> <i class="el-icon-close"></i> Delete team from project</el-button>
-                                                    </div>
-                                                </el-col>
-                                            </el-collapse-item>
-                                        </el-collapse>
-                                    </div>
+                                    <!--<div class="teams" v-if="isEditing">-->
+                                        <!--<el-collapse v-model="activePanels">-->
+                                            <!--<el-collapse-item v-for="(team, index) in project.teams" :key="team.id" :title="team.name" :name="team.name">-->
+                                                <!--<el-table :data="team.users"-->
+                                                          <!--:default-sort="{ prop: 'name' }"-->
+                                                <!--&gt;-->
+                                                    <!--<el-table-column label="Name" prop="name"></el-table-column>-->
+                                                    <!--<el-table-column label="Cost rate">-->
+                                                        <!--<template slot-scope="scope">-->
+                                                    <!--<span v-for="user in project.users" :scope="scope">-->
+                                                        <!--<span v-if="user.id === scope.row.id && user.pivot.cost_rate != ''">-->
+                                                            <!--$ {{ user.pivot.cost_rate }}-->
+                                                        <!--</span>-->
+                                                    <!--</span>-->
+                                                        <!--</template>-->
+                                                    <!--</el-table-column>-->
+                                                <!--</el-table>-->
+                                                <!--<el-col :span="8" :offset="17">-->
+                                                    <!--<div>-->
+                                                        <!--<el-button type="text" class="delete_button" @click="deleteTeam(index, team.id)"> <i class="el-icon-close"></i> Delete team from project</el-button>-->
+                                                    <!--</div>-->
+                                                <!--</el-col>-->
+                                            <!--</el-collapse-item>-->
+                                        <!--</el-collapse>-->
+                                    <!--</div>-->
                                 </el-tab-pane>
                                 <el-tab-pane label="Users" name="users">
                                     <el-row>
@@ -177,6 +177,7 @@ export default {
         this.$store.dispatch('getOwnUsers');
         if (this.$route.name === 'newProject') {
             this.isCreating = true;
+            this.$store.dispatch('clearProject');
         }
         if (this.$route.name === 'editProject') {
             this.isEditing = true;
@@ -206,7 +207,7 @@ export default {
                 });
             });
             if (this.isEditing) {
-                if (!this.teamsGenerated) {
+                if (!this.teamsGenerated && this.project.teams) {
                     this.project.teams.map((team) => {
                         this.projectTeams.push(team.id);
                         return team;
@@ -221,7 +222,7 @@ export default {
             const users = this.ownUsers;
             users.forEach((user) => {
                 let userIsInProject = null;
-                if (this.$route.name === 'editProject') {
+                if (this.isEditing && this.project.teams) {
                     userIsInProject = this.project.users.find((userInProject) => {
                         return user.id === userInProject.id ? userInProject : null;
                     });
@@ -242,6 +243,9 @@ export default {
             });
             return data;
         },
+    },
+    destroyed() {
+        this.$store.dispatch('clearProject');
     },
     methods: {
         addProject() {

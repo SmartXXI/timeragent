@@ -120,7 +120,7 @@ class ProjectController extends Controller
             ->each(function(Team $team) use ($project) {
                 $project->usersWithTeam($team->id)->detach();
             });
-
+//        dd($request->projectTeams);
         if ($request->projectTeams) {
             $project->teams()->sync($request->projectTeams);
         }
@@ -139,7 +139,7 @@ class ProjectController extends Controller
                 ];
             }
 
-//            dd($team_users);
+//            dd($project->usersWithTeam($team_id));
             $project->usersWithTeam($team_id)->sync($team_users);
             $team_users = [];
         }

@@ -89,7 +89,13 @@ export default {
     [types.SET_ONE_TEAM](state, team) {
         Object.assign(state, { team });
     },
+    [types.CLEAR_TEAM](state, team = {}) {
+        Object.assign(state, { team });
+    },
     [types.SET_ONE_PROJECT](state, project) {
+        Object.assign(state, { project });
+    },
+    [types.CLEAR_PROJECT](state, project = {}) {
         Object.assign(state, { project });
     },
     [types.SET_OWN_TEAMS](state, ownTeams) {
