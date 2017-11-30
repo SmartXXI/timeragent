@@ -16,7 +16,7 @@ class TeamController extends Controller
     	$teams = $user->teams;
         $teams->map(function(Team $team) {
             $team->owner_name = User::find($team->owner_id)->name;
-            $team->users = $team->users;
+            $team->load('users');
             return $team;
         });
     	return $teams;
@@ -29,12 +29,16 @@ class TeamController extends Controller
 		$team->owner_id = $user->getKey();
 		$team->name = $request->team['name'];
 		$team->save();
-		$user->attachTeam($team);
+//		$user->attachTeam($team);
 
-        foreach($request->members as $member) {
-            $member = User::find($member);
-            $member->attachTeam($team);
-        }
+//        foreach($request->members as $member) {
+//            $member = User::find($member);
+//            $member->attachTeam($team);
+//        }
+        $team_users = $request->teamUsers;
+        $team_users[] = $user->id;
+
+        $team->users()->sync($team_users);
 
 		return $team;
     }
@@ -77,20 +81,38 @@ class TeamController extends Controller
     public function update(Request $request, Team $team) {
         $projects = $team->projects;
 
-        foreach ($request->deletedMembers as $member) {
-            foreach ($projects as $project) {
-                $project->detachUser($member);
-            }
+//        foreach ($request->deletedMembers as $member) {
+//            foreach ($projects as $project) {
+//                $project->detachUser($member);
+//            }
+//
+//            $member = User::find($member);
+//            $member->detachTeam($team);
+//        }
+//        foreach($request->addedMembers as $member) {
+//            $member = User::find($member);
+//            $member->attachTeam($team);
+//        }
+        $team_users = [];
+        foreach ($request->teamUsers as $user_id) {
+            $user = User::find($user_id);
+            $team_users[$user_id] = [
+                'team_id' => $team->id,
+                'billable_rate' => $user->billable_rate,
+                'cost_rate' => $user->cost_rate,
+            ];
+        }
 
-            $member = User::find($member);
-            $member->detachTeam($team);
+        foreach ($projects as $project) {
+            $project->usersWithTeam($team->id)->sync($team_users);
         }
-        foreach($request->addedMembers as $member) {
-            $member = User::find($member);
-            $member->attachTeam($team);
-        }
+
+        $team->users()->sync($request->teamUsers);
+
         $all['name'] = $request->team['name'];
-        $team->update($all); 
+        $team->update($all);
+//        $team->load('users');
+//        return $team;
     }
     public function getExistsMembers(Request $request) {
         $user = Auth::user();
