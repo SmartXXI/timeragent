@@ -49,11 +49,11 @@ class ProjectController extends Controller
         }
 
         if ($request->projectUsers) {
-            foreach ($request->projectUsers as $user_id) {
-                $user = User::find($user_id);
-                $project->attachUser($user->id, [
-                    'billable_rate' => $user->billable_rate,
-                    'cost_rate' => $user->cost_rate,
+            foreach ($request->projectUsers as $userData) {
+                $user = User::find($userData['id']);
+                $project->attachUser($userData['id'], [
+                    'billable_rate' => $userData['billable_rate'],
+                    'cost_rate' => $userData['cost_rate'],
                 ]);
             }
         }
@@ -156,12 +156,13 @@ class ProjectController extends Controller
 
         $project_users = [];
 
-        foreach ($request->projectUsers as $user_id) {
-            $user = User::find($user_id);
+//        foreach ($request->projectUsers as $user_id) {
+        foreach ($request->projectUsers as $userData) {
+            $user = User::find($userData['id']);
 
             $project_users[$user->id] = [
-                'billable_rate' => $user->billable_rate,
-                'cost_rate' => $user->cost_rate,
+                'billable_rate' => $userData['billable_rate'],
+                'cost_rate' => $userData['cost_rate'],
             ];
         }
 
