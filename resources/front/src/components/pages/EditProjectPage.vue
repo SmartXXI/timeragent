@@ -54,10 +54,11 @@
                                     <el-row>
                                         <el-col :offset="4">
                                             <!--<el-transfer v-model="addedTeams"-->
-                                            <el-transfer v-model="projectTeams"
+                                            <el-transfer v-model="teamsInTransfer"
                                                          :data="teamsData"
-                                                         :titles="['My Teams', 'To Add']"
+                                                         :titles="['My Teams', 'Project Teams']"
                                                          :render-content="renderTeams"
+                                                         @change="moveTeams"
                                             >
                                             </el-transfer>
 
@@ -71,6 +72,38 @@
                                                 <span slot="footer">
                                                     <el-button @click="showModal = false">Close</el-button>
                                                 </span>
+                                            </el-dialog>
+
+                                            <el-dialog title="Users rate in project"
+                                                       :visible.sync="showTeamUsersRates"
+                                                       :show-close="false"
+                                            >
+                                                    <el-collapse v-model="openedTeams">
+                                                        <el-collapse-item v-for="(team, index) in teamsForChangeRates.newValue" :key="team.id" :title="team.name" :name="team.name">
+                                                            <el-table :data="team.users">
+                                                                <el-table-column label="Name" prop="name" :width="300"></el-table-column>
+                                                                <el-table-column label="Rate" :width="200">
+                                                                    <template slot-scope="scope">
+                                                                        <el-input-number v-model="scope.row.cost_rate" :step="1" :min="0"></el-input-number>
+                                                                    </template>
+                                                                </el-table-column>
+                                                                <el-table-column :width="300">
+                                                                    <template slot-scope="scope">
+                                                                        <el-button type="plain"
+                                                                                   title="Reset"
+                                                                                   size="mini"
+                                                                                   @click="resetTeamUserRate(index, scope.$index)">
+                                                                            <span class="el-icon-refresh"></span>
+                                                                        </el-button>
+                                                                    </template>
+                                                                </el-table-column>
+                                                            </el-table>
+                                                        </el-collapse-item>
+                                                    </el-collapse>
+                                                <span slot="footer">
+                                                        <el-button type="plain" @click="resetAllTeamsRates">Reset All</el-button>
+                                                        <el-button type="success" @click="setTeamsRates">Apply</el-button>
+                                                    </span>
                                             </el-dialog>
                                         </el-col>
                                     </el-row>
@@ -106,9 +139,9 @@
                                         <el-col :offset="4">
                                             <el-transfer v-model="usersInTransfer"
                                                          :data="usersData"
-                                                         :titles="['All Users', 'To Add']"
+                                                         :titles="['All Users', 'Project Users']"
                                                          :render-content="renderUsers"
-                                                         @change="handleChange"
+                                                         @change="moveUsers"
                                             >
 
                                             </el-transfer>
@@ -126,8 +159,8 @@
                                                     </el-table-column>
                                                 </el-table>
                                                 <span slot="footer">
-                                                    <el-button type="plain" @click="setDefaultRates">Cancel</el-button>
-                                                    <el-button type="success" @click="setRates">Apply</el-button>
+                                                    <el-button type="plain" @click="setDefaultUsersRates">Cancel</el-button>
+                                                    <el-button type="success" @click="setUsersRates">Apply</el-button>
                                                 </span>
                                             </el-dialog>
                                         </el-col>
@@ -180,16 +213,22 @@ export default {
             showModal          : false,
             showConfirmModal   : false,
             activeTabName      : 'teams',
-            activePanels       : [],
+            openedTeams        : [],
             projectName        : '',
             membersDataTable   : [],
-            projectTeams       : [],
+            teamsInTransfer    : [],
             usersInTransfer    : [],
             teamsGenerated     : false,
             usersGenerated     : false,
             projectUsers       : [],
+            projectTeams       : [],
             showUsersRates     : false,
+            showTeamUsersRates : false,
             usersForChangeRates: {
+                oldValue: [],
+                newValue: [],
+            },
+            teamsForChangeRates: {
                 oldValue: [],
                 newValue: [],
             },
@@ -236,7 +275,11 @@ export default {
             if (this.isEditing) {
                 if (!this.teamsGenerated && this.project.teams) {
                     this.project.teams.map((team) => {
-                        this.projectTeams.push(team.id);
+                        this.teamsInTransfer.push(team.id);
+                        this.projectTeams.push({
+                            id   : team.id,
+                            users: team.users,
+                        });
                         return team;
                     });
                     this.teamsGenerated = true;
@@ -282,16 +325,26 @@ export default {
         this.$store.dispatch('clearProject');
     },
     methods: {
-        // Handle function for transfer change
-        handleChange(value, direction, movedKeys) {
+        // Handle function for transfer users adding
+        moveUsers(value, direction, movedKeys) {
             if (direction === 'right') {
-                this.showUsersRates = true;
                 movedKeys.forEach((key) => {
                     const user = {};
                     const oldUser = {};
-                    const userInArray = this.ownUsers.find((user) => {
-                        return user.id === key;
-                    });
+                    const userInArray = this.getUser(key);
+
+                    if (this.userIsInProject(userInArray.id)) {
+                        setTimeout(() => {
+                            this.showWarning(`${userInArray.name} is already added to project`);
+                        });
+                        this.usersInTransfer = this.usersInTransfer.filter((userId) => {
+                            return userId !== key;
+                        });
+                        return key;
+                    }
+
+                    this.showUsersRates = true;
+
                     if (userInArray) {
                         Object.assign(user, userInArray);
                         Object.assign(oldUser, userInArray);
@@ -304,6 +357,62 @@ export default {
                 this.projectUsers = this.projectUsers.filter((userData) => {
                     return !movedKeys.find((userId) => {
                         return userId === userData.id;
+                    });
+                });
+            }
+        },
+        // Handle function for transfer teams adding
+        moveTeams(value, direction, movedKeys) {
+            if (direction === 'right') {
+                movedKeys.forEach((key) => {
+                    let team = {};
+                    let oldTeam = {};
+                    const teamInArray = this.getTeam(key);
+
+                    const usersInProject = teamInArray.users.filter((user) => {
+                        return this.userIsInProject(user.id);
+                    });
+
+
+                    if (usersInProject.length) {
+
+                        const names = usersInProject.map((user) => {
+                            return user.name;
+                        });
+
+                        setTimeout(() => {
+                            this.showWarning(`${names.join(', ')} ${(names.length === 1) ? 'is' : 'are'} already added to project`);
+                        });
+
+                        this.teamsInTransfer = this.teamsInTransfer.filter((teamId) => {
+                            return teamId !== key;
+                        });
+                        return key;
+                    }
+
+                    this.showTeamUsersRates = true;
+
+                    teamInArray.users.forEach((user) => {
+                        if (this.userIsInProject(user.id)) {
+                            this.showWarning(`${user.name} is already added to project`);
+                        }
+                    });
+
+                    if (teamInArray) {
+                        team = _.cloneDeep(teamInArray);
+                        oldTeam = _.cloneDeep(teamInArray);
+                    }
+                    this.teamsForChangeRates.oldValue.push(oldTeam);
+                    this.teamsForChangeRates.newValue.push(team);
+                    return key;
+                });
+                if (this.teamsForChangeRates.newValue.length === 1) {
+                    this.openedTeams.push(this.teamsForChangeRates.newValue[0].name);
+                }
+            } else {
+                this.projectTeams = this.projectTeams.filter((teamData) => {
+                    return !movedKeys.find((teamId) => {
+                        return teamId === teamData.id;
                     });
                 });
             }
@@ -394,8 +503,8 @@ export default {
                 ),
             ]);
         },
-        // Set rates
-        setRates() {
+        // Set users rates
+        setUsersRates() {
             this.showUsersRates = false;
             this.usersForChangeRates.newValue.forEach((user) => {
                 this.projectUsers.push(user);
@@ -404,9 +513,51 @@ export default {
             this.usersForChangeRates.newValue = [];
         },
         // Cancel changing rates and apply default rates
-        setDefaultRates() {
+        setDefaultUsersRates() {
             this.usersForChangeRates.newValue = this.usersForChangeRates.oldValue;
-            this.setRates();
+            this.setUsersRates();
+        },
+        // Set teams rates
+        setTeamsRates() {
+            this.showTeamUsersRates = false;
+            this.teamsForChangeRates.newValue.forEach((team) => {
+                this.projectTeams.push(team);
+            });
+            this.teamsForChangeRates.oldValue = [];
+            this.teamsForChangeRates.newValue = [];
+            this.openedTeams = [];
+        },
+        resetTeamUserRate(teamIndex, userIndex) {
+            this.teamsForChangeRates.newValue[teamIndex].users[userIndex].cost_rate = this.teamsForChangeRates.oldValue[teamIndex].users[userIndex].cost_rate
+        },
+        resetAllTeamsRates() {
+            this.teamsForChangeRates.newValue = _.cloneDeep(this.teamsForChangeRates.oldValue);
+        },
+        getUser(userId) {
+            return this.ownUsers.find((user) => {
+                return user.id === userId;
+            });
+        },
+        getTeam(teamId) {
+            return this.ownTeams.find((team) => {
+                return team.id === teamId;
+            });
+        },
+        // Check if the user is already attached to project
+        userIsInProject(userId) {
+            const inTeams = !!this.projectTeams
+                .filter((team) => {
+                    return !!team.users
+                        .find((user) => {
+                            return user.id === userId;
+                        });
+                })
+                .length;
+            const inProject = !!this.projectUsers
+                .find((user) => {
+                    return user.id === userId;
+                });
+            return inTeams || inProject;
         },
     },
     components: {

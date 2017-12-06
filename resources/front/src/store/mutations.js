@@ -19,8 +19,17 @@ export default {
     },
 
     [types.START_TIMER](state) {
+
+        let activeTask = {};
+
+        if (state.activeTask) {
+            activeTask = state.tasks[state.activeTask];
+        }
+
+        Object.assign(state, { spendTime: moment() });
+
         const timerID = window.setInterval(() => {
-            const activeTask = state.tasks[state.activeTask];
+            activeTask = state.tasks[state.activeTask];
             const spendTime = moment.duration(moment().diff(moment(activeTask.startTime, 'HH:mm:ss')));
 
             Object.assign(state, { spendTime: moment() });
@@ -55,9 +64,11 @@ export default {
     },
 
     [types.CONTINUE_TASK](state) {
-        const activeTask = state.tasks[state.activeTask];
+        const activeTask = {};
+        Object.assign(activeTask, state.tasks[state.activeTask]);
         activeTask.active = true;
         activeTask.endTime = null;
+        Object.assign(state.tasks[state.activeTask], activeTask);
     },
 
     [types.STOP_TASK](state, task) {

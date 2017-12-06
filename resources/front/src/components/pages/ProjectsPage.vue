@@ -25,13 +25,23 @@
                             <el-table-column prop="owner_name"
                                              label="Owner"
                             ></el-table-column>
-                            <el-table-column label="Teams">
+                            <el-table-column label="Members">
                                 <template slot-scope="scope">
-                                    <div v-if="scope.row.teams.length === 1">{{ scope.row.teams[0].name }}</div>
-                                    <div v-if="scope.row.teams.length === 2">{{ scope.row.teams[0].name }} and {{ scope.row.teams[1].name }}</div>
-                                    <div v-if="scope.row.teams.length === 3">{{ scope.row.teams[0].name }}, {{ scope.row.teams[1].name }} and {{ scope.row.teams[2].name }}</div>
-                                    <div v-if="scope.row.teams.length > 3">{{ scope.row.teams[0].name }}, {{ scope.row.teams[1].name }}, {{ scope.row.teams[2].name }} and
+                                    <div v-if="scope.row.teams.length === 1">Team: {{ scope.row.teams[0].name }}</div>
+                                    <div v-if="scope.row.teams.length === 2">Teams: {{ scope.row.teams[0].name }} and {{ scope.row.teams[1].name }}</div>
+                                    <div v-if="scope.row.teams.length === 3">Teams: {{ scope.row.teams[0].name }}, {{ scope.row.teams[1].name }} and {{ scope.row.teams[2].name }}</div>
+                                    <div v-if="scope.row.teams.length > 3">Teams: {{ scope.row.teams[0].name }}, {{ scope.row.teams[1].name }}, {{ scope.row.teams[2].name }} and
                                     <el-button type="text" @click="showTeams(scope.row.teams)">others...</el-button></div>
+                                    <div v-if="scope.row.users_without_team.length === 1">
+                                        User: {{ scope.row.users_without_team[0].name }}
+                                    </div>
+                                    <div v-if="scope.row.users_without_team.length === 2">
+                                        Users: {{ scope.row.users_without_team[0].name }} and {{ scope.row.users_without_team[1].name }}
+                                    </div>
+                                    <div v-if="scope.row.users_without_team.length === 3">
+                                        Users: {{ scope.row.users_without_team[0].name }}, {{ scope.row.users_without_team[1].name }} and
+                                        {{ scope.row.users_without_team[2].name }}
+                                    </div>
                                 </template>
                             </el-table-column>
                             <el-table-column

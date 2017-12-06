@@ -20,6 +20,7 @@ class ProjectController extends Controller
             $project->teams->map(function (Team $team) {
                 $team->owner_name = User::find($team->owner_id)->name;
             });
+            $project->load('usersWithoutTeam');
             return $project;
         });
 		return $projects;
@@ -114,6 +115,11 @@ class ProjectController extends Controller
 //                }
 //            }
 //        }
+        $project_teams = [];
+        foreach ($request->projectTeams as $teamData) {
+            $project_teams[] = $teamData['id'];
+        }
+
         $project->teams()
             ->whereNotIn('team_id', $request->projectTeams)
             ->get()
@@ -122,41 +128,31 @@ class ProjectController extends Controller
             });
 //        dd($request->projectTeams);
         if ($request->projectTeams) {
-            $project->teams()->sync($request->projectTeams);
+//            $project->teams()->sync($request->projectTeams);
+            $project->teams()->sync($project_teams);
         }
         else {
             $project->teams()->detach();
         }
 
-        foreach ($request->projectTeams as $team_id) {
-            $team = Team::find($team_id);
+        foreach ($request->projectTeams as $teamData) {
+            $team = Team::find($teamData['id']);
 
-            foreach ($team->users as $user) {
-                $team_users[$user->id] = [
-                    'team_id' => $team_id,
-                    'billable_rate' => $user->billable_rate,
-                    'cost_rate' => $user->cost_rate,
+            foreach ($teamData['users'] as $user) {
+                $team_users[$user['id']] = [
+                    'team_id' => $teamData['id'],
+                    'billable_rate' => $user['billable_rate'],
+                    'cost_rate' => $user['cost_rate'],
                 ];
             }
 
-//            dd($project->usersWithTeam($team_id));
-            $project->usersWithTeam($team_id)->sync($team_users);
+            $project->usersWithTeam($teamData['id'])->sync($team_users);
             $team_users = [];
         }
 
-//        if ($request->addedMembers) {
-//            foreach ($request->addedMembers as $member) {
-//                $user = User::find($member);
-//                $project->attachUser($user->id, [
-//                    'billable_rate' => $user->billable_rate,
-//                    'cost_rate' => $user->cost_rate,
-//                ]);
-//            }
-//        }
 
         $project_users = [];
 
-//        foreach ($request->projectUsers as $user_id) {
         foreach ($request->projectUsers as $userData) {
             $user = User::find($userData['id']);
 
