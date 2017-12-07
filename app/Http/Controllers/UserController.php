@@ -20,6 +20,8 @@ class UserController extends Controller
             'email' => $request->user['email'],
             'billable_rate' => $request->user['billable_rate'],
             'cost_rate' => $request->user['cost_rate'],
+            'billable_currency' => $request->user['billable_currency'],
+            'cost_currency' => $request->user['cost_currency'],
 
         ]);
         return $user;

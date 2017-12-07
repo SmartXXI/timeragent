@@ -49,30 +49,44 @@
                                     </i>
                             </el-row>
                             <el-row>
-                                <label>Billable rate</label>
-                                    <el-input :class="{ 'has-error': $v.user.billable_rate.$error }"
-                                              placeholder="Enter your billable rate"
-                                              v-model="user.billable_rate"
-                                              @input="$v.user.billable_rate.$touch()"
-                                    ></el-input>
-                                    <i class="fa fa-exclamation-circle error-icon" v-if="$v.user.billable_rate.$error">
-                                        <div class="errors">
-                                            <span class="error-message" v-if="!$v.user.billable_rate.required">Invalid data</span>
-                                        </div>
-                                    </i>
+                                <label>Billable rate</label><br>
+                                    <!--<el-input :class="{ 'has-error': $v.user.billable_rate.$error }"-->
+                                              <!--placeholder="Enter your billable rate"-->
+                                              <!--v-model="user.billable_rate"-->
+                                              <!--@input="$v.user.billable_rate.$touch()"-->
+                                    <!--&gt;</el-input>-->
+                                    <el-input-number v-model="user.billable_rate" :min="0"></el-input-number>
+                                    <!--<i class="fa fa-exclamation-circle error-icon" v-if="$v.user.billable_rate.$error">-->
+                                        <!--<div class="errors">-->
+                                            <!--<span class="error-message" v-if="!$v.user.billable_rate.required">Invalid data</span>-->
+                                        <!--</div>-->
+                                    <!--</i>-->
+                                <el-radio-group v-model="user.billable_currency">
+                                    <el-radio-button label="$" title="Dollar USA"></el-radio-button>
+                                    <el-radio-button label="€" title="Euro"></el-radio-button>
+                                    <el-radio-button label="₴" title="Hryvna"></el-radio-button>
+                                    <el-radio-button label="£" title="Funt sterling"></el-radio-button>
+                                </el-radio-group>
                             </el-row>
                             <el-row>
-                                <label class="control-label" for="user-cost-rate">Cost rate</label>
-                                    <el-input :class="{ 'has-error': $v.user.cost_rate.$error }"
-                                              placeholder="Enter your billable rate"
-                                              v-model="user.cost_rate"
-                                              @input="$v.user.cost_rate.$touch()"
-                                    ></el-input>
-                                    <i class="fa fa-exclamation-circle error-icon" v-if="$v.user.cost_rate.$error">
-                                        <div class="errors">
-                                            <span class="error-message" v-if="!$v.user.cost_rate.numeric">Invalid data</span>
-                                        </div>
-                                    </i>
+                                <label class="control-label">Cost rate</label><br>
+                                    <!--<el-input :class="{ 'has-error': $v.user.cost_rate.$error }"-->
+                                              <!--placeholder="Enter your billable rate"-->
+                                              <!--v-model="user.cost_rate"-->
+                                              <!--@input="$v.user.cost_rate.$touch()"-->
+                                    <!--&gt;</el-input>-->
+                                <el-input-number v-model="user.cost_rate" :min="0"></el-input-number>
+                                    <!--<i class="fa fa-exclamation-circle error-icon" v-if="$v.user.cost_rate.$error">-->
+                                        <!--<div class="errors">-->
+                                            <!--<span class="error-message" v-if="!$v.user.cost_rate.numeric">Invalid data</span>-->
+                                        <!--</div>-->
+                                    <!--</i>-->
+                                <el-radio-group v-model="user.cost_currency">
+                                    <el-radio-button label="$" title="Dollar USA"></el-radio-button>
+                                    <el-radio-button label="€" title="Euro"></el-radio-button>
+                                    <el-radio-button label="₴" title="Hryvna"></el-radio-button>
+                                    <el-radio-button label="£" title="Funt sterling"></el-radio-button>
+                                </el-radio-group>
                             </el-row>
                         </el-col>
                         </el-row>
@@ -129,12 +143,12 @@
                     required,
                     email,
                 },
-                billable_rate: {
-                    numeric,
-                },
-                cost_rate: {
-                    numeric,
-                },
+//                billable_rate: {
+//                    numeric,
+//                },
+//                cost_rate: {
+//                    numeric,
+//                },
             },
         },
     };
