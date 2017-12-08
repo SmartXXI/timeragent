@@ -25,7 +25,7 @@ class Project extends Model
 
     public function users() {
     	return $this->belongsToMany('App\User', 'project_user', 'project_id', 'user_id')
-    		->withPivot('billable_rate', 'cost_rate', 'team_id')
+    		->withPivot('billable_rate', 'billable_currency', 'cost_rate', 'cost_currency', 'team_id')
     		->withTimestamps();
     }
 

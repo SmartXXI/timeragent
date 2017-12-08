@@ -77,6 +77,7 @@
                                             <el-dialog title="Users rate in project"
                                                        :visible.sync="showTeamUsersRates"
                                                        :show-close="false"
+                                                       width="60%"
                                             >
                                                     <el-collapse v-model="openedTeams">
                                                         <el-collapse-item v-for="(team, index) in teamsForChangeRates.newValue" :key="team.id" :title="team.name" :name="team.name">
@@ -87,7 +88,17 @@
                                                                         <el-input-number v-model="scope.row.cost_rate" :step="1" :min="0"></el-input-number>
                                                                     </template>
                                                                 </el-table-column>
-                                                                <el-table-column :width="300">
+                                                                <el-table-column label="Currency">
+                                                                    <template slot-scope="scope">
+                                                                        <el-radio-group v-model="scope.row.cost_currency">
+                                                                            <el-radio-button label="$" title="Dollar USA"></el-radio-button>
+                                                                            <el-radio-button label="€" title="Euro"></el-radio-button>
+                                                                            <el-radio-button label="₴" title="Hryvna"></el-radio-button>
+                                                                            <el-radio-button label="£" title="Funt sterling"></el-radio-button>
+                                                                        </el-radio-group>
+                                                                    </template>
+                                                                </el-table-column>
+                                                                <el-table-column :width="100">
                                                                     <template slot-scope="scope">
                                                                         <el-button type="plain"
                                                                                    title="Reset"
@@ -156,6 +167,16 @@
                                                         <template slot-scope="scope">
                                                             <el-input-number v-model="scope.row.cost_rate" :step="1" :min="0"></el-input-number>
                                                         </template>
+                                                    </el-table-column>
+                                                    <el-table-column label="Currency">
+                                                            <template slot-scope="scope">
+                                                                <el-radio-group v-model="scope.row.cost_currency">
+                                                                    <el-radio-button label="$" title="Dollar USA"></el-radio-button>
+                                                                    <el-radio-button label="€" title="Euro"></el-radio-button>
+                                                                    <el-radio-button label="₴" title="Hryvna"></el-radio-button>
+                                                                    <el-radio-button label="£" title="Funt sterling"></el-radio-button>
+                                                                </el-radio-group>
+                                                            </template>
                                                     </el-table-column>
                                                 </el-table>
                                                 <span slot="footer">
@@ -301,9 +322,11 @@ export default {
                         this.project.users.map((user) => {
                             this.usersInTransfer.push(user.id);
                             this.projectUsers.push({
-                                id           : user.id,
-                                cost_rate    : user.pivot.cost_rate,
-                                billable_rate: user.pivot.billable_rate,
+                                id               : user.id,
+                                cost_rate        : user.pivot.cost_rate,
+                                cost_currency    : user.pivot.cost_currency,
+                                billable_rate    : user.pivot.billable_rate,
+                                billable_currency: user.pivot.billable_currency,
                             });
                             return user;
                         });
@@ -314,6 +337,7 @@ export default {
                     key          : user.id,
                     label        : user.name,
                     cost_rate    : (userIsInProject) ? userIsInProject.pivot.cost_rate : null,
+                    cost_currency: (userIsInProject) ? userIsInProject.pivot.cost_currency : null,
                     billable_rate: (userIsInProject) ? userIsInProject.pivot.billable_rate : null,
                 });
             });
@@ -497,7 +521,7 @@ export default {
                         },
                     },
                     [
-                        (option.cost_rate) ? ' $' : '',
+                        (option.cost_currency) ? option.cost_currency : '',
                         option.cost_rate,
                     ]
                 ),

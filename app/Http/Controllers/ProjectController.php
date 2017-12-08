@@ -142,7 +142,9 @@ class ProjectController extends Controller
                 $team_users[$user['id']] = [
                     'team_id' => $teamData['id'],
                     'billable_rate' => $user['billable_rate'],
+//                    'billable_currency' => $user['billable_currency'],
                     'cost_rate' => $user['cost_rate'],
+//                    'cost_currency' => $user['cost_currency'],
                 ];
             }
 
@@ -158,7 +160,9 @@ class ProjectController extends Controller
 
             $project_users[$user->id] = [
                 'billable_rate' => $userData['billable_rate'],
+//                'billable_currency' => $userData['billable_currency'],
                 'cost_rate' => $userData['cost_rate'],
+                'cost_currency' => $userData['cost_currency'],
             ];
         }
 
