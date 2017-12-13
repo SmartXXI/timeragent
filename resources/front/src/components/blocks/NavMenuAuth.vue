@@ -4,11 +4,13 @@
             <el-row>
                 <el-col :span="16" :offset="4">
                     <span class="logo">
+                        <img class="hat" src="../../assets/images/hat.png">
                         <router-link to="/">
                             <img class="logo" src="../../assets/images/logo.svg" alt="logo"/>
                         </router-link>
                     </span>
-                    <el-col :span="2" :offset="2" class="control-buttons" v-if="$route.path == '/'">
+                    <el-col :span="2" :offset="2" class="control-buttons"
+                            v-if="$route.path == '/'">
                         <el-button title="Start timer"
                                    type="success"
                                    plain
@@ -82,12 +84,17 @@
 
 <script>
     import ElRow from 'element-ui/packages/row/src/row';
+    import moment from 'moment';
 
     export default {
         components: { ElRow },
         data() {
             return {
                 isOpened: null,
+                task    : {
+                    id         : 'id',
+                    description: '',
+                },
             };
         },
         created() {
@@ -100,20 +107,32 @@
             user() {
                 return this.$store.state.user;
             },
+            date() {
+                return moment().format('YYYY-MM-DD');
+            },
         },
         methods: {
             showSubMenu(name) {
                 this.isOpened = (this.isOpened === null) ? name : null;
             },
             startTimer() {
+                this.getTodayTasks();
                 this.$store.dispatch('startTimer');
-                this.$store.dispatch('createTask');
+                this.$store.dispatch('createTask', { task: this.task });
             },
             stopTimer() {
-                const taskIndex = this.$store.state.activeTask;
-                const activeTask = this.$store.state.tasks[taskIndex];
+                this.getTodayTasks();
+                const taskId = this.$store.state.activeTask;
+                const activeTask = this.$store.getters.tasks.find((task) => {
+                    return task.id === taskId;
+                });
                 this.$store.dispatch('stopTimer');
-                this.$store.dispatch('stopTask', { task_id: activeTask.id, index: taskIndex, task: activeTask });
+                this.$store.dispatch('stopTask', { task_id: activeTask.id, task: activeTask });
+            },
+            getTodayTasks() {
+                if (this.$store.state.date !== this.date) {
+                    this.$store.dispatch('getTasks', { date: this.date });
+                }
             },
             subIsActive(input) {
                 const paths = Array.isArray(input) ? input : [input];
@@ -411,4 +430,17 @@
         }
     }
 
+</style>
+
+<style>
+    .logo {
+        position: relative;
+    }
+
+    .hat {
+        width: 48px;
+        position: absolute;
+        left: -16px;
+        z-index: 1;
+    }
 </style>
