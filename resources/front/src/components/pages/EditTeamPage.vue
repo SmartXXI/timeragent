@@ -47,16 +47,24 @@
 
                                         <el-row>
                                             <el-col :span="17" :offset="4">
-                                                <el-input :class="{ 'has-error': $v.members.$error }"
-                                                          placeholder="Enter user email..."
-                                                          v-model="members"
-                                                          @input="$v.members.$touch()"
-                                                ></el-input>
-                                                <i class="fa fa-exclamation-circle error-icon" v-if="$v.members.$error">
-                                                    <div class="errors">
-                                                        <span class="error-message" v-if="!$v.members.email">Invalid email</span>
-                                                    </div>
-                                                </i>
+                                                <!--<el-input :class="{ 'has-error': $v.members.$error }"-->
+                                                          <!--placeholder="Enter user email..."-->
+                                                          <!--v-model="members"-->
+                                                          <!--@input="$v.members.$touch()"-->
+                                                <!--&gt;</el-input>-->
+                                                <!--<i class="fa fa-exclamation-circle error-icon" v-if="$v.members.$error">-->
+                                                    <!--<div class="errors">-->
+                                                        <!--<span class="error-message" v-if="!$v.members.email">Invalid email</span>-->
+                                                    <!--</div>-->
+                                                <!--</i>-->
+                                                <el-select v-model="members"
+                                                           multiple
+                                                           filterable
+                                                           allow-create
+                                                           placeholder="Type members emails here"
+                                                           class="members-emails"
+                                                >
+                                                </el-select>
                                             </el-col>
                                         </el-row>
                                         <el-row class="transfer">
@@ -122,10 +130,8 @@
                 isEditing       : false,
                 showModal       : false,
                 showConfirmModal: false,
-                members         : '',
-                addedMembers    : [],
+                members         : [],
                 teamUsers       : [],
-                deletedMembers  : [],
                 activeTabName   : 'members',
                 teamName        : '',
                 teamsGenerated  : false,
@@ -177,7 +183,11 @@
         methods: {
             addTeam() {
                 if (this.$v.$invalid) return;
-                this.$store.dispatch('addTeam', { team: this.team, teamUsers: this.teamUsers, emailToInvite: this.members })
+                this.$store.dispatch('addTeam', {
+                    team          : this.team,
+                    teamUsers     : this.teamUsers,
+                    emailsToInvite: this.members,
+                })
                     .then(() => {
                         this.showSuccess('Team saved successful');
                         this.$router.push('/teams');
@@ -189,17 +199,17 @@
             updateTeam() {
                 if (this.$v.$invalid) return;
                 this.$store.dispatch('updateTeam', {
-                    team         : this.team,
-                    teamUsers    : this.teamUsers,
-                    emailToInvite: this.members,
+                    team          : this.team,
+                    teamUsers     : this.teamUsers,
+                    emailsToInvite: this.members,
                 })
-                .then(() => {
-                    this.showSuccess('Team saved successful');
-                    this.$router.push('/teams');
-                })
-                .catch(() => {
-                    this.showError();
-                });
+                    .then(() => {
+                        this.showSuccess('Team saved successful');
+                        this.$router.push('/teams');
+                    })
+                    .catch(() => {
+                        this.showError();
+                    });
             },
             deleteTeam() {
                 if (!this.confirmDeleteTeam) return;
@@ -223,9 +233,9 @@
                     required,
                 },
             },
-            members: {
-                email,
-            },
+//            members: {
+//                email,
+//            },
         },
     };
 </script>
@@ -423,5 +433,11 @@
     }
     .fa-times {
         cursor: pointer;
+    }
+</style>
+
+<style>
+    .members-emails {
+        width: 100%;
     }
 </style>

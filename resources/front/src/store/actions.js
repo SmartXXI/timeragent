@@ -107,13 +107,13 @@ export default {
     },
     addTeam(context, payload) {
         return Http.post('api/teams/new', { team: payload.team, teamUsers: payload.teamUsers }).then((response) => {
-            if (payload.emailToInvite !== '') {
-                context.dispatch('inviteMembers', { teamId: response.data.id, emailToInvite: payload.emailToInvite });
+            if (payload.emailsToInvite !== []) {
+                context.dispatch('inviteMembers', { teamId: response.data.id, emailsToInvite: payload.emailsToInvite });
             }
         });
     },
     inviteMembers(context, payload) {
-        Http.post('api/teams/invite', { members: payload.emailToInvite, team_id: payload.teamId });
+        Http.post('api/teams/invite', { members: payload.emailsToInvite, team_id: payload.teamId });
     },
     addProject(context, payload) {
         return Http.post('api/projects/new', { project: payload.project, projectTeams: payload.projectTeams, projectUsers: payload.projectUsers });
@@ -125,14 +125,12 @@ export default {
     },
     updateTeam(context, payload) {
         return Http.post(`api/teams/${payload.team.id}`, {
-            team          : payload.team,
-            deletedMembers: payload.deletedMembers,
-            addedMembers  : payload.addedMembers,
-            teamUsers     : payload.teamUsers,
+            team     : payload.team,
+            teamUsers: payload.teamUsers,
         })
         .then((response) => {
-            if (payload.emailToInvite !== '') {
-                context.dispatch('inviteMembers', { teamId: response.data.id, emailToInvite: payload.emailToInvite });
+            if (payload.emailsToInvite !== []) {
+                context.dispatch('inviteMembers', { teamId: response.data.id, emailsToInvite: payload.emailsToInvite });
             }
         });
     },

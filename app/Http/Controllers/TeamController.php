@@ -47,13 +47,16 @@ class TeamController extends Controller
     	$team_id = $request['team_id'];
 
     	$invite_team = Team::find($team_id);
-    	Teamwork::inviteToTeam( $request['members'], $team_id, function( $invite )
-        {
-            Mail::send('teamwork.emails.invite', ['team' => $invite->team, 'invite' => $invite], function ($m) use ($invite) {
-                $m->to($invite->email)->subject('Invitation to join team '.$invite->team->name);
+
+    	foreach ($request->members as $memberEmail) {
+
+            Teamwork::inviteToTeam($memberEmail, $team_id, function ($invite) {
+                Mail::send('teamwork.emails.invite', ['team' => $invite->team, 'invite' => $invite], function ($m) use ($invite) {
+                    $m->to($invite->email)->subject('Invitation to join team ' . $invite->team->name);
+                });
+                // Send email to user
             });
-            // Send email to user
-        });
+        }
     }
     public function getOwnTeams(Request $request) {
     	$user = Auth::user();
