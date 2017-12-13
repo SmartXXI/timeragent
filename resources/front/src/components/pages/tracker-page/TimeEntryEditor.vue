@@ -45,7 +45,7 @@
                             
                         </div>
                         <div class="time-editor-input-group flex-container"
-                             v-if="(task) ? $store.state.activeTask !== task.id : false">
+                             v-if="(task) ? $store.state.activeTask !== task.id : true">
                             <el-time-picker
                                     :class="{ 'has-error': $v.localTask.endTime.$error }"
                                     placeholder="End time"
@@ -65,7 +65,7 @@
                             </i>
                         </div>
                         <div class="time-editor-input-group flex-container"
-                             v-if="(task) ? $store.state.activeTask !== task.id : false">
+                             v-if="(task) ? $store.state.activeTask !== task.id : true">
                             <el-input
                                     :class="{ 'has-error': $v.localTask.spendTime.$error }"
                                     placeholder="Spend time (1 h 0 min)"
@@ -167,7 +167,7 @@
             },
         },
         validations() {
-            const taskId = (this.task) ? this.task.id : null;
+            const taskId = (this.task) ? this.task.id : 0;
             if (this.$store.state.activeTask === taskId) {
                 return {
                     localTask: {
