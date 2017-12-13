@@ -1,4 +1,7 @@
 export default {
+    activeTask(state) {
+        return state.activeTask;
+    },
     user(state) {
         return state.user;
     },

@@ -24,6 +24,8 @@ Route::middleware('auth:api')->post('/update-task/{task}', 'TaskController@updat
 
 Route::middleware('auth:api')->post('/create-task', 'TaskController@createTask');
 
+Route::middleware('auth:api')->post('/continue-task', 'TaskController@continueTask');
+
 Route::middleware('auth:api')->post('/stop-task/{task}', 'TaskController@stopTask');
 
 Route::middleware('auth:api')->post('/delete-task/{task}', 'TaskController@deleteTask');

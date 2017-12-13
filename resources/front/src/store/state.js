@@ -7,6 +7,7 @@ export default {
     spendTime    : null,
     total        : null,
     activeTask   : null,
+    oldActiveTask: null,
     date         : moment().format('YYYY-MM-DD'),
     user         : {},
     tasks        : [],

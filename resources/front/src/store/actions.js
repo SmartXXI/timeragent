@@ -8,7 +8,9 @@ export default {
             context.commit(types.GET_TASKS, { data: response.data, date: obj.date });
             if (response.data.length > 0
                 && response.data[response.data.length - 1].active === 1) {
-                context.dispatch('startTimer');
+                if (context.state.timerID === 0) {
+                    context.dispatch('startTimer');
+                }
             }
         });
     },
@@ -20,28 +22,29 @@ export default {
     },
     stopTask(context, obj) {
         if (moment().diff(moment(obj.task.startTime, 'HH:mm:ss'), 'seconds') < 60) {
-            context.dispatch('deleteTask', { task_id: obj.task_id, index: obj.index });
+            context.dispatch('deleteTask', { task_id: obj.task_id });
         } else {
             const endTime = moment().format('HH:mm:ss');
             Http.post(`api/stop-task/${obj.task_id}`, { endTime })
                 .then(response => context.commit(types.STOP_TASK, {
-                    task : response.data,
-                    index: obj.index,
+                    task: response.data,
                 }));
             // context.commit(types.STOP_TASK);
         }
     },
-    createTask(context) {
-        if (context.state.activeTask !== null) {
-            const oldActiveTask = context.state.tasks[context.state.activeTask];
+    createTask(context, payload) {
+        if (payload.task.id === context.state.oldActiveTask) {
+            const oldActiveTask = context.state.tasks.find((task) => {
+                return task.id === context.state.oldActiveTask;
+            });
 
-            if (moment().diff(moment(oldActiveTask.endTime, 'HH:mm:ss'), 'seconds') > 60 || oldActiveTask.description !== null) {
+            if (moment().diff(moment(oldActiveTask.endTime, 'HH:mm:ss'), 'seconds') > 60) {
                 const startTime = moment().format('HH:mm:ss');
                 const task = {
                     description: '',
                     checked    : false,
                     active     : true,
-                    project_id : null,
+                    project_id : oldActiveTask.project_id,
                     startTime,
                     spendTime  : null,
                     endTime    : null,
@@ -49,15 +52,16 @@ export default {
                 Http.post('api/create-task', { task })
                     .then(response => context.commit(types.CREATE_TASK, response.data));
             } else {
-                context.commit(types.CONTINUE_TASK);
+                Http.post('api/continue-task', { task_id: context.state.oldActiveTask })
+                    .then(() => context.commit(types.CONTINUE_TASK, { task_id: context.state.oldActiveTask }));
             }
         } else {
             const startTime = moment().format('HH:mm:ss');
             const task = {
-                description: '',
+                description: payload.task.description,
                 checked    : false,
                 active     : true,
-                project_id : null,
+                project_id : payload.task.project_id,
                 startTime,
                 spendTime  : null,
                 endTime    : null,
@@ -77,7 +81,7 @@ export default {
     },
     deleteTask(context, task) {
         Http.post(`api/delete-task/${task.task_id}`)
-            .then(() => context.commit(types.DELETE_TASK, { index: task.index }));
+            .then(() => context.commit(types.DELETE_TASK, { id: task.task_id }));
     },
     addTimeEntry(context, task) {
         Http.post('api/create-task', { task })
