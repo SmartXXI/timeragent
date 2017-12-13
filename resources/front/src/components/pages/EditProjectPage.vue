@@ -178,9 +178,19 @@
                                                                 </el-radio-group>
                                                             </template>
                                                     </el-table-column>
+                                                    <el-table-column :width="100">
+                                                        <template slot-scope="scope">
+                                                            <el-button type="plain"
+                                                                       title="Reset"
+                                                                       size="mini"
+                                                                       @click="resetUserRate(scope.$index)">
+                                                                <span class="el-icon-refresh"></span>
+                                                            </el-button>
+                                                        </template>
+                                                    </el-table-column>
                                                 </el-table>
                                                 <span slot="footer">
-                                                    <el-button type="plain" @click="setDefaultUsersRates">Cancel</el-button>
+                                                    <el-button type="plain" @click="resetAllUsersRates">Reset All</el-button>
                                                     <el-button type="success" @click="setUsersRates">Apply</el-button>
                                                 </span>
                                             </el-dialog>
@@ -536,11 +546,6 @@ export default {
             this.usersForChangeRates.oldValue = [];
             this.usersForChangeRates.newValue = [];
         },
-        // Cancel changing rates and apply default rates
-        setDefaultUsersRates() {
-            this.usersForChangeRates.newValue = this.usersForChangeRates.oldValue;
-            this.setUsersRates();
-        },
         // Set teams rates
         setTeamsRates() {
             this.showTeamUsersRates = false;
@@ -552,10 +557,28 @@ export default {
             this.openedTeams = [];
         },
         resetTeamUserRate(teamIndex, userIndex) {
-            this.teamsForChangeRates.newValue[teamIndex].users[userIndex].cost_rate = this.teamsForChangeRates.oldValue[teamIndex].users[userIndex].cost_rate
+            this.teamsForChangeRates
+                .newValue[teamIndex]
+                .users[userIndex]
+                .cost_rate = this.teamsForChangeRates.oldValue[teamIndex].users[userIndex].cost_rate;
+            this.teamsForChangeRates
+                .newValue[teamIndex]
+                .users[userIndex]
+                .cost_currency = this.teamsForChangeRates.oldValue[teamIndex].users[userIndex].cost_currency;
         },
         resetAllTeamsRates() {
             this.teamsForChangeRates.newValue = _.cloneDeep(this.teamsForChangeRates.oldValue);
+        },
+        resetUserRate(userIndex) {
+            this.usersForChangeRates
+                .newValue[userIndex]
+                .cost_rate = this.usersForChangeRates.oldValue[userIndex].cost_rate;
+            this.usersForChangeRates
+                .newValue[userIndex]
+                .cost_currency = this.usersForChangeRates.oldValue[userIndex].cost_currency;
+        },
+        resetAllUsersRates() {
+            this.usersForChangeRates.newValue = _.cloneDeep(this.usersForChangeRates.oldValue);
         },
         getUser(userId) {
             return this.ownUsers.find((user) => {

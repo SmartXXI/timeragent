@@ -33,16 +33,18 @@ class ProjectController extends Controller
     	$project = Project::create($data);
 
     	if ($request->projectTeams) {
-            foreach($request->projectTeams as $team_id) {
-                $project->attachTeam($team_id);
+            foreach($request->projectTeams as $teamData) {
+                $project->attachTeam($teamData['id']);
 
-                $team = Team::find($team_id);
+                $team = Team::find($teamData['id']);
 
-                foreach ($team->users as $user) {
-                    $project->attachUser($user->id, [
-                            'billable_rate' => $user->billable_rate,
-                            'cost_rate' => $user->cost_rate,
-                            'team_id' => $team_id,
+                foreach ($teamData['users'] as $user) {
+                    $project->attachUser($user['id'], [
+                            'billable_rate' => $user['billable_rate'],
+                            'billable_currency' => $user['billable_currency'],
+                            'cost_rate' => $user['cost_rate'],
+                            'cost_currency' => $user['cost_currency'],
+                            'team_id' => $teamData['id'],
                         ]
                     );
                 }
@@ -142,9 +144,9 @@ class ProjectController extends Controller
                 $team_users[$user['id']] = [
                     'team_id' => $teamData['id'],
                     'billable_rate' => $user['billable_rate'],
-//                    'billable_currency' => $user['billable_currency'],
+                    'billable_currency' => $user['billable_currency'],
                     'cost_rate' => $user['cost_rate'],
-//                    'cost_currency' => $user['cost_currency'],
+                    'cost_currency' => $user['cost_currency'],
                 ];
             }
 
