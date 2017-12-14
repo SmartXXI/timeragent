@@ -38,6 +38,16 @@ class TaskController extends Controller
     	return response($task); 		
     }
 
+    public function continueTask(Request $request) {
+        $task = Task::find($request['task_id']);
+
+        $task->active = true;
+        $task->endTime = null;
+
+        $task->save();
+        return response($task);
+    }
+
     public function stopTask(Request $request, Task $task) {
         $task->active = false;
         $task->endTime = $request->endTime;

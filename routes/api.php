@@ -24,6 +24,8 @@ Route::middleware('auth:api')->post('/update-task/{task}', 'TaskController@updat
 
 Route::middleware('auth:api')->post('/create-task', 'TaskController@createTask');
 
+Route::middleware('auth:api')->post('/continue-task', 'TaskController@continueTask');
+
 Route::middleware('auth:api')->post('/stop-task/{task}', 'TaskController@stopTask');
 
 Route::middleware('auth:api')->post('/delete-task/{task}', 'TaskController@deleteTask');
@@ -39,6 +41,7 @@ Route::middleware('auth:api')->post('/teams/{team}', 'TeamController@update');
 Route::middleware('auth:api')->get('/projects', 'ProjectController@getProjects');
 Route::middleware('auth:api')->post('/projects/new', 'ProjectController@createProject');
 Route::middleware('auth:api')->get('/projects/teams', 'TeamController@getOwnTeams');
+Route::middleware('auth:api')->get('/projects/users', 'TeamController@getOwnUsers');
 Route::middleware('auth:api')->get('/projects/{project}', 'ProjectController@edit');
 Route::middleware('auth:api')->post('/projects/{project}', 'ProjectController@update');
 Route::middleware('auth:api')->post('/projects/{project}/delete', 'ProjectController@delete');

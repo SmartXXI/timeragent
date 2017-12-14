@@ -1,4 +1,7 @@
 export default {
+    activeTask(state) {
+        return state.activeTask;
+    },
     user(state) {
         return state.user;
     },
@@ -19,6 +22,9 @@ export default {
     },
     ownTeams(state) {
         return state.ownTeams;
+    },
+    ownUsers(state) {
+        return state.ownUsers;
     },
     existsMembers(state) {
         return state.existsMembers;

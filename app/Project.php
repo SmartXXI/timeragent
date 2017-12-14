@@ -24,19 +24,34 @@ class Project extends Model
     }
 
     public function users() {
-    	return $this->belongsToMany('App\User', 'projects_users', 'project_id', 'user_id')
-    		->withPivot('billable_rate', 'cost_rate')
+    	return $this->belongsToMany('App\User', 'project_user', 'project_id', 'user_id')
+    		->withPivot('billable_rate', 'billable_currency', 'cost_rate', 'cost_currency', 'team_id')
     		->withTimestamps();
     }
+
+    public function usersWithTeam($team_id) {
+        return $this->belongsToMany('App\User', 'project_user', 'project_id', 'user_id')
+            ->wherePivot('team_id', $team_id)
+            ->withPivot('billable_rate', 'cost_rate', 'team_id')
+            ->withTimestamps();
+    }
+
+    public function usersWithoutTeam() {
+        return $this->belongsToMany('App\User', 'project_user', 'project_id', 'user_id')
+            ->wherePivot('team_id', NULL)
+            ->withPivot('billable_rate', 'cost_rate', 'team_id')
+            ->withTimestamps();
+    }
+
     public function attachUser($user_id, $pivot = [])
     {
     	$this->users()->attach($user_id, $pivot);
     	return $this;
     }
 
-    public function detachUser($user_id, $pivot = [])
+    public function detachUser($user_id, $team_id)
     {
-        $this->users()->detach($user_id, $pivot);
+        $this->users()->wherePivot('team_id', $team_id)->detach($user_id);
         return $this;
     }
 

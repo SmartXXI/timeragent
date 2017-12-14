@@ -25,7 +25,7 @@
 				</span>
 				<span title="Continue task">
 					<el-button type="success" plain class="start-button">
-                    	<i class="el-icon-caret-right" v-if="!this.task.active" @click="continueTask"></i>
+                    	<i class="el-icon-caret-right" v-if="!this.task.active" @click="checkForActive"></i>
 					</el-button>
 				</span>
 			</el-col>
@@ -59,6 +59,16 @@
                 <el-button type="primary" @click="deleteTask">Yes</el-button>
             </span>
         </el-dialog>
+        <el-dialog
+                title="Stop current active task"
+                :visible.sync="confirmStopActive"
+                width="30%">
+            <span>Stop previous active task?</span>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="confirmStopActive = false">No</el-button>
+                <el-button type="primary" @click="continueTask(stopActive)">Yes</el-button>
+            </span>
+        </el-dialog>
     </div>
 </template>
 
@@ -70,8 +80,10 @@ export default {
     props: ['task', 'index', 'tasks'],
     data() {
         return {
-            isEditing    : false,
-            dialogVisible: false,
+            isEditing        : false,
+            dialogVisible    : false,
+			confirmStopActive: false,
+			stopActive       : true,
         };
     },
     computed: {
@@ -104,18 +116,33 @@ export default {
         },
         stopTask() {
             this.$store.dispatch('stopTimer');
-            this.$store.dispatch('stopTask', { task_id: this.task.id, index: this.index, task: this.task });
+            this.$store.dispatch('stopTask', { task_id: this.task.id, task: this.task });
         },
-        continueTask() {
+        continueTask(stopTask) {
+            this.confirmStopActive = false;
+            if (stopTask) {
+                const activeTask = this.$store.getters.tasks.find((task) => {
+                    return task.id === this.$store.getters.activeTask;
+                });
+                this.$store.dispatch('stopTimer');
+                this.$store.dispatch('stopTask', { task_id: activeTask.id, task: activeTask });
+            }
             this.$store.dispatch('startTimer');
-            this.$store.dispatch('createTask');
+            this.$store.dispatch('createTask', { task: this.task });
+        },
+        checkForActive() {
+            if (this.$store.getters.activeTask !== null) {
+                this.confirmStopActive = true;
+            } else {
+                this.continueTask(!this.stopActive);
+            }
         },
         deleteTask() {
             this.dialogVisible = false;
-            if (this.task.active === 1 && moment().diff(moment(this.task.startTime, 'HH:mm:ss'), 'seconds') < 60) {
+            if (this.task.active === true && moment().diff(moment(this.task.startTime, 'HH:mm:ss'), 'seconds') < 60) {
                 this.stopTask();
-            } else if (this.task.active === 1) {
-                this.$store.dispatch('stopTimer');
+            } else if (this.task.active === true) {
+                this.stopTask();
                 this.$store.dispatch('deleteTask', { task_id: this.task.id, index: this.index });
             } else {
                 this.$store.dispatch('deleteTask', { task_id: this.task.id, index: this.index });

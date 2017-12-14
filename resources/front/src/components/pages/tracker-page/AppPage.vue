@@ -3,18 +3,27 @@
         <div id="app-page">
             <div class="page-title">
                 <div class="tracker-datepicker">
-                    <el-button-group>
+                    <!--<el-button-group>-->
                         <el-button type="primary" size="small" icon="el-icon-arrow-left" @click="subDay"></el-button>
+                        <el-date-picker
+                                v-model="pickerDate"
+                                type="date"
+                                placeholder="Pick a day"
+                                value-format="yyyy-MM-dd"
+                                @change="getTasksByDate"
+                                :picker-options="pickerOptions">
+                        </el-date-picker>
                         <el-button type="primary" size="small" icon="el-icon-arrow-right" @click="addDay" :disabled="date == today">
                         </el-button>
-                    </el-button-group>
+                    <!--</el-button-group>-->
                     <a class="btn-calendar">{{ (date === today) ? 'Today' : (date === yesterday ) ? 'Yesterday' : formatedDate }}</a>
                     <div class="text-right" title="Now">{{ spendTime }}</div>
                 </div>
             </div>
             <!--<calendar></calendar>-->
             <!--<div class="col-md-12">-->
-            <el-col :span="24">
+            <el-col :span="24" style="position: relative;">
+                <img class="kenguru" src="../../../assets/images/kenguru.png">
                 <el-card>
                     <div class="panel-heading flex-container-space-between">
                         <div class="panel-title">
@@ -75,6 +84,25 @@
                 isOpened : null,
                 today    : moment().format('YYYY-MM-DD'),
                 yesterday: moment().subtract(1, 'day').format('YYYY-MM-DD'),
+                pickerDate   : moment().format('YYYY-MM-DD'),
+                pickerOptions: {
+                    disabledDate(time) {
+                        return time.getTime() > Date.now();
+                    },
+                    shortcuts: [{
+                        text: 'Today',
+                        onClick(picker) {
+                            picker.$emit('pick', new Date());
+                        }
+                    }, {
+                        text: 'Yesterday',
+                        onClick(picker) {
+                            const date = new Date();
+                            date.setTime(date.getTime() - 3600 * 1000 * 24);
+                            picker.$emit('pick', date);
+                        }
+                    },],
+                },
             };
         },
         computed: {
@@ -117,16 +145,19 @@
         methods: {
             addDay() {
                 const date = moment(this.date, 'YYYY-MM-DD').add(1, 'day').format('YYYY-MM-DD');
-                // console.log(date);
+                this.pickerDate = date;
                 this.$store.dispatch('getTasks', { date });
             },
             subDay() {
                 const date = moment(this.date, 'YYYY-MM-DD').subtract(1, 'day').format('YYYY-MM-DD');
-                // console.log(date);
+                this.pickerDate = date;
                 this.$store.dispatch('getTasks', { date });
             },
             showSubMenu(name) {
                 this.isOpened = (this.isOpened === null) ? name : null;
+            },
+            getTasksByDate(date) {
+                this.$store.dispatch('getTasks', { date });
             },
         },
     };
@@ -228,4 +259,21 @@
         margin-right: 15px;
     }
 
+</style>
+
+<style>
+    .kenguru {
+        width: 100px;
+        position: absolute;
+        left: -77px;
+    }
+
+    .el-date-editor {
+        width: 135px;
+    }
+
+    .el-date-editor.el-input,
+    .el-date-editor.el-input__inner {
+        width: 140px;
+    }
 </style>

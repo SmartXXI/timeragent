@@ -47,8 +47,8 @@ export default new Router({
         },
         {
             path     : '/projects/new',
-            name     : 'NewProject',
-            component: NewProject,
+            name     : 'newProject',
+            component: EditProject,
         },
         {
             path     : '/members',
@@ -62,8 +62,8 @@ export default new Router({
         },
         {
             path     : '/teams/new',
-            name     : 'NewTeam',
-            component: NewTeam,
+            name     : 'newTeam',
+            component: EditTeam,
         },
         {
             path     : '/teams/:teamId',

@@ -14,6 +14,13 @@ const notification = {
                 type   : 'error',
             });
         },
+        showWarning(messageText = 'Warning') {
+            this.$notify({
+                title  : 'Warning',
+                message: messageText,
+                type   : 'warning',
+            });
+        },
     },
 };
 

@@ -44,7 +44,8 @@
                             </i>
                             
                         </div>
-                        <div class="time-editor-input-group flex-container">
+                        <div class="time-editor-input-group flex-container"
+                             v-if="(task) ? $store.state.activeTask !== task.id : true">
                             <el-time-picker
                                     :class="{ 'has-error': $v.localTask.endTime.$error }"
                                     placeholder="End time"
@@ -53,6 +54,7 @@
                                     value-format="HH:mm"
                                     format="HH:mm"
                                     @blur="clearEndTime"
+                                    :disabled="(task) ? $store.state.activeTask === task.id : false"
                             ></el-time-picker>
                             <!-- errors block -->
                             <i class="fa fa-exclamation-circle error-icon" v-if="$v.localTask.endTime.$error">
@@ -62,7 +64,8 @@
                                 </div>
                             </i>
                         </div>
-                        <div class="time-editor-input-group flex-container">
+                        <div class="time-editor-input-group flex-container"
+                             v-if="(task) ? $store.state.activeTask !== task.id : true">
                             <el-input
                                     :class="{ 'has-error': $v.localTask.spendTime.$error }"
                                     placeholder="Spend time (1 h 0 min)"
@@ -119,20 +122,6 @@
                 projects: {},
             };
         },
-        watch: {
-            'localTask.startTime'(val, oldVal) {
-                if (val.length === 1 && val > 2 && oldVal.substr(-1) !== ':') {
-                    this.localTask.startTime = `${this.localTask.startTime}:`;
-                } else if (val.length === 2 && val.substr(-1) !== ':' && oldVal.substr(-1) !== ':') {
-                    this.localTask.startTime = `${this.localTask.startTime}:`;
-                }
-            },
-            'localTask.endTime'(val, oldVal) {
-                if (val.length === 2 && oldVal.substr(-1) !== ':') {
-                    this.localTask.endTime = `${this.localTask.endTime}:`;
-                }
-            },
-        },
         computed: {
             spendTime() {
                 if (this.localTask.startTime !== '' && this.localTask.endTime !== '') {
@@ -177,28 +166,44 @@
                 this.$emit('add-time-entry', this.localTask);
             },
         },
-        validations: {
-            localTask: {
-                startTime: {
-                    required,
-                    validTime(value) {
-                        return moment(value, 'HH:mm:ss').isBefore(moment()) && value !== '';
+        validations() {
+            const taskId = (this.task) ? this.task.id : 0;
+            if (this.$store.state.activeTask === taskId) {
+                return {
+                    localTask: {
+                        startTime: {
+                            required,
+                            validTime(value) {
+                                return moment(value, 'HH:mm:ss').isBefore(moment()) && value !== '';
+                            },
+                        },
                     },
-                },
-                endTime: {
-                    required,
-                    validTime(value) {
-                        let isAfter = true;
-                        if (this.localTask.startTime !== '') {
-                            isAfter = moment(value, 'HH:mm:ss').isAfter(moment(this.localTask.startTime, 'HH:mm:ss'));
-                        }
-                        return moment(value, 'HH:mm:ss').isBefore(moment()) && value !== '' && isAfter;
+                };
+            } else {
+                return {
+                    localTask: {
+                        startTime: {
+                            required,
+                            validTime(value) {
+                                return moment(value, 'HH:mm:ss').isBefore(moment()) && value !== '';
+                            },
+                        },
+                        endTime: {
+                            required,
+                            validTime(value) {
+                                let isAfter = true;
+                                if (this.localTask.startTime !== '') {
+                                    isAfter = moment(value, 'HH:mm:ss').isAfter(moment(this.localTask.startTime, 'HH:mm:ss'));
+                                }
+                                return moment(value, 'HH:mm:ss').isBefore(moment()) && value !== '' && isAfter;
+                            },
+                        },
+                        spendTime: {
+                            required,
+                        },
                     },
-                },
-                spendTime: {
-                    required,
-                },
-            },
+                };
+            }
         },
     };
 </script>

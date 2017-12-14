@@ -10,12 +10,20 @@
                                    @click.prevent="$router.go(-1)"
                         > Cancel </el-button>
                         <el-button type="success"
+                                   v-if="isEditing"
                                    title="Click to save"
                                     @click.prevent="updateTeam"
                                    :disabled="formInvalid"
                         > Save </el-button>
+                        <el-button type="success"
+                                   v-if="isCreating"
+                                   title="Click to create"
+                                    @click.prevent="addTeam"
+                                   :disabled="formInvalid"
+                        > Save </el-button>
                     </div>
-                    <span class="page-title"> Edit Team </span>
+                    <span v-if="isCreating" class="page-title"> New Team </span>
+                    <span v-if="isEditing" class="page-title"> Edit Team </span>
                     <el-col :span="24">
                         <el-card>
                             <el-row>
@@ -36,70 +44,64 @@
 
                                 <el-tabs v-model="activeTabName">
                                     <el-tab-pane label="Members" name="members">
-                                        <div>
-                                            <el-button type="primary"
-                                                       plain
-                                                       @click="showModal = true"
-                                            >Add members to team</el-button>
-                                        </div>
-                                        <div>
-                                            <el-table :data="team.users"
-                                                      :default-sort = "{prop: 'name'}">
-                                                <el-table-column prop="name"></el-table-column>
-                                                <el-table-column
-                                                        width="80">
-                                                    <template slot-scope="scope">
-                                                        <div>
-                                                            <el-button type="plain" size="mini" icon="el-icon-delete" @click="deleteMember(scope.$index, scope.row.id)"></el-button>
-                                                        </div>
-                                                    </template>
-                                                </el-table-column>
-                                            </el-table>
-                                        </div>
+
+                                        <el-row>
+                                            <el-col :span="17" :offset="4">
+                                                <!--<el-input :class="{ 'has-error': $v.members.$error }"-->
+                                                          <!--placeholder="Enter user email..."-->
+                                                          <!--v-model="members"-->
+                                                          <!--@input="$v.members.$touch()"-->
+                                                <!--&gt;</el-input>-->
+                                                <!--<i class="fa fa-exclamation-circle error-icon" v-if="$v.members.$error">-->
+                                                    <!--<div class="errors">-->
+                                                        <!--<span class="error-message" v-if="!$v.members.email">Invalid email</span>-->
+                                                    <!--</div>-->
+                                                <!--</i>-->
+                                                <el-select v-model="members"
+                                                           multiple
+                                                           filterable
+                                                           allow-create
+                                                           placeholder="Type members emails here"
+                                                           class="members-emails"
+                                                >
+                                                </el-select>
+                                            </el-col>
+                                        </el-row>
+                                        <el-row class="transfer">
+                                            <el-col :offset="4">
+                                                <el-transfer v-model="teamUsers"
+                                                             :data="membersData"
+                                                             :titles="['Exists Members', 'To Add']"
+                                                >
+                                                </el-transfer>
+                                            </el-col>
+                                        </el-row>
+
                                     </el-tab-pane>
                                 </el-tabs>
-                                <div><el-button type="text" class="delete_button" @click="showConfirmModal = true">Delete team</el-button></div>
+                                <div>
+                                    <el-button type="text"
+                                                class="delete_button"
+                                                v-if="isEditing"
+                                                @click="showConfirmModal = true"
+                                    >Delete team</el-button>
+                                </div>
                                 <!-- Confirm delete team modal form -->
 
                                 <el-dialog
                                         title="Delete team"
+                                        v-if="isEditing"
                                         :visible.sync="showConfirmModal"
                                         width="30%">
                                     <p>It will not be undone. Please enter team name to continue: <br>({{ team.name }})</p>
                                     <el-input v-model="teamName"
                                               placeholder="Enter team name"></el-input>
                                     <span slot="footer" class="dialog-footer">
-                                    <el-button @click.prevent="showConfirmModal = false">Cancel</el-button>
-                                    <el-button :disabled="!confirmDeleteTeam" type="danger" @click.prevent="deleteTeam">Delete</el-button>
-                                </span>
-                                </el-dialog>
-
-                                <!-- add members -->
-                                <el-dialog title="Add members" :visible.sync="showModal">
-                                    <el-row>
-                                        <el-col :span="15" :offset="4">
-                                            <el-input :class="{ 'has-error': $v.members.$error }"
-                                                      placeholder="Enter user email..."
-                                                      v-model="members"
-                                                      @input="$v.members.$touch()"
-                                            ></el-input>
-                                            <i class="fa fa-exclamation-circle error-icon" v-if="$v.members.$error">
-                                                <div class="errors">
-                                                    <span class="error-message" v-if="!$v.members.email">Invalid email</span>
-                                                </div>
-                                            </i>
-                                        </el-col>
-                                    </el-row>
-                                    <el-row class="transfer">
-                                        <el-col :span="16" :offset="4">
-                                            <el-transfer v-model="addedMembers"
-                                                         :data="membersData"
-                                                         :titles="['Exists Members', 'To Add']"></el-transfer>
-                                        </el-col>
-                                    </el-row>
-                                    <span slot="footer">
-                                        <el-button @click="showModal = false">Close</el-button>
-                                        <el-button type="success" @click="addMembers">Add</el-button>
+                                        <el-button @click.prevent="showConfirmModal = false">Cancel</el-button>
+                                        <el-button :disabled="!confirmDeleteTeam"
+                                                   type="danger"
+                                                   @click.prevent="deleteTeam"
+                                        >Delete</el-button>
                                     </span>
                                 </el-dialog>
                             </el-col>
@@ -124,17 +126,25 @@
         mixins: [notification],
         data() {
             return {
+                isCreating      : false,
+                isEditing       : false,
                 showModal       : false,
                 showConfirmModal: false,
-                members         : '',
-                addedMembers    : [],
-                deletedMembers  : [],
+                members         : [],
+                teamUsers       : [],
                 activeTabName   : 'members',
                 teamName        : '',
+                teamsGenerated  : false,
             };
         },
         created() {
-            this.$store.dispatch('getOneTeam', { teamId: this.teamId });
+            if (this.$route.name === 'editTeam') {
+                this.$store.dispatch('getOneTeam', { teamId: this.teamId });
+                this.isEditing = true;
+            }
+            if (this.$route.name === 'newTeam') {
+                this.isCreating = true;
+            }
             this.$store.dispatch('getExistsMembers');
         },
         computed: {
@@ -157,20 +167,49 @@
                         label: member.name,
                     });
                 });
+                if (!this.teamsGenerated && this.team.users) {
+                    this.team.users.map((user) => {
+                        this.teamUsers.push(user.id);
+                        return user;
+                    });
+                    this.teamsGenerated = true;
+                }
                 return data;
             },
         },
+        destroyed() {
+            this.$store.dispatch('clearTeam');
+        },
         methods: {
+            addTeam() {
+                if (this.$v.$invalid) return;
+                this.$store.dispatch('addTeam', {
+                    team          : this.team,
+                    teamUsers     : this.teamUsers,
+                    emailsToInvite: this.members,
+                })
+                    .then(() => {
+                        this.showSuccess('Team saved successful');
+                        this.$router.push('/teams');
+                    })
+                    .catch(() => {
+                        this.showError();
+                    });
+            },
             updateTeam() {
                 if (this.$v.$invalid) return;
-                this.$store.dispatch('updateTeam', { team: this.team, deletedMembers: this.deletedMembers, addedMembers: this.addedMembers, emailToInvite: this.members })
-                .then(() => {
-                    this.showSuccess('Team saved successful');
-                    this.$router.push('/teams');
+                this.$store.dispatch('updateTeam', {
+                    team          : this.team,
+                    teamUsers     : this.teamUsers,
+                    emailsToInvite: this.members,
                 })
-                .catch(() => {
-                    this.showError();
-                });
+                    .then(() => {
+                        this.showSuccess('Team saved successful');
+                        this.$router.push('/teams');
+                    })
+                    .catch(() => {
+                        this.showError();
+                    });
             },
             deleteTeam() {
                 if (!this.confirmDeleteTeam) return;
@@ -184,22 +223,6 @@
                     this.showError();
                 });
             },
-            deleteMember(index, userId) {
-                this.deletedMembers.push(userId);
-                this.team.users.splice(index, 1);
-            },
-            addMembers() {
-                this.addedMembers.map((memberId) => {
-                    const memberIndex = this.existsMembers.findIndex(obj => obj.id === memberId);
-                    const index = this.team.users.findIndex(obj => obj.id === memberId);
-                    if (index === -1) {
-                        const member = this.existsMembers[memberIndex];
-                        this.team.users.push(member);
-                    }
-                    return memberId;
-                });
-                this.showModal = false;
-            },
         },
         components: {
             NavMenuAuth,
@@ -210,9 +233,9 @@
                     required,
                 },
             },
-            members: {
-                email,
-            },
+//            members: {
+//                email,
+//            },
         },
     };
 </script>
@@ -410,5 +433,11 @@
     }
     .fa-times {
         cursor: pointer;
+    }
+</style>
+
+<style>
+    .members-emails {
+        width: 100%;
     }
 </style>
