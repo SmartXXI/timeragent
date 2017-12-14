@@ -141,8 +141,8 @@ export default {
             this.dialogVisible = false;
             if (this.task.active === true && moment().diff(moment(this.task.startTime, 'HH:mm:ss'), 'seconds') < 60) {
                 this.stopTask();
-            } else if (this.task.active === 1) {
-                this.$store.dispatch('stopTimer');
+            } else if (this.task.active === true) {
+                this.stopTask();
                 this.$store.dispatch('deleteTask', { task_id: this.task.id, index: this.index });
             } else {
                 this.$store.dispatch('deleteTask', { task_id: this.task.id, index: this.index });
