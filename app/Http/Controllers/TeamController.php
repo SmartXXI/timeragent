@@ -58,13 +58,13 @@ class TeamController extends Controller
             });
         }
     }
-    public function getOwnTeams(Request $request) {
-    	$user = Auth::user();
-    	$teams = $user->teams->where('owner_id', '=', $user->id);
-        $teams->map(function(Team $team) {
-            $team->users = $team->users;
-        });
-    	return $teams;
+    public function getOwnTeams()
+    {
+        return Team::iManage()
+            ->with('users')
+            ->get()
+            ->values()
+            ->toArray();
     }
     public function getOwnUsers() {
         $user = Auth::user();
