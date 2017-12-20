@@ -94,6 +94,8 @@
                 task    : {
                     id         : 'id',
                     description: '',
+                    project_id : null,
+                    task_id    : null,
                 },
             };
         },

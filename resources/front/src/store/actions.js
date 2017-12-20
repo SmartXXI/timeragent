@@ -33,42 +33,35 @@ export default {
         }
     },
     createTask(context, payload) {
+        const startTime = moment().format('HH:mm:ss');
+        const task = {
+            description: payload.task.description,
+            task_id    : payload.task.task_id,
+            checked    : false,
+            active     : true,
+            project_id : payload.task.project_id,
+            startTime,
+            spendTime  : null,
+            endTime    : null,
+        };
         if (payload.task.id === context.state.oldActiveTask) {
             const oldActiveTask = context.state.tasks.find((task) => {
                 return task.id === context.state.oldActiveTask;
             });
 
             if (moment().diff(moment(oldActiveTask.endTime, 'HH:mm:ss'), 'seconds') > 60) {
-                const startTime = moment().format('HH:mm:ss');
-                const task = {
-                    description: '',
-                    checked    : false,
-                    active     : true,
-                    project_id : oldActiveTask.project_id,
-                    startTime,
-                    spendTime  : null,
-                    endTime    : null,
-                };
-                Http.post('api/create-task', { task })
+                Http.post('api/create-duration', { task })
                     .then(response => context.commit(types.CREATE_TASK, response.data));
             } else {
-                Http.post('api/continue-task', { task_id: context.state.oldActiveTask })
+                Http.post(`api/continue-task/${context.state.oldActiveTask}`)
                     .then(() => context.commit(types.CONTINUE_TASK, { task_id: context.state.oldActiveTask }));
             }
+        } else if (payload.task.task_id) {
+            Http.post('api/create-duration', { task })
+                .then(response => context.commit(types.CREATE_TASK, response.data));
         } else {
-            const startTime = moment().format('HH:mm:ss');
-            const task = {
-                description: payload.task.description,
-                checked    : false,
-                active     : true,
-                project_id : payload.task.project_id,
-                startTime,
-                spendTime  : null,
-                endTime    : null,
-            };
             Http.post('api/create-task', { task })
                 .then(response => context.commit(types.CREATE_TASK, response.data));
-            // context.commit(types.CREATE_TASK);
         }
     },
     updateTask(context, obj) {
@@ -78,6 +71,7 @@ export default {
                 task : response.data,
                 index: obj.index,
             }));
+        context.dispatch('getTasks', { date: context.state.date });
     },
     deleteTask(context, task) {
         Http.post(`api/delete-task/${task.task_id}`)
