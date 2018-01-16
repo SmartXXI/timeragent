@@ -11,14 +11,15 @@ class Task extends Model
         'active',
         'user_id',
         'project_id',
+        'created_at',
     ];
 
     public function project() {
     	return $this->belongsTo('App\Project');
     }
 
-    public function duration() {
-        return $this->hasMany('App\TasksDuration');
+    public function timeEntries() {
+        return $this->hasMany('App\TimeEntry');
     }
 
 }

@@ -92,7 +92,7 @@
             return {
                 isOpened: null,
                 task    : {
-                    id         : 'id',
+                    id         : 0,
                     description: '',
                     project_id : null,
                     task_id    : null,
@@ -125,11 +125,14 @@
             stopTimer() {
                 this.getTodayTasks();
                 const taskId = this.$store.state.activeTask;
-                const activeTask = this.$store.getters.tasks.find((task) => {
-                    return task.id === taskId;
+                let activeTask = {};
+                this.$store.getters.tasks.map((task) => { // find active task in all tasks
+                    activeTask = task.time_entries.find((timeEntry) => {
+                        return timeEntry.id === taskId;
+                    });
                 });
                 this.$store.dispatch('stopTimer');
-                this.$store.dispatch('stopTask', { task_id: activeTask.id, task: activeTask });
+                this.$store.dispatch('stopTask', { task: activeTask });
             },
             getTodayTasks() {
                 if (this.$store.state.date !== this.date) {

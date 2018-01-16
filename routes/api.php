@@ -20,17 +20,20 @@ Route::middleware('auth:api')->post('/user', 'UserController@update');
 
 Route::middleware('auth:api')->get('/tasks', 'TaskController@getTasks');
 
-Route::middleware('auth:api')->post('/update-task/{duration}', 'TaskController@updateTask');
+Route::middleware('auth:api')->post('/update-task/{task}', 'TaskController@updateTask');
 
 Route::middleware('auth:api')->post('/create-task', 'TaskController@createTask');
 
-Route::middleware('auth:api')->post('/create-duration', 'TaskController@createDuration');
 
-Route::middleware('auth:api')->post('/continue-task/{duration}', 'TaskController@continueTask');
+Route::middleware('auth:api')->post('/continue-task/{timeEntry}', 'TimeEntryController@continueTask');
 
-Route::middleware('auth:api')->post('/stop-task/{duration}', 'TaskController@stopTask');
+Route::middleware('auth:api')->post('/stop-task/{timeEntry}', 'TimeEntryController@stopTask');
 
-Route::middleware('auth:api')->post('/delete-task/{duration}', 'TaskController@deleteTask');
+Route::middleware('auth:api')->post('/delete-task/{task}', 'TaskController@deleteTask');
+
+Route::middleware('auth:api')->post('/create-time-entry', 'TimeEntryController@createTimeEntry');
+Route::middleware('auth:api')->post('/update-time-entry/{timeEntry}', 'TimeEntryController@updateTimeEntry');
+Route::middleware('auth:api')->post('/delete-time-entry/{timeEntry}', 'TimeEntryController@deleteTimeEntry');
 
 Route::middleware('auth:api')->get('/teams', 'TeamController@getTeams');
 Route::middleware('auth:api')->post('/teams/new', 'TeamController@create');

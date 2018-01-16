@@ -2,90 +2,119 @@
     <div>
     <div class="timer-timeentry-editor">
         <el-form>
-            <el-row>
-                <el-col :span="16">
-                    <div class="flex-container">
-                        <el-col :span="22">
-                            <el-form-item>
-                                <el-input placeholder="Enter description"
-                                          v-model="localTask.description"
-                                          prefix-icon="el-icon-edit-outline"
-                                          autofocus></el-input>
-                            </el-form-item>
-                        </el-col>
-                    </div>
-                </el-col>
-                <el-col :span="8">
-                    <el-select v-model="localTask.project_id" :disabled="projects.length > 0 ? false : true">
-                        <el-option value="" label="No project"></el-option>
-                        <el-option v-for="(project, index) in projects" :label="project.name" :value="project.id" :key="project.id"></el-option>
-                    </el-select>
-                </el-col>
-            </el-row>
+            <!--<el-row>-->
+                <!--<el-col :span="16">-->
+                    <!--<div class="flex-container">-->
+                        <!--<el-col :span="22">-->
+                            <!--<el-form-item>-->
+                                <!--<el-input placeholder="Enter description"-->
+                                          <!--v-model="localTask.description"-->
+                                          <!--prefix-icon="el-icon-edit-outline"-->
+                                          <!--autofocus></el-input>-->
+                            <!--</el-form-item>-->
+                        <!--</el-col>-->
+                    <!--</div>-->
+                <!--</el-col>-->
+                <!--<el-col :span="8">-->
+                    <!--<el-select v-model="localTask.project_id" :disabled="projects.length > 0 ? false : true">-->
+                        <!--<el-option value="" label="No project"></el-option>-->
+                        <!--<el-option v-for="(project, index) in projects" :label="project.name" :value="project.id" :key="project.id"></el-option>-->
+                    <!--</el-select>-->
+                <!--</el-col>-->
+            <!--</el-row>-->
+            <!--<el-row>-->
+                <!--<div v-for="duration in localTask.duration">{{ duration.startTime }} - {{ (duration.endTime) ? duration.endTime : 'now' }}</div>-->
+            <!--</el-row>-->
             <el-row>
                 <el-col class="time-pickers" :span="18">
                     <div class="flex-container-space-between">
                         <div class="time-editor-input-group flex-container">
                             <el-time-picker
-                                    :class="{'has-error': $v.localTask.startTime.$error }"
+                                    :class="{'has-error': $v.localTimeEntry.startTime.$error }"
                                     placeholder="Stop time"
-                                    v-model="localTask.startTime"
-                                    @input="$v.localTask.startTime.$touch()"
-                                    value-format="HH:mm"
+                                    v-model="localTimeEntry.startTime"
+                                    @input="$v.localTimeEntry.startTime.$touch()"
+                                    value-format="yyyy-MM-dd HH:mm:ss"
                                     format="HH:mm"
                                     @blur="clearStartTime"
                             ></el-time-picker>
                              <!-- errors block -->
-                            <i class="fa fa-exclamation-circle error-icon" v-if="$v.localTask.startTime.$error">
+                            <i class="fa fa-exclamation-circle error-icon" v-if="$v.localTimeEntry.startTime.$error">
                                 <div class="errors">
-                                    <span class="error-message" v-if="!$v.localTask.startTime.required">Field is required</span>
-                                    <span class="error-message" v-if="!$v.localTask.startTime.validTime">Invalid time</span>
+                                    <span
+                                            class="error-message"
+                                            v-if="!$v.localTimeEntry.startTime.required"
+                                    >Field is required</span>
+                                    <span
+                                            class="error-message"
+                                            v-if="!$v.localTimeEntry.startTime.validTime"
+                                    >Invalid time</span>
                                 </div>
                             </i>
-                            
+
                         </div>
                         <div class="time-editor-input-group flex-container"
-                             v-if="(task) ? $store.state.activeTask !== task.id : true">
+                             v-if="(timeEntry) ? $store.state.activeTask !== timeEntry.id : true">
                             <el-time-picker
-                                    :class="{ 'has-error': $v.localTask.endTime.$error }"
+                                    :class="{ 'has-error': $v.localTimeEntry.endTime.$error }"
                                     placeholder="End time"
-                                    v-model="localTask.endTime"
-                                    @input="$v.localTask.endTime.$touch()"
-                                    value-format="HH:mm"
+                                    v-model="localTimeEntry.endTime"
+                                    @input="$v.localTimeEntry.endTime.$touch()"
+                                    value-format="yyyy-MM-dd HH:mm:ss"
                                     format="HH:mm"
                                     @blur="clearEndTime"
-                                    :disabled="(task) ? $store.state.activeTask === task.id : false"
+                                    :disabled="(timeEntry) ? $store.state.activeTask === timeEntry.id : false"
                             ></el-time-picker>
                             <!-- errors block -->
-                            <i class="fa fa-exclamation-circle error-icon" v-if="$v.localTask.endTime.$error">
+                            <i class="fa fa-exclamation-circle error-icon" v-if="$v.localTimeEntry.endTime.$error">
                                 <div class="errors">
-                                    <span class="error-message" v-if="!$v.localTask.endTime.required">Field is required</span>
-                                    <span class="error-message" v-if="!$v.localTask.endTime.validTime">Invalid time</span>
+                                    <span class="error-message" v-if="!$v.localTimeEntry.endTime.required">Field is required</span>
+                                    <span class="error-message" v-if="!$v.localTimeEntry.endTime.validTime">Invalid time</span>
                                 </div>
                             </i>
                         </div>
                         <div class="time-editor-input-group flex-container"
-                             v-if="(task) ? $store.state.activeTask !== task.id : true">
+                             v-if="(timeEntry) ? $store.state.activeTask !== timeEntry.id : true">
                             <el-input
-                                    :class="{ 'has-error': $v.localTask.spendTime.$error }"
+                                    :class="{ 'has-error': $v.localTimeEntry.spendTime.$error }"
                                     placeholder="Spend time (1 h 0 min)"
-                                    @input="$v.localTask.spendTime.$touch()"
+                                    @input="$v.localTimeEntry.spendTime.$touch()"
                                     v-model="spendTime"
                             ></el-input>
                             <!-- errors block -->
-                            <i class="fa fa-exclamation-circle error-icon" v-if="$v.localTask.spendTime.$error">
+                            <i class="fa fa-exclamation-circle error-icon" v-if="$v.localTimeEntry.spendTime.$error">
                                 <div class="errors">
-                                    <span class="error-message" v-if="!$v.localTask.spendTime.required">Field is required</span>
+                                    <span class="error-message" v-if="!$v.localTimeEntry.spendTime.required">Field is required</span>
                                 </div>
                             </i>
                         </div>
                     </div>
                 </el-col>
             </el-row>
+            <el-dialog
+                    title="Delete time entry"
+                    :visible.sync="confirmDeleting"
+                    width="30%">
+                <span>It will not be undone. Continue?</span>
+                <span slot="footer" class="dialog-footer">
+                <el-button @click="confirmDeleting = false">No</el-button>
+                <el-button type="primary" @click="deleteTimeEntry">Yes</el-button>
+            </span>
+            </el-dialog>
             <el-row class="actions">
                 <el-col class="action-buttons">
-                    <el-button type="success" size="middle" v-if="editTask" @click.prevent="updateTask" title="Save editing" :disabled="formInvalid"> Save </el-button>
-                    <el-button type="success" size="middle" v-if="addingTimeEntry" @click.prevent="addTimeEntry" title="Add time entry" :disabled="formInvalid"> Save </el-button>
+                    <el-button type="success"
+                               size="middle"
+                               v-if="editingTimeEntry"
+                               @click.prevent="updateTimeEntry"
+                               title="Save editing"
+                    > Save </el-button>
+                    <el-button type="success"
+                               size="middle"
+                               v-if="addingTimeEntry"
+                               @click.prevent="addTimeEntry"
+                               title="Add time entry"
+                    > Save </el-button>
                     <el-button
                             type="plain"
                             size="middle"
@@ -93,6 +122,11 @@
                     >
                         Cancel
                     </el-button>
+                    <el-button type="text"
+                               v-if="editingTimeEntry"
+                               class="delete_button"
+                               @click.prevent="confirmDeleting = true"
+                    >Delete Time Entry</el-button>
                 </el-col>
             </el-row>
         </el-form>
@@ -103,99 +137,100 @@
 <script>
     import moment from 'moment';
     import { required } from 'vuelidate/lib/validators';
-    import Http from '../../../helpers/Http';
 
     export default {
-        props: ['task', 'addingTimeEntry', 'editTask'],
+        props: ['addingTimeEntry', 'editingTimeEntry', 'timeEntry', 'duration', 'editTask', 'taskId'],
         data() {
             return {
-                localTask: {
-                    description: '',
-                    checked    : false,
-                    active     : false,
-                    project_id : '',
-                    startTime  : '',
-                    spendTime  : this.spendTime,
-                    endTime    : '',
+                localTimeEntry: {
+                    active   : 0,
+                    task_id  : this.taskId,
+                    startTime: '',
+                    spendTime: '',
+                    endTime  : '',
                 },
-                oldTask : {},
-                projects: {},
+                oldTimeEntry   : {},
+                projects       : {},
+                confirmDeleting: false,
             };
         },
         computed: {
             spendTime() {
-                if (this.localTask.startTime !== '' && this.localTask.endTime !== '') {
-                    const spendTime = moment.duration(moment(this.localTask.endTime, 'HH:mm')
-                        .diff(moment(this.localTask.startTime, 'HH:mm')));
-                    this.localTask.spendTime = `${spendTime.hours()}  h  ${spendTime.minutes()}  min `;
-                    return this.localTask.spendTime;
+                if (this.localTimeEntry.startTime !== '' && this.localTimeEntry.endTime !== '') {
+                    const spendTime = moment.duration(moment(this.localTimeEntry.endTime, 'YYYY-MM-DD HH:mm:ss')
+                        .diff(moment(this.localTimeEntry.startTime, 'YYYY-MM-DD HH:mm:ss')));
+                    this.localTimeEntry.spendTime = `${spendTime.hours()}  h  ${spendTime.minutes()}  min `;
+                    return this.localTimeEntry.spendTime;
                 }
-                this.localTask.spendTime = '';
-                return this.localTask.spendTime;
+                this.localTimeEntry.spendTime = '';
+                return this.localTimeEntry.spendTime;
             },
             formInvalid() {
                 return this.$v.$invalid;
             },
         },
         created() {
-            if (this.task) {
-                this.oldTask = Object.assign({}, this.task);
-                this.localTask = Object.assign({}, this.task);
+            if (this.timeEntry) {
+                this.oldTimeEntry = Object.assign({}, this.timeEntry);
+                this.localTimeEntry = Object.assign({}, this.timeEntry);
             }
-
-            Http.get('api/projects').then((response) => {
-                this.projects = response.data;
-            });
         },
         methods: {
             clearStartTime(comp) {
-                if (comp.userInput === '') this.localTask.startTime = '';
+                if (comp.userInput === '') this.localTimeEntry.startTime = '';
             },
             clearEndTime(comp) {
-                if (comp.userInput === '') this.localTask.endTime = '';
+                if (comp.userInput === '') this.localTimeEntry.endTime = '';
             },
             closeEditor() {
-                this.localTask = Object.assign({}, this.oldTask);
+                this.localTimeEntry = Object.assign({}, this.oldTimeEntry);
                 this.$emit('close-editor');
             },
-            updateTask() {
-                this.$emit('update-task', this.localTask);
+            updateTimeEntry() {
+                this.$emit('update-time-entry', this.localTimeEntry);
             },
             addTimeEntry() {
                 if (this.$v.$invalid) return;
-                this.$emit('add-time-entry', this.localTask);
+                this.$emit('add-time-entry', this.localTimeEntry);
+            },
+            deleteTimeEntry() {
+                this.$emit('delete-time-entry', this.localTimeEntry);
+                this.closeEditor();
             },
         },
         validations() {
             const taskId = (this.task) ? this.task.id : 0;
-            if (this.$store.state.activeTask === taskId) {
+//            if (this.$store.state.activeTask === taskId) {
+//                return {
+//                    localTimeEntry: {
+//                        startTime: {
+//                            required,
+//                            validTime(value) {
+//                                return moment(value, 'HH:mm:ss').isBefore(moment()) && value !== '';
+//                            },
+//                        },
+//                    },
+//                };
+//            } else {
                 return {
-                    localTask: {
+                    localTimeEntry: {
                         startTime: {
                             required,
                             validTime(value) {
-                                return moment(value, 'HH:mm:ss').isBefore(moment()) && value !== '';
-                            },
-                        },
-                    },
-                };
-            } else {
-                return {
-                    localTask: {
-                        startTime: {
-                            required,
-                            validTime(value) {
-                                return moment(value, 'HH:mm:ss').isBefore(moment()) && value !== '';
+                                this.localTimeEntry.startTime = `${this.$store.getters.date} ${moment(this.localTimeEntry.startTime).format('HH:mm:ss')}`;
+                                return moment(value, 'YYYY-MM-DD HH:mm:ss').isBefore(moment()) && value !== '';
                             },
                         },
                         endTime: {
                             required,
                             validTime(value) {
+                                this.localTimeEntry.endTime = `${this.$store.getters.date} ${moment(this.localTimeEntry.endTime).format('HH:mm:ss')}`;
                                 let isAfter = true;
-                                if (this.localTask.startTime !== '') {
-                                    isAfter = moment(value, 'HH:mm:ss').isAfter(moment(this.localTask.startTime, 'HH:mm:ss'));
+                                if (this.localTimeEntry.startTime !== '') {
+                                    isAfter = moment(value, 'YYYY-MM-DD HH:mm:ss')
+                                        .isAfter(moment(this.localTimeEntry.startTime, 'YYYY-MM-DD HH:mm:ss'));
                                 }
-                                return moment(value, 'HH:mm:ss').isBefore(moment()) && value !== '' && isAfter;
+                                return moment(value, 'YYYY-MM-DD HH:mm:ss').isBefore(moment()) && value !== '' && isAfter;
                             },
                         },
                         spendTime: {
@@ -203,7 +238,7 @@
                         },
                     },
                 };
-            }
+//            }
         },
     };
 </script>
@@ -221,6 +256,10 @@
 
     .actions {
         margin-top: 20px;
+    }
+
+    .delete_button {
+        color: #FA5555;
     }
 
     .form-control {

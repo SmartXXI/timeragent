@@ -4,28 +4,31 @@
 			<el-col :span="2">
 				<el-checkbox v-model="tasks[index].checked"></el-checkbox>
 			</el-col>
-			<el-col :span="10">
+			<el-col :span="12">
 				<span v-if="task.description != null " class="description" @dblclick="showEditor">{{ task.description }}</span>
 				<span v-else @dblclick="showEditor"> (no description) </span>
 				<transition name="editor">
-					<el-tag v-if="task.active" type="success" size="medium" class="active-tag" color="#5daf34">Active</el-tag>
+					<el-tag v-if="active" type="success" size="medium" class="active-tag" color="#5daf34">Active</el-tag>
 				</transition>
 			</el-col>
-			<el-col :span="4">
-				<small v-if="task.startTime !== null" class="text-muted"> {{ time(task.startTime) }} - <span v-if="task.endTime == null">now</span> <span v-else >{{ time(task.endTime) }}</span> </small>
-			</el-col>
-			<el-col :span="4">
-				<span v-if="task.startTime !== null"><span >{{ spendTime }}</span></span>
-			</el-col>
+			<!--<el-col :span="4">-->
+				<!--<small v-if="task.startTime !== null" class="text-muted"> {{ time(task.startTime) }} - <span v-if="task.endTime == null">now</span> <span v-else >{{ time(task.endTime) }}</span> </small>-->
+			<!--</el-col>-->
+			<!--<el-col :span="4">-->
+				<!--<span v-if="task.startTime !== null"><span >{{ spendTime }}</span></span>-->
+			<!--</el-col>-->
+            <el-col :span="4">
+                {{ total }}
+            </el-col>
 			<el-col :span="2">
 				<span title="Stop task">
-					<el-button type="danger" plain v-if="this.task.active" @click="stopTask" class="stop-button">
+					<el-button type="danger" plain v-if="active" @click="stopTask" class="stop-button">
 						<i class="el-icon-close"></i>
 					</el-button>
 				</span>
 				<span title="Continue task">
 					<el-button type="success" plain class="start-button">
-                    	<i class="el-icon-caret-right" v-if="!this.task.active" @click="checkForActive"></i>
+                    	<i class="el-icon-caret-right" v-if="!active" @click="checkForActive"></i>
 					</el-button>
 				</span>
 			</el-col>
@@ -46,11 +49,49 @@
                     </el-dropdown>
 				</span>
 			</el-col>
+            <el-col :span="2">
+                <i class="el-icon-arrow-down"
+                   v-if="!showTimeEntries"
+                   @click="showTimeEntries = true"
+                ></i>
+                <i class="el-icon-arrow-up"
+                   v-if="showTimeEntries"
+                   @click="showTimeEntries = false"
+                ></i>
+            </el-col>
 		</el-row>
-			<time-entry-editor v-if="isEditing" @update-task="updateTask" @close-editor="closeEditor" :editTask="true" :task="task"></time-entry-editor>
+		<el-row v-if="showTimeEntries">
+            <el-col :span="20">
+                <div v-for="timeEntry in task.time_entries">
+                    <time-entry :timeEntry="timeEntry"></time-entry>
+                </div>
+            </el-col>
+            <el-col :span="4">
+                <el-button
+                        @click="showTimeEntryCreator"
+                        type="primary"
+                        size="mini"
+                        plain
+                >
+                    Add Time Entry
+                </el-button>
+            </el-col>
+		</el-row>
+			<time-entry-editor v-if="addingTimeEntry"
+							   @add-time-entry="addTimeEntry"
+							   @close-editor="closeEditor"
+							   :taskId="task.id"
+							   :addingTimeEntry="true"
+			></time-entry-editor>
+			<task-editor v-if="isEditing"
+                         @update-task="updateTask"
+                         @close-editor="closeEditor"
+                         :editTask="true"
+                         :task="task"
+            ></task-editor>
         <!--Confirm dialog-->
         <el-dialog
-                title="Delete time entry"
+                title="Delete task"
                 :visible.sync="dialogVisible"
                 width="30%">
             <span>It will not be undone. Continue?</span>
@@ -75,15 +116,19 @@
 <script>
 import moment from 'moment';
 import TimeEntryEditor from './TimeEntryEditor';
+import TaskEditor from './TaskEditor';
+import TimeEntry from './TimeEntry';
 
 export default {
     props: ['task', 'index', 'tasks'],
     data() {
         return {
             isEditing        : false,
+            addingTimeEntry  : false,
             dialogVisible    : false,
-			confirmStopActive: false,
-			stopActive       : true,
+            confirmStopActive: false,
+            stopActive       : true,
+            showTimeEntries  : false,
         };
     },
     computed: {
@@ -99,36 +144,51 @@ export default {
             const minutes = spendTime.minutes();
             return `${(hours > 0 ? `${hours} h ` : '')} ${minutes} min`;
         },
+        total() {
+            let spendTime = '';
+            const total = this.task.time_entries.reduce((prev, cur) => {
+                let endTime = cur.endTime;
+                spendTime = (cur.spendTime) ? cur.spendTime : '';
+                if (!endTime) endTime = moment().format('YYYY-MM-DD HH:mm:ss');
+                return moment.duration(moment(endTime, 'YYYY-MM-DD HH:mm:ss')
+                    .diff(moment(cur.startTime, 'YYYY-MM-DD HH:mm:ss'))).add(prev);
+            }, null);
+            // return moment.utc(total.asMilliseconds()).format('HH [h] mm [min]');
+            const hours = total.hours();
+            const minutes = total.minutes();
+            return (hours > 0 ? hours + ' h ' : '') + minutes + ' min ';
+		},
+        active() {
+            return !!this.task.time_entries.find((timeEntry) => {
+                return timeEntry.active === 1;
+            });
+        },
+        date() {
+            return moment().format('YYYY-MM-DD');
+        },
     },
     methods: {
         showEditor() {
             this.isEditing = true;
         },
+        showTimeEntryCreator() {
+            this.addingTimeEntry = true;
+        },
         closeEditor() {
             this.isEditing = false;
+            this.addingTimeEntry = false;
         },
         updateTask(task) {
             const lTask = task;
-            lTask.spendTime = moment(lTask.spendTime, 'HH [h] mm [min]').format('HH:mm:ss');
+            lTask.spendTime = moment(lTask.spendTime, 'h [h] mm [min]').format('HH:mm:ss');
             this.$store.dispatch('updateTask', { task: lTask, index: this.index });
             // this.task = Object.assign({}, task);
             this.isEditing = false;
         },
         stopTask() {
+            const activeTimeEntry = this.getActiveTimeEntry();
             this.$store.dispatch('stopTimer');
-            this.$store.dispatch('stopTask', { task_id: this.task.id, task: this.task });
-        },
-        continueTask(stopTask) {
-            this.confirmStopActive = false;
-            if (stopTask) {
-                const activeTask = this.$store.getters.tasks.find((task) => {
-                    return task.id === this.$store.getters.activeTask;
-                });
-                this.$store.dispatch('stopTimer');
-                this.$store.dispatch('stopTask', { task_id: activeTask.id, task: activeTask });
-            }
-            this.$store.dispatch('startTimer');
-            this.$store.dispatch('createTask', { task: this.task });
+            this.$store.dispatch('stopTask', { task: activeTimeEntry });
         },
         checkForActive() {
             if (this.$store.getters.activeTask !== null) {
@@ -137,15 +197,59 @@ export default {
                 this.continueTask(!this.stopActive);
             }
         },
+        continueTask(stopTask) {
+            if (this.$store.state.date !== this.date) {
+                this.getTodayTasks()
+                    .then(() => {
+                        this.confirmStopActive = false;
+                        if (stopTask) {
+                            const activeTimeEntry = this.getActiveTimeEntry();
+                            this.$store.dispatch('stopTimer');
+                            this.$store.dispatch('stopTask', { task: activeTimeEntry });
+                        }
+                        this.$store.dispatch('createTask', { task: this.task });
+                        this.$store.dispatch('startTimer');
+                    });
+            } else {
+                this.confirmStopActive = false;
+                if (stopTask) {
+                    const activeTimeEntry = this.getActiveTimeEntry();
+                    this.$store.dispatch('stopTimer');
+                    this.$store.dispatch('stopTask', { task: activeTimeEntry });
+                }
+                this.$store.dispatch('createTask', { task: this.task });
+                this.$store.dispatch('startTimer');
+            }
+        },
+        getActiveTimeEntry() {
+            let activeTimeEntry = {};
+            this.$store.getters.tasks.map((task) => { // find active task in all tasks
+                activeTimeEntry = task.time_entries.find((timeEntry) => {
+                    return timeEntry.id === this.$store.getters.activeTask;
+                });
+            });
+            return activeTimeEntry;
+        },
+        addTimeEntry(timeEntry) {
+            this.$store.dispatch('addTimeEntry', timeEntry);
+            this.closeEditor();
+        },
+        getTodayTasks() {
+            return new Promise((resolve, reject) => {
+                if (this.$store.state.date !== this.date) {
+                    this.$store.dispatch('getTasks', { date: this.date }).then(() => resolve());
+                }
+            });
+        },
         deleteTask() {
             this.dialogVisible = false;
             if (this.task.active === true && moment().diff(moment(this.task.startTime, 'HH:mm:ss'), 'seconds') < 60) {
                 this.stopTask();
             } else if (this.task.active === true) {
                 this.stopTask();
-                this.$store.dispatch('deleteTask', { task_id: this.task.id, index: this.index });
+                this.$store.dispatch('deleteTask', { task: this.task, index: this.index });
             } else {
-                this.$store.dispatch('deleteTask', { task_id: this.task.id, index: this.index });
+                this.$store.dispatch('deleteTask', { task: this.task, index: this.index });
             }
         },
         currentTime() {
@@ -156,7 +260,7 @@ export default {
         },
     },
     components: {
-        TimeEntryEditor,
+        TimeEntryEditor, TaskEditor, TimeEntry,
     },
 };
 </script>

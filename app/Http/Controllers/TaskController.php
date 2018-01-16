@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\TasksDuration;
+use App\TimeEntry;
 use Illuminate\Http\Request;
 use \App\Task;
 use Illuminate\Support\Facades\Auth;
@@ -17,20 +17,33 @@ class TaskController extends Controller
 
         $user_id = Auth::user()->id;
 
-        return TasksDuration::whereDate('created_at', $request->date)
-            ->whereHas('task', function($sql) {
-                $sql->where('user_id', Auth::id());
+
+        return Task::where('user_id', Auth::id())
+            ->whereHas('timeEntries', function($sql) use($request) {
+                $sql->whereDate('startTime', $request->date);
             })
+            ->with(['timeEntries' => function($query) use($request) {
+                $query->whereDate('startTime', $request->date)->orderBy('startTime');
+            }])
             ->get()
-            ->map(function (TasksDuration $duration) {
-                return array_merge(
-                    $duration->toArray(),
-                    [
-                        'description' => $duration->task->description,
-                        'project_id'  => $duration->task->project_id,
-                    ]
-                );
-            });
+            ->sortBy(function (Task $task) {
+                return $task
+                    ->timeEntries
+                    ->sortBy('startTime')
+                    ->last()
+                    ->startTime;
+            })
+            ->values()
+            ->toArray();
+//            ->map(function (TasksDuration $duration) {
+//                return array_merge(
+//                    $duration->toArray(),
+//                    [
+//                        'description' => $duration->task->description,
+//                        'project_id'  => $duration->task->project_id,
+//                    ]
+//                );
+//            });
 
     }
 
@@ -43,7 +56,7 @@ class TaskController extends Controller
         ];
         $created_task = Task::create($task_data);
 
-        $task_duration = [
+        $time_entry = [
             'active' => $task['active'],
             'task_id' => $created_task->id,
             'startTime' => $task['startTime'],
@@ -51,43 +64,22 @@ class TaskController extends Controller
             'endTime' => $task['endTime'],
         ];
 
-        $task_duration = TasksDuration::create($task_duration);
+        $time_entry = TimeEntry::create($time_entry);
 
 
-        return response(array_merge(
-            $task_duration->toArray(),
-            [
-                'description' => $task['description'],
-                'project_id'  => $task['project_id'],
-            ]
-        ));
+//        return response(array_merge(
+//            $task_duration->toArray(),
+//            [
+//                'description' => $task['description'],
+//                'project_id'  => $task['project_id'],
+//            ]
+//        ));
+        return response($created_task->load('timeEntries'));
     }
 
-    public function createDuration(Request $request) {
-        $task = $request->task;
-        $task_duration = [
-            'active' => $task['active'],
-            'task_id' => $task['task_id'],
-            'startTime' => $task['startTime'],
-            'spendTime' => $task['spendTime'],
-            'endTime' => $task['endTime'],
-        ];
-
-        $task_duration = TasksDuration::create($task_duration);
-
-        return response(array_merge(
-            $task_duration->toArray(),
-            [
-                'description' => $task['description'],
-                'project_id'  => $task['project_id'],
-            ]
-        ));
-    }
-
-    public function updateTask(Request $request, TasksDuration $duration) {
+    public function updateTask(Request $request, Task $task) {
 
         $task_data = [];
-        $task = Task::find($duration->task_id);
     	$task_data['description'] = $request->task['description'];
         if (isset($request->task['project_id'])) {
             $task_data['project_id'] = $request->task['project_id'];
@@ -95,59 +87,15 @@ class TaskController extends Controller
         $task->update($task_data);
 
 
-
-    	$duration->startTime = $request->task['startTime'];
-    	$duration->spendTime = $request->task['spendTime'];
-    	$duration->endTime = $request->task['endTime'];
-
-    	$duration->save();
-
-    	return response(array_merge(
-    	    $duration->toArray(),
-            [
-                'description' => $task->description,
-                'project_id'  => $task->project_id,
-            ]
-        ));
+    	return response($task);
     }
 
-    public function continueTask(Request $request, TasksDuration $duration) {
-//        $task = Task::find($request['task_id']);
-        $duration->active = true;
-        $duration->endTime = null;
-
-        $duration->save();
-        return response(array_merge(
-            $duration->toArray(),
-            [
-                'description' => $duration->task->description,
-                'project_id'  => $duration->task->project_id,
-            ]
-        ));
-    }
-
-    public function stopTask(Request $request, TasksDuration $duration) {
-        $duration->active = false;
-        $duration->endTime = $request->endTime;
-        $duration->save();
-        return response(array_merge(
-            $duration->toArray(),
-            [
-                'description' => $duration->task->description,
-                'project_id'  => $duration->task->project_id,
-            ]
-        ));
-    }
-
-    public function deleteTask(TasksDuration $duration) {
-        if ($duration->task->duration->count() <= 1) {
-            $task = Task::find($duration->task_id);
-            $task->delete();
+    public function deleteTask(Task $task) {
+        if ($task->timeEntries->count() > 0) {
+            foreach ($task->timeEntries as $timeEntry) {
+                TimeEntry::find($timeEntry->id)->delete();
+            }
         }
-        $duration->delete();
+        $task->delete();
     }
-
-    // public function addTimeEntry(Request $request) {
-    //     $timeEntry
-    // }
 }

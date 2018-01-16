@@ -2,6 +2,12 @@ export default {
     activeTask(state) {
         return state.activeTask;
     },
+    date(state) {
+        return state.date;
+    },
+    oldActiveTask(state) {
+        return state.oldActiveTask;
+    },
     user(state) {
         return state.user;
     },

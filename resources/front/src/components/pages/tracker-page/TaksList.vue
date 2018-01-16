@@ -1,6 +1,6 @@
 <template >
 	<div>
-		<one-task v-for="(task, index) in sortedTasks" :key="task.id" :task="task" :index="index" :tasks="sortedTasks"></one-task>
+		<one-task v-for="(task, index) in tasks" :key="task.id" :task="task" :index="index" :tasks="tasks"></one-task>
 	</div>
 </template>
 
@@ -10,19 +10,8 @@
 
     export default {
         computed: {
-            sortedTasks() {
-                return this.$store.getters.tasks.sort(this.compare);
-            },
-        },
-        methods: {
-            compare(a, b) {
-                let result;
-                if (moment(a.startTime, 'HH:mm:ss').isAfter(moment(b.startTime, 'HH:mm:ss'))) {
-                    result = 1;
-                } else if (moment(b.startTime, 'HH:mm:ss').isAfter(moment(a.startTime, 'HH:mm:ss'))) {
-                    result = -1;
-                }
-                return result;
+            tasks() {
+                return this.$store.getters.tasks;
             },
         },
         components: {
