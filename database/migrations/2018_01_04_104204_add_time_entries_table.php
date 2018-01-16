@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class AddTasksDurationTable extends Migration
+class AddTimeEntriesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class AddTasksDurationTable extends Migration
      */
     public function up()
     {
-        Schema::create('tasks_duration', function (Blueprint $table) {
+        Schema::create('time_entries', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('task_id');
             $table->boolean('active')->nullable();
@@ -31,6 +31,6 @@ class AddTasksDurationTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('tasks_duration');
+        Schema::dropIfExists('time_entries');
     }
 }
