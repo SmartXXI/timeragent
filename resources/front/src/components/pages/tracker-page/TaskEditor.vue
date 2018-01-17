@@ -3,7 +3,7 @@
         <div class="timer-timeentry-editor">
             <el-form>
                 <el-row>
-                    <el-col :span="16">
+                    <el-col :span="12">
                         <div class="flex-container">
                             <el-col :span="22">
                                 <el-form-item>
@@ -15,7 +15,12 @@
                             </el-col>
                         </div>
                     </el-col>
-                    <el-col :span="8">
+                    <el-col :span="6">
+                        <el-col :span="20">
+                            <el-input placeholder="Estimate"></el-input> <span style="color: red">Demo</span>
+                        </el-col>
+                    </el-col>
+                    <el-col :span="6">
                         <el-select v-model="localTask.project_id" :disabled="projects.length > 0 ? false : true">
                             <el-option value="" label="No project"></el-option>
                             <el-option v-for="(project, index) in projects" :label="project.name" :value="project.id" :key="project.id"></el-option>
@@ -32,9 +37,9 @@
                         > Save </el-button>
                         <el-button type="success"
                                    size="middle"
-                                   v-if="addingTimeEntry"
-                                   @click.prevent="addTimeEntry"
-                                   title="Add time entry"
+                                   v-if="addingTask"
+                                   @click.prevent="addTask"
+                                   title="Add task"
                         > Save </el-button>
                         <el-button
                                 type="plain"
@@ -55,10 +60,11 @@
     import Http from '../../../helpers/Http';
 
     export default {
-        props: ['task', 'addingTimeEntry', 'editTask'],
+        props: ['task', 'addingTask', 'editTask'],
         data() {
             return {
                 localTask: {
+                    id         : 0,
                     description: '',
                     checked    : false,
                     project_id : '',
@@ -85,8 +91,8 @@
             updateTask() {
                 this.$emit('update-task', this.localTask);
             },
-            addTimeEntry() {
-                this.$emit('add-time-entry', this.localTask);
+            addTask() {
+                this.$emit('add-task', this.localTask);
             },
         },
     };

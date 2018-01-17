@@ -16,7 +16,7 @@
                                 <!--Add Time Entry-->
                             <!--</el-button>-->
                             <el-button
-                                    @click="checkForActive"
+                                    @click="showEditor"
                                     type="primary"
                                     plain
                             >
@@ -29,12 +29,17 @@
                     </el-col>
                 </el-row>
                 <div>
-                        <time-entry-editor
-                                v-if="AddingTimeEntry"
-                                @close-editor="closeEditor"
-                                @add-time-entry="AddTimeEntry"
-                                :addingTimeEntry="true"
-                        ></time-entry-editor>
+                        <!--<time-entry-editor-->
+                                <!--v-if="AddingTimeEntry"-->
+                                <!--@close-editor="closeEditor"-->
+                                <!--@add-time-entry="AddTimeEntry"-->
+                                <!--:addingTimeEntry="true"-->
+                        <!--&gt;</time-entry-editor>-->
+                    <task-editor v-if="addingTask"
+                                 @add-task="checkForActive"
+                                 @close-editor="closeEditor"
+                                 :addingTask="true"
+                    ></task-editor>
 
                     <div class="tasks-section">
                         <tasks-list v-if="tasksExists"></tasks-list>
@@ -62,17 +67,13 @@
     import moment from 'moment';
     import TimeEntryEditor from './TimeEntryEditor';
     import TasksList from './TaksList';
+    import TaskEditor from './TaskEditor';
 
     export default {
         data() {
             return {
-                task: {
-                    id         : 0,
-                    description: '',
-                    project_id : null,
-                    task_id    : null,
-                },
-                AddingTimeEntry: false,
+                task: {},
+                addingTask: false,
                 checkedTasks   : 0,
                 timerID        : null,
                 time           : null,
@@ -105,7 +106,9 @@
                 this.$store.dispatch('startTimer');
                 this.$store.dispatch('createTask', { task: this.task });
             },
-            checkForActive() {
+            checkForActive(task) {
+                this.closeEditor();
+                this.task = Object.assign(task);
                 this.getTodayTasks();
                 if (this.$store.getters.activeTask !== null) {
                     this.confirmStopActive = true;
@@ -128,10 +131,10 @@
                 }
             },
             showEditor() {
-                this.AddingTimeEntry = true;
+                this.addingTask = true;
             },
             closeEditor() {
-                this.AddingTimeEntry = false;
+                this.addingTask = false;
             },
 
             searchForCheck(task) {
@@ -162,7 +165,7 @@
             // },
         },
         components: {
-            TimeEntryEditor, TasksList,
+            TimeEntryEditor, TasksList, TaskEditor,
         },
     };
 </script>
