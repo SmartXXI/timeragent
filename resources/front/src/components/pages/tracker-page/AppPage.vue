@@ -23,7 +23,6 @@
             <!--<calendar></calendar>-->
             <!--<div class="col-md-12">-->
             <el-col :span="24" style="position: relative;">
-                <img class="kenguru" src="../../../assets/images/kenguru.png">
                 <el-card>
                     <div class="panel-heading flex-container-space-between">
                         <div class="panel-title">
@@ -275,12 +274,6 @@
 </style>
 
 <style>
-    .kenguru {
-        width: 100px;
-        position: absolute;
-        left: -77px;
-    }
-
     .el-date-editor {
         width: 135px;
     }

@@ -4,7 +4,6 @@
             <el-row>
                 <el-col :span="16" :offset="4">
                     <span class="logo">
-                        <img class="hat" src="../../assets/images/hat.png">
                         <router-link to="/">
                             <img class="logo" src="../../assets/images/logo.svg" alt="logo"/>
                         </router-link>
@@ -440,12 +439,5 @@
 <style>
     .logo {
         position: relative;
-    }
-
-    .hat {
-        width: 48px;
-        position: absolute;
-        left: -16px;
-        z-index: 1;
     }
 </style>

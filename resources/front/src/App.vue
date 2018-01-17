@@ -1,8 +1,6 @@
 <template>
     <div id="app">
         <router-view></router-view>
-        <img class="tree" src="./assets/images/tree.png">
-        <img class="presents" src="./assets/images/presents.png">
     </div>
 </template>
 
@@ -99,23 +97,5 @@
     .rate {
         float: right;
         margin-right: 10px;
-    }
-</style>
-
-<style>
-    .presents {
-        width: 500px;
-        position: absolute;
-        right: 0px;
-        z-index: -1;
-        top: 494px;
-    }
-
-    .tree {
-        width: 410px;
-        position: absolute;
-        top: 64px;
-        right: 30px;
-        z-index: -2;
     }
 </style>
