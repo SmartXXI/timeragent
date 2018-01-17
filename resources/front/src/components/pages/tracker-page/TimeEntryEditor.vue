@@ -41,17 +41,18 @@
                         ></el-time-picker>
                          <!-- errors block -->
                         <i class="fa fa-exclamation-circle error-icon" v-if="$v.localTimeEntry.startTime.$error">
-                            <div class="errors">
-                                <span
-                                        class="error-message"
-                                        v-if="!$v.localTimeEntry.startTime.required"
-                                >Field is required</span>
-                                <span
-                                        class="error-message"
-                                        v-if="!$v.localTimeEntry.startTime.validTime"
-                                >Invalid time</span>
-                            </div>
+
                         </i>
+                            <span v-if="$v.localTimeEntry.startTime.$error">
+                            <span
+                                    class="error-message"
+                                    v-if="!$v.localTimeEntry.startTime.required"
+                            >Field is required</span>
+                            <span
+                                    class="error-message"
+                                    v-if="!$v.localTimeEntry.startTime.validTime"
+                            >Invalid time</span>
+                            </span>
                         </el-col>
 
                         <el-col :span="8"><span class="spend-time">{{ spendTime }}</span></el-col>
@@ -70,11 +71,12 @@
                         ></el-time-picker>
                         <!-- errors block -->
                         <i class="fa fa-exclamation-circle error-icon" v-if="$v.localTimeEntry.endTime.$error">
-                            <div class="errors">
-                                <span class="error-message" v-if="!$v.localTimeEntry.endTime.required">Field is required</span>
-                                <span class="error-message" v-if="!$v.localTimeEntry.endTime.validTime">Invalid time</span>
-                            </div>
+
                         </i>
+                        <span v-if="$v.localTimeEntry.endTime.$error">
+                            <span class="error-message" v-if="!$v.localTimeEntry.endTime.required">Field is required</span>
+                            <span class="error-message" v-if="!$v.localTimeEntry.endTime.validTime">Invalid time</span>
+                        </span>
                     </el-col>
                 </el-col>
             </el-row>

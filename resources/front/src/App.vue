@@ -28,6 +28,7 @@
     .has-error {
         border-bottom : 2px solid #e02c48 !important;
         color         : #e02c48 !important;
+        border-radius: 4px;
     }
 
     .has-error:focus {
@@ -48,31 +49,12 @@
         display   : block;
     }
 
-    .errors {
-        display          : none;
-        position         : absolute;
-        left             : 4px;
-        bottom           : 0;
-        right            : 0;
-        top              : 33px;
-        width            : 130px;
-        height           : 50px;
-        background-color : #f2dede;
-        border           : 1px solid #ebcccc;
-        color            : #a94442;
-        font-size        : initial;
-        padding          : 10px;
+    .error-message {
+        display: block;
+        color: red;
+        margin-top: 2px;
     }
 
-    .errors:before {
-        border-bottom : 8px solid #f2dede;
-        border-left   : 8px solid transparent;
-        border-right  : 8px solid transparent;
-        content       : '';
-        left          : 0px;
-        position      : absolute;
-        top           : -8px;
-    }
 
     .error-icon:hover .errors {
         display : block;
