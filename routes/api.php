@@ -40,13 +40,13 @@ Route::middleware('auth:api')->post('/teams/new', 'TeamController@create');
 Route::middleware('auth:api')->post('/teams/invite', 'TeamController@invite');
 Route::middleware('auth:api')->get('/teams/exists-members', 'TeamController@getExistsMembers');
 Route::middleware('auth:api')->post('/teams/{team}/delete', 'TeamController@delete');
-Route::middleware('auth:api')->get('/teams/{team}', 'TeamController@edit');
+Route::middleware('auth:api')->get('/teams/{team}', 'TeamController@edit')->middleware('can:update,team');
 Route::middleware('auth:api')->post('/teams/{team}', 'TeamController@update');
 
 Route::middleware('auth:api')->get('/projects', 'ProjectController@getProjects');
 Route::middleware('auth:api')->post('/projects/new', 'ProjectController@createProject');
 Route::middleware('auth:api')->get('/projects/teams', 'TeamController@getOwnTeams');
 Route::middleware('auth:api')->get('/projects/users', 'TeamController@getOwnUsers');
-Route::middleware('auth:api')->get('/projects/{project}', 'ProjectController@edit');
+Route::middleware('auth:api')->get('/projects/{project}', 'ProjectController@edit')->middleware('can:update,project');
 Route::middleware('auth:api')->post('/projects/{project}', 'ProjectController@update');
 Route::middleware('auth:api')->post('/projects/{project}/delete', 'ProjectController@delete');

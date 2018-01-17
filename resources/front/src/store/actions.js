@@ -141,9 +141,10 @@ export default {
         return Http.post('api/projects/new', { project: payload.project, projectTeams: payload.projectTeams, projectUsers: payload.projectUsers });
     },
     getOneTeam(context, payload) {
-        Http.get(`api/teams/${payload.teamId}`).then((response) => {
-            context.commit(types.SET_ONE_TEAM, response.data);
-        });
+        return Http.get(`api/teams/${payload.teamId}`)
+            .then((response) => {
+                context.commit(types.SET_ONE_TEAM, response.data);
+            });
     },
     updateTeam(context, payload) {
         return Http.post(`api/teams/${payload.team.id}`, {
@@ -163,7 +164,7 @@ export default {
         return Http.post(`api/teams/${payload.teamId}/delete`);
     },
     getOneProject(context, payload) {
-        Http.get(`api/projects/${payload.projectId}`).then((response) => {
+        return Http.get(`api/projects/${payload.projectId}`).then((response) => {
             context.commit(types.SET_ONE_PROJECT, response.data);
         });
     },
