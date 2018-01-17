@@ -77,18 +77,22 @@
                 </el-button>
             </el-col>
 		</el-row>
-			<time-entry-editor v-if="addingTimeEntry"
-							   @add-time-entry="addTimeEntry"
-							   @close-editor="closeEditor"
-							   :taskId="task.id"
-							   :addingTimeEntry="true"
-			></time-entry-editor>
+        <el-row>
+            <el-col :span="20">
+                <time-entry-editor v-if="addingTimeEntry"
+                                   @add-time-entry="addTimeEntry"
+                                   @close-editor="closeEditor"
+                                   :taskId="task.id"
+                                   :addingTimeEntry="true"
+                ></time-entry-editor>
+            </el-col>
 			<task-editor v-if="isEditing"
                          @update-task="updateTask"
                          @close-editor="closeEditor"
                          :editTask="true"
                          :task="task"
             ></task-editor>
+        </el-row>
         <!--Confirm dialog-->
         <el-dialog
                 title="Delete task"
