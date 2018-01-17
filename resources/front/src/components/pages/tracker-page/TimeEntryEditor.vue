@@ -27,68 +27,51 @@
             <!--</el-row>-->
             <el-row>
                 <el-col class="time-pickers" :span="18">
-                    <div class="flex-container-space-between">
-                        <div class="time-editor-input-group flex-container">
-                            <el-time-picker
-                                    :class="{'has-error': $v.localTimeEntry.startTime.$error }"
-                                    placeholder="Stop time"
-                                    v-model="localTimeEntry.startTime"
-                                    @input="$v.localTimeEntry.startTime.$touch()"
-                                    value-format="yyyy-MM-dd HH:mm:ss"
-                                    format="HH:mm"
-                                    @blur="clearStartTime"
-                            ></el-time-picker>
-                             <!-- errors block -->
-                            <i class="fa fa-exclamation-circle error-icon" v-if="$v.localTimeEntry.startTime.$error">
-                                <div class="errors">
-                                    <span
-                                            class="error-message"
-                                            v-if="!$v.localTimeEntry.startTime.required"
-                                    >Field is required</span>
-                                    <span
-                                            class="error-message"
-                                            v-if="!$v.localTimeEntry.startTime.validTime"
-                                    >Invalid time</span>
-                                </div>
-                            </i>
+                    <el-col :span="9">
+                        <el-time-picker
+                                :class="{'has-error': $v.localTimeEntry.startTime.$error }"
+                                placeholder="Start time"
+                                v-model="localTimeEntry.startTime"
+                                @input="$v.localTimeEntry.startTime.$touch()"
+                                value-format="yyyy-MM-dd HH:mm:ss"
+                                format="HH:mm"
+                                @blur="clearStartTime"
+                        ></el-time-picker>
+                         <!-- errors block -->
+                        <i class="fa fa-exclamation-circle error-icon" v-if="$v.localTimeEntry.startTime.$error">
+                            <div class="errors">
+                                <span
+                                        class="error-message"
+                                        v-if="!$v.localTimeEntry.startTime.required"
+                                >Field is required</span>
+                                <span
+                                        class="error-message"
+                                        v-if="!$v.localTimeEntry.startTime.validTime"
+                                >Invalid time</span>
+                            </div>
+                        </i>
 
-                        </div>
-                        <div class="time-editor-input-group flex-container"
-                             v-if="(timeEntry) ? $store.state.activeTask !== timeEntry.id : true">
-                            <el-time-picker
-                                    :class="{ 'has-error': $v.localTimeEntry.endTime.$error }"
-                                    placeholder="End time"
-                                    v-model="localTimeEntry.endTime"
-                                    @input="$v.localTimeEntry.endTime.$touch()"
-                                    value-format="yyyy-MM-dd HH:mm:ss"
-                                    format="HH:mm"
-                                    @blur="clearEndTime"
-                                    :disabled="(timeEntry) ? $store.state.activeTask === timeEntry.id : false"
-                            ></el-time-picker>
-                            <!-- errors block -->
-                            <i class="fa fa-exclamation-circle error-icon" v-if="$v.localTimeEntry.endTime.$error">
-                                <div class="errors">
-                                    <span class="error-message" v-if="!$v.localTimeEntry.endTime.required">Field is required</span>
-                                    <span class="error-message" v-if="!$v.localTimeEntry.endTime.validTime">Invalid time</span>
-                                </div>
-                            </i>
-                        </div>
-                        <div class="time-editor-input-group flex-container"
-                             v-if="(timeEntry) ? $store.state.activeTask !== timeEntry.id : true">
-                            <el-input
-                                    :class="{ 'has-error': $v.localTimeEntry.spendTime.$error }"
-                                    placeholder="Spend time (1 h 0 min)"
-                                    @input="$v.localTimeEntry.spendTime.$touch()"
-                                    v-model="spendTime"
-                            ></el-input>
-                            <!-- errors block -->
-                            <i class="fa fa-exclamation-circle error-icon" v-if="$v.localTimeEntry.spendTime.$error">
-                                <div class="errors">
-                                    <span class="error-message" v-if="!$v.localTimeEntry.spendTime.required">Field is required</span>
-                                </div>
-                            </i>
-                        </div>
-                    </div>
+                    </el-col>
+                    <el-col :span="9"
+                         v-if="(timeEntry) ? $store.state.activeTask !== timeEntry.id : true">
+                        <el-time-picker
+                                :class="{ 'has-error': $v.localTimeEntry.endTime.$error }"
+                                placeholder="End time"
+                                v-model="localTimeEntry.endTime"
+                                @input="$v.localTimeEntry.endTime.$touch()"
+                                value-format="yyyy-MM-dd HH:mm:ss"
+                                format="HH:mm"
+                                @blur="clearEndTime"
+                                :disabled="(timeEntry) ? $store.state.activeTask === timeEntry.id : false"
+                        ></el-time-picker>
+                        <!-- errors block -->
+                        <i class="fa fa-exclamation-circle error-icon" v-if="$v.localTimeEntry.endTime.$error">
+                            <div class="errors">
+                                <span class="error-message" v-if="!$v.localTimeEntry.endTime.required">Field is required</span>
+                                <span class="error-message" v-if="!$v.localTimeEntry.endTime.validTime">Invalid time</span>
+                            </div>
+                        </i>
+                    </el-col>
                 </el-col>
             </el-row>
             <el-dialog
@@ -155,16 +138,6 @@
             };
         },
         computed: {
-            spendTime() {
-                if (this.localTimeEntry.startTime !== '' && this.localTimeEntry.endTime !== '') {
-                    const spendTime = moment.duration(moment(this.localTimeEntry.endTime, 'YYYY-MM-DD HH:mm:ss')
-                        .diff(moment(this.localTimeEntry.startTime, 'YYYY-MM-DD HH:mm:ss')));
-                    this.localTimeEntry.spendTime = `${spendTime.hours()}  h  ${spendTime.minutes()}  min `;
-                    return this.localTimeEntry.spendTime;
-                }
-                this.localTimeEntry.spendTime = '';
-                return this.localTimeEntry.spendTime;
-            },
             formInvalid() {
                 return this.$v.$invalid;
             },
@@ -232,9 +205,6 @@
                                 }
                                 return moment(value, 'YYYY-MM-DD HH:mm:ss').isBefore(moment()) && value !== '' && isAfter;
                             },
-                        },
-                        spendTime: {
-                            required,
                         },
                     },
                 };
