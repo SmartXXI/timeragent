@@ -8,29 +8,6 @@
                             <img class="logo" src="../../assets/images/logo.svg" alt="logo"/>
                         </router-link>
                     </span>
-                    <el-col :span="2" :offset="2" class="control-buttons"
-                            v-if="$route.path == '/'">
-                        <el-button title="Start timer"
-                                   type="success"
-                                   plain
-                                   size="mini"
-                                   v-if="!timerStarted"
-                                   @click="startTimer">
-                            <i class="fa fa-play"></i>
-                        </el-button>
-                        <!--<button class="btn btn-tier-continue" v-if="timerStarted">-->
-                        <!--<i class="fa fa-plus"></i>-->
-                        <!--</button>-->
-                        <el-button title="Stop timer"
-                                   type="danger"
-                                   plain
-                                   size="mini"
-                                   @click="stopTimer"
-                                   v-if="timerStarted"
-                                   :disabled="!timerStarted">
-                            <i class="fa fa-stop"></i>
-                        </el-button>
-                    </el-col>
                     <el-menu
                             class="el-menu-demo"
                             :router="true" :default-active="$route.path"
@@ -102,9 +79,6 @@
             this.$store.dispatch('getUser');
         },
         computed: {
-            timerStarted() {
-                return this.$store.state.timerStarted;
-            },
             user() {
                 return this.$store.state.user;
             },
@@ -115,28 +89,6 @@
         methods: {
             showSubMenu(name) {
                 this.isOpened = (this.isOpened === null) ? name : null;
-            },
-            startTimer() {
-                this.getTodayTasks();
-                this.$store.dispatch('startTimer');
-                this.$store.dispatch('createTask', { task: this.task });
-            },
-            stopTimer() {
-                this.getTodayTasks();
-                const taskId = this.$store.state.activeTask;
-                let activeTask = {};
-                this.$store.getters.tasks.map((task) => { // find active task in all tasks
-                    activeTask = task.time_entries.find((timeEntry) => {
-                        return timeEntry.id === taskId;
-                    });
-                });
-                this.$store.dispatch('stopTimer');
-                this.$store.dispatch('stopTask', { task: activeTask });
-            },
-            getTodayTasks() {
-                if (this.$store.state.date !== this.date) {
-                    this.$store.dispatch('getTasks', { date: this.date });
-                }
             },
             subIsActive(input) {
                 const paths = Array.isArray(input) ? input : [input];
