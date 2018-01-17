@@ -28,12 +28,14 @@
             <el-row>
                 <el-col class="time-pickers" :span="18">
                     <el-col :span="9">
+                        <el-col :span="15">
                         <el-time-picker
                                 :class="{'has-error': $v.localTimeEntry.startTime.$error }"
                                 placeholder="Start time"
                                 v-model="localTimeEntry.startTime"
                                 @input="$v.localTimeEntry.startTime.$touch()"
-                                value-format="yyyy-MM-dd HH:mm:ss"
+                                value-format="HH:mm:ss"
+                                :default-value="defaultTime"
                                 format="HH:mm"
                                 @blur="clearStartTime"
                         ></el-time-picker>
@@ -50,16 +52,18 @@
                                 >Invalid time</span>
                             </div>
                         </i>
+                        </el-col>
 
+                        <el-col :span="8"><span class="spend-time">{{ spendTime }}</span></el-col>
                     </el-col>
-                    <el-col :span="9"
+                    <el-col :span="6"
                          v-if="(timeEntry) ? $store.state.activeTask !== timeEntry.id : true">
                         <el-time-picker
                                 :class="{ 'has-error': $v.localTimeEntry.endTime.$error }"
                                 placeholder="End time"
                                 v-model="localTimeEntry.endTime"
                                 @input="$v.localTimeEntry.endTime.$touch()"
-                                value-format="yyyy-MM-dd HH:mm:ss"
+                                value-format="HH:mm:ss"
                                 format="HH:mm"
                                 @blur="clearEndTime"
                                 :disabled="(timeEntry) ? $store.state.activeTask === timeEntry.id : false"
@@ -140,14 +144,31 @@
             };
         },
         computed: {
+            spendTime() {
+                if (this.localTimeEntry.startTime !== '' && this.localTimeEntry.endTime !== '') {
+                    const spendTime = moment.duration(moment(this.localTimeEntry.endTime, 'HH:mm:ss')
+                        .diff(moment(this.localTimeEntry.startTime, 'HH:mm:ss')));
+                    if (spendTime.seconds() >= 0) {
+                        return `${spendTime.hours()}  h  ${spendTime.minutes()}  min `;
+                    }
+                }
+                return ' ';
+            },
             formInvalid() {
                 return this.$v.$invalid;
+            },
+            defaultTime() {
+                return moment().subtract(1, 'hour').format('YYYY-MM-DD HH:mm:ss');
             },
         },
         created() {
             if (this.timeEntry) {
                 this.oldTimeEntry = Object.assign({}, this.timeEntry);
                 this.localTimeEntry = Object.assign({}, this.timeEntry);
+                this.localTimeEntry.startTime = moment(this.timeEntry.startTime, 'YYYY-MM-DD HH:mm:ss')
+                    .format('HH:mm:ss');
+                this.localTimeEntry.endTime = moment(this.timeEntry.endTime, 'YYYY-MM-DD HH:mm:ss')
+                    .format('HH:mm:ss');
             }
         },
         methods: {
@@ -162,15 +183,23 @@
                 this.$emit('close-editor');
             },
             updateTimeEntry() {
-                this.$emit('update-time-entry', this.localTimeEntry);
+                const timeEntry = Object.assign(this.reformatTime(this.localTimeEntry));
+                this.$emit('update-time-entry', timeEntry);
             },
             addTimeEntry() {
                 if (this.$v.$invalid) return;
-                this.$emit('add-time-entry', this.localTimeEntry);
+                const timeEntry = Object.assign(this.reformatTime(this.localTimeEntry));
+                this.$emit('add-time-entry', timeEntry);
             },
             deleteTimeEntry() {
                 this.$emit('delete-time-entry', this.localTimeEntry);
                 this.closeEditor();
+            },
+            reformatTime(object) {
+                const timeEntry = Object.assign(object);
+                timeEntry.startTime = `${this.$store.getters.date} ${moment(this.localTimeEntry.startTime, 'HH:mm:ss').format('HH:mm:ss')}`;
+                timeEntry.endTime = `${this.$store.getters.date} ${moment(this.localTimeEntry.endTime, 'HH:mm:ss').format('HH:mm:ss')}`;
+                return timeEntry;
             },
         },
         validations() {
@@ -192,21 +221,18 @@
                         startTime: {
                             required,
                             validTime(value) {
-                                this.localTimeEntry.startTime = `${this.$store.getters.date} ${moment(this.localTimeEntry.startTime).format('HH:mm:ss')}`;
-                                return moment(value, 'YYYY-MM-DD HH:mm:ss').isBefore(moment()) && value !== '';
+                                return moment(value, 'HH:mm:ss').isBefore(moment()) && value !== '';
                             },
                         },
                         endTime: {
                             required,
                             validTime(value) {
-                                this.localTimeEntry.endTime = `${this.$store.getters.date} ${moment(this.localTimeEntry.endTime).format('HH:mm:ss')}`;
                                 let isAfter = true;
                                 if (this.localTimeEntry.startTime !== '') {
-                                    isAfter = moment(this.localTimeEntry.endTime, 'YYYY-MM-DD HH:mm:ss')
-                                        .isAfter(moment(this.localTimeEntry.startTime, 'YYYY-MM-DD HH:mm:ss'));
+                                    isAfter = moment(this.localTimeEntry.endTime, 'HH:mm:ss')
+                                        .isAfter(moment(this.localTimeEntry.startTime, 'HH:mm:ss'));
                                 }
-                                return moment(this.localTimeEntry.endTime, 'YYYY-MM-DD HH:mm:ss')
-                                    .isBefore(moment()) && value !== '' && isAfter;
+                                return moment(value, 'HH:mm:ss').isBefore(moment()) && value !== '' && isAfter;
                             },
                         },
                     },
@@ -317,4 +343,14 @@
         padding: 20px 0 20px 0;
     }
 
+</style>
+
+<style>
+    .spend-time {
+        color: #b4bccc;
+        display: inline-block;
+        margin-top: 10px;
+        margin-bottom: 10px;
+
+    }
 </style>
