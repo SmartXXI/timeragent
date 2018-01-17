@@ -91,12 +91,14 @@
                                v-if="editingTimeEntry"
                                @click.prevent="updateTimeEntry"
                                title="Save editing"
+                               :disabled="formInvalid"
                     > Save </el-button>
                     <el-button type="success"
                                size="middle"
                                v-if="addingTimeEntry"
                                @click.prevent="addTimeEntry"
                                title="Add time entry"
+                               :disabled="formInvalid"
                     > Save </el-button>
                     <el-button
                             type="plain"
@@ -200,10 +202,11 @@
                                 this.localTimeEntry.endTime = `${this.$store.getters.date} ${moment(this.localTimeEntry.endTime).format('HH:mm:ss')}`;
                                 let isAfter = true;
                                 if (this.localTimeEntry.startTime !== '') {
-                                    isAfter = moment(value, 'YYYY-MM-DD HH:mm:ss')
+                                    isAfter = moment(this.localTimeEntry.endTime, 'YYYY-MM-DD HH:mm:ss')
                                         .isAfter(moment(this.localTimeEntry.startTime, 'YYYY-MM-DD HH:mm:ss'));
                                 }
-                                return moment(value, 'YYYY-MM-DD HH:mm:ss').isBefore(moment()) && value !== '' && isAfter;
+                                return moment(this.localTimeEntry.endTime, 'YYYY-MM-DD HH:mm:ss')
+                                    .isBefore(moment()) && value !== '' && isAfter;
                             },
                         },
                     },
