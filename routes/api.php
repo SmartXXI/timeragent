@@ -24,24 +24,29 @@ Route::middleware('auth:api')->post('/update-task/{task}', 'TaskController@updat
 
 Route::middleware('auth:api')->post('/create-task', 'TaskController@createTask');
 
-Route::middleware('auth:api')->post('/continue-task', 'TaskController@continueTask');
 
-Route::middleware('auth:api')->post('/stop-task/{task}', 'TaskController@stopTask');
+Route::middleware('auth:api')->post('/continue-task/{timeEntry}', 'TimeEntryController@continueTask');
+
+Route::middleware('auth:api')->post('/stop-task/{timeEntry}', 'TimeEntryController@stopTask');
 
 Route::middleware('auth:api')->post('/delete-task/{task}', 'TaskController@deleteTask');
+
+Route::middleware('auth:api')->post('/create-time-entry', 'TimeEntryController@createTimeEntry');
+Route::middleware('auth:api')->post('/update-time-entry/{timeEntry}', 'TimeEntryController@updateTimeEntry');
+Route::middleware('auth:api')->post('/delete-time-entry/{timeEntry}', 'TimeEntryController@deleteTimeEntry');
 
 Route::middleware('auth:api')->get('/teams', 'TeamController@getTeams');
 Route::middleware('auth:api')->post('/teams/new', 'TeamController@create');
 Route::middleware('auth:api')->post('/teams/invite', 'TeamController@invite');
 Route::middleware('auth:api')->get('/teams/exists-members', 'TeamController@getExistsMembers');
 Route::middleware('auth:api')->post('/teams/{team}/delete', 'TeamController@delete');
-Route::middleware('auth:api')->get('/teams/{team}', 'TeamController@edit');
+Route::middleware('auth:api')->get('/teams/{team}', 'TeamController@edit')->middleware('can:update,team');
 Route::middleware('auth:api')->post('/teams/{team}', 'TeamController@update');
 
 Route::middleware('auth:api')->get('/projects', 'ProjectController@getProjects');
 Route::middleware('auth:api')->post('/projects/new', 'ProjectController@createProject');
 Route::middleware('auth:api')->get('/projects/teams', 'TeamController@getOwnTeams');
 Route::middleware('auth:api')->get('/projects/users', 'TeamController@getOwnUsers');
-Route::middleware('auth:api')->get('/projects/{project}', 'ProjectController@edit');
+Route::middleware('auth:api')->get('/projects/{project}', 'ProjectController@edit')->middleware('can:update,project');
 Route::middleware('auth:api')->post('/projects/{project}', 'ProjectController@update');
 Route::middleware('auth:api')->post('/projects/{project}/delete', 'ProjectController@delete');

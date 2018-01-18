@@ -9,11 +9,18 @@
                     </el-col>
                     <el-col :span="6">
                         <div v-if="!isChecked" class="actions full-width">
+                            <!--<el-button-->
+                                    <!--@click="showEditor"-->
+                                    <!--type="primary" plain-->
+                            <!--&gt;-->
+                                <!--Add Time Entry-->
+                            <!--</el-button>-->
                             <el-button
                                     @click="showEditor"
-                                    type="primary" plain
+                                    type="primary"
+                                    plain
                             >
-                                Add Time Entry
+                                Create task
                             </el-button>
                             <el-button plain disabled>
                                 Add Break
@@ -22,12 +29,17 @@
                     </el-col>
                 </el-row>
                 <div>
-                        <time-entry-editor
-                                v-if="AddingTimeEntry"
-                                @close-editor="closeEditor"
-                                @add-time-entry="AddTimeEntry"
-                                :addingTimeEntry="true"
-                        ></time-entry-editor>
+                        <!--<time-entry-editor-->
+                                <!--v-if="AddingTimeEntry"-->
+                                <!--@close-editor="closeEditor"-->
+                                <!--@add-time-entry="AddTimeEntry"-->
+                                <!--:addingTimeEntry="true"-->
+                        <!--&gt;</time-entry-editor>-->
+                    <task-editor v-if="addingTask"
+                                 @add-task="checkForActive"
+                                 @close-editor="closeEditor"
+                                 :addingTask="true"
+                    ></task-editor>
 
                     <div class="tasks-section">
                         <tasks-list v-if="tasksExists"></tasks-list>
@@ -37,6 +49,16 @@
                     </div>
                 </div>
             </el-card>
+            <el-dialog
+                    title="Stop current active task"
+                    :visible.sync="confirmStopActive"
+                    width="30%">
+                <span>Stop previous active task?</span>
+                <span slot="footer" class="dialog-footer">
+                <el-button @click="confirmStopActive = false">No</el-button>
+                <el-button type="primary" @click="startTimer(stopActive)">Yes</el-button>
+            </span>
+            </el-dialog>
         </el-col>
     </div>
 </template>
@@ -45,14 +67,18 @@
     import moment from 'moment';
     import TimeEntryEditor from './TimeEntryEditor';
     import TasksList from './TaksList';
+    import TaskEditor from './TaskEditor';
 
     export default {
         data() {
             return {
-                AddingTimeEntry: false,
+                task: {},
+                addingTask: false,
                 checkedTasks   : 0,
                 timerID        : null,
                 time           : null,
+                stopActive       : true,
+                confirmStopActive: false,
             };
         },
         computed: {
@@ -65,13 +91,50 @@
             tasksExists() {
                 return this.$store.getters.tasks.length;
             },
+            date() {
+                return moment().format('YYYY-MM-DD');
+            },
         },
         methods: {
+            startTimer(stopActive) {
+                this.confirmStopActive = false;
+                if (stopActive) {
+                    const activeTimeEntry = this.getActiveTimeEntry();
+                    this.$store.dispatch('stopTimer');
+                    this.$store.dispatch('stopTask', { task: activeTimeEntry });
+                }
+                this.$store.dispatch('startTimer');
+                this.$store.dispatch('createTask', { task: this.task });
+            },
+            checkForActive(task) {
+                this.closeEditor();
+                this.task = Object.assign(task);
+                this.getTodayTasks();
+                if (this.$store.getters.activeTask !== null) {
+                    this.confirmStopActive = true;
+                } else {
+                    this.startTimer(!this.stopActive);
+                }
+            },
+            getActiveTimeEntry() {
+                let activeTimeEntry = {};
+                this.$store.getters.tasks.map((task) => { // find active task in all tasks
+                    activeTimeEntry = task.time_entries.find((timeEntry) => {
+                        return timeEntry.id === this.$store.getters.activeTask;
+                    });
+                });
+                return activeTimeEntry;
+            },
+            getTodayTasks() {
+                if (this.$store.state.date !== this.date) {
+                    this.$store.dispatch('getTasks', { date: this.date });
+                }
+            },
             showEditor() {
-                this.AddingTimeEntry = true;
+                this.addingTask = true;
             },
             closeEditor() {
-                this.AddingTimeEntry = false;
+                this.addingTask = false;
             },
 
             searchForCheck(task) {
@@ -102,7 +165,7 @@
             // },
         },
         components: {
-            TimeEntryEditor, TasksList,
+            TimeEntryEditor, TasksList, TaskEditor,
         },
     };
 </script>

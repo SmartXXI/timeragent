@@ -2,7 +2,10 @@
     <div>
         <el-container direction="vertical">
         <nav-menu-auth></nav-menu-auth>
-        <el-main>
+        <el-main
+                v-loading.fullscreen.lock="loading"
+                element-loading-background="rgba(255, 255, 255, 1)"
+        >
             <el-row>
                 <el-col :span="16" :offset="4">
                 <div class="pull-right">
@@ -239,6 +242,7 @@ export default {
     mixins: [notification],
     data() {
         return {
+            loading            : true,
             isCreating         : false,
             isEditing          : false,
             showModal          : false,
@@ -271,10 +275,19 @@ export default {
         if (this.$route.name === 'newProject') {
             this.isCreating = true;
             this.$store.dispatch('clearProject');
+            this.loading = false;
         }
         if (this.$route.name === 'editProject') {
             this.isEditing = true;
-            this.$store.dispatch('getOneProject', { projectId: this.projectId });
+            this.$store.dispatch('getOneProject', { projectId: this.projectId })
+                .then(() => this.loading = false)
+                .catch((error) => {
+                    if (error.response.status === 403) {
+                        this.showError('Access denied');
+                        this.$router.go(-1);
+                        this.loading = false;
+                    }
+                });
         }
     },
     computed: {

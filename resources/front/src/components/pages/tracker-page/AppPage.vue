@@ -23,7 +23,6 @@
             <!--<calendar></calendar>-->
             <!--<div class="col-md-12">-->
             <el-col :span="24" style="position: relative;">
-                <img class="kenguru" src="../../../assets/images/kenguru.png">
                 <el-card>
                     <div class="panel-heading flex-container-space-between">
                         <div class="panel-title">
@@ -120,18 +119,31 @@
             },
             totalTime() {                                                                   //eslint-disable-line
                 if (this.tasks.length > 0) {
-                    const tasks = JSON.parse(JSON.stringify(this.tasks));                   //eslint-disable-line
-
-                    const total = tasks.reduce(function(prev, cur) {                        //eslint-disable-line
-                        let endTime = cur.endTime;
-                        if (!endTime) endTime = moment().format('HH:mm:ss');
-                        return moment.duration(moment(endTime, 'HH:mm:ss').diff(moment(cur.startTime, 'HH:mm:ss'))).add(prev);
-                    }, null);                                                               //eslint-disable-line
+//                    const tasks = JSON.parse(JSON.stringify(this.tasks));                   //eslint-disable-line
+//
+//                    const total = tasks.reduce(function(prev, cur) {                        //eslint-disable-line
+//                        let endTime = cur.endTime;
+//                        if (!endTime) endTime = moment().format('YYYY-MM-DD HH:mm:ss');
+//                        return moment.duration(moment(endTime, 'YYYY-MM-DD HH:mm:ss').diff(moment(cur.startTime, 'YYYY-MM-DD HH:mm:ss'))).add(prev);
+//                    }, null);                                                               //eslint-disable-line
+                    let total = moment.duration(0);
+                    let spendTime = '';
+                    let time = '';
+                    this.tasks.map((task) => {
+                        const spendTime = task.time_entries.reduce((prev, cur) => {
+                            time = (cur.spendTime) ? cur.spendTime : '';
+                            let endTime = cur.endTime;
+                            if (!endTime) endTime = moment().format('YYYY-MM-DD HH:mm:ss');
+                            return moment.duration(moment(endTime, 'YYYY-MM-DD HH:mm:ss')
+                                .diff(moment(cur.startTime, 'YYYY-MM-DD HH:mm:ss'))).add(prev);
+                        }, null);
+                        total.add(moment.duration(spendTime));
+                    });
                     // return moment.utc(total.asMilliseconds()).format('HH [h] mm [min]');
                     const hours = total.hours();
                     const minutes = total.minutes();
-                    return (hours > 0 ? hours + ' h ' : '') + minutes + ' min ';            //eslint-disable-line
-                } else {                                                                    //eslint-disable-line
+                    return (hours > 0 ? hours + ' h ' : '') + minutes + ' min ';
+                } else {
                     return '0 min';
                 }
             },
@@ -262,12 +274,6 @@
 </style>
 
 <style>
-    .kenguru {
-        width: 100px;
-        position: absolute;
-        left: -77px;
-    }
-
     .el-date-editor {
         width: 135px;
     }

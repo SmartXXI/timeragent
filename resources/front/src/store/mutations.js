@@ -4,17 +4,18 @@ import * as types from './mutation-types';
 export default {
     [types.GET_TASKS](state, data) {
         let activeTask;
-
-        if (data.data.length > 0 && data.data[data.data.length - 1].active === 1) {
-            activeTask = data.data[data.data.length - 1].id;
-        } else {
-            activeTask = null;
+        const tasks = data.data;
+        if (tasks.length > 0 && tasks[tasks.length - 1].time_entries[tasks[tasks.length - 1].time_entries.length - 1].active === 1) {
+            activeTask = tasks[tasks.length - 1].time_entries[tasks[tasks.length - 1].time_entries.length - 1].id;
+            Object.assign(state, {
+                activeTask,
+            });
         }
 
         Object.assign(state, {
             tasks: data.data,
             date : data.date,
-            activeTask,
+            activeTask: state.activeTask,
         });
     },
 
@@ -22,28 +23,32 @@ export default {
 
         let activeTask = {};
         let spendTime = '';
-
-        if (state.activeTask) {
-            activeTask = state.tasks.find((task) => {
-                return task.id === state.activeTask;
-            });
-            //
-            spendTime = moment.duration(moment().diff(moment(activeTask.startTime, 'HH:mm:ss')));
-            activeTask.spendTime = moment.utc(spendTime.asMilliseconds()).format('HH:mm:ss');
-        }
-
+        const date = moment().format('YYYY-MM-DD');
         Object.assign(state, { spendTime: moment() });
 
-        const date = moment().format('YYYY-MM-DD');
+        if (state.activeTask) {
+
+            state.tasks.map((task) => {
+                activeTask = task.time_entries.find((timeEntry) => {
+                    return timeEntry.id === state.activeTask;
+                });
+            });
+
+            //
+            spendTime = moment.duration(moment().diff(moment(activeTask.startTime, 'YYYY-MM-DD HH:mm:ss')));
+            activeTask.spendTime = moment.utc(spendTime.asMilliseconds()).format('HH:mm:ss');
+        }
 
         const timerID = window.setInterval(() => {
             Object.assign(state, { spendTime: moment() });
             //
             if (state.date === date) {
-                activeTask = state.tasks.find((task) => {
-                    return task.id === state.activeTask;
+                state.tasks.map((task) => { // find active task in all tasks
+                    activeTask = task.time_entries.find((timeEntry) => {
+                        return timeEntry.id === state.activeTask;
+                    });
                 });
-                spendTime = moment.duration(moment().diff(moment(activeTask.startTime, 'HH:mm:ss')));
+                spendTime = moment.duration(moment().diff(moment(activeTask.startTime, 'YYYY-MM-DD HH:mm:ss')));
 
                 activeTask.spendTime = moment.utc(spendTime.asMilliseconds()).format('HH:mm:ss');
             }
@@ -64,51 +69,72 @@ export default {
     },
 
     [types.CREATE_TASK](state, task) {
-        Object.assign(task, { startTime: moment().format('HH:mm:ss') });
-        state.tasks.push(task);
-
-        Object.assign(state, {
-            tasksExists: true,
-            activeTask : state.tasks[state.tasks.length - 1].id,
-        });
+        // Object.assign(task, { startTime: moment().format('HH:mm:ss') });
+        // state.tasks.push(task);
+        // const tasks = state.tasks;
+        // Object.assign(state, {
+        //     tasksExists: true,
+        //     activeTask : tasks[tasks.length - 1].duration[tasks[tasks.length - 1].duration.length - 1].id,
+        // });
     },
 
     [types.UPDATE_TASK](state, task) {
-        const taskIndex = state.tasks.findIndex((element) => {
-            return element.id === task.task.id;
-        });
-        //
-        Object.assign(state.tasks[taskIndex], task.task);
+        // const taskIndex = state.tasks.findIndex((element) => {
+        //     return element.id === task.task.id;
+        // });
+        // //
+        // Object.assign(state.tasks[taskIndex], task.task);
     },
 
     [types.CONTINUE_TASK](state) {
-        const activeTask = {};
-        const task = state.tasks.find((task) => {
-            return task.id === state.oldActiveTask;
-        });
-        const taskIndex = state.tasks.findIndex((element) => {
-            return element.id === task.id;
-        });
-        state.activeTask = task.id;
-        Object.assign(activeTask, task);
-        activeTask.active = true;
-        activeTask.endTime = null;
-        Object.assign(state.tasks[taskIndex], activeTask);
+        // const activeTask = {};
+        // const task = state.tasks.find((task) => {
+        //     return task.id === state.oldActiveTask;
+        // });
+        // const taskIndex = state.tasks.findIndex((element) => {
+        //     return element.id === task.id;
+        // });
+        // state.activeTask = task.id;
+        // Object.assign(activeTask, task);
+        // activeTask.active = true;
+        // activeTask.endTime = null;
+        // Object.assign(state.tasks[taskIndex], activeTask);
     },
 
-    [types.STOP_TASK](state, task) {
-        const taskIndex = state.tasks.findIndex((element) => {
-            return element.id === task.task.id;
-        });
-        Object.assign(state.tasks[taskIndex], task.task);
+    [types.STOP_TASK](state, payload) {
+        // let durationIndex = null;
+        // let taskIndex = null;
+        // state.tasks.map((task, index) => {
+        //     durationIndex = task.duration.findIndex((element) => {
+        //         return element.id === payload.task.id;
+        //     });
+        //     taskIndex = index;
+        // });
+        // Object.assign(state.tasks[taskIndex].duration[durationIndex], payload.task);
+        (payload.withDelete) ? state.oldActiveTask = null : state.oldActiveTask = state.activeTask;
         state.activeTask = null;
-        state.oldActiveTask = task.task.id;
     },
     [types.DELETE_TASK](state, task) {
         // state.tasks.splice(task.index, 1);
         const tasks = state.tasks.filter((taskInArray) => {
             return taskInArray.id !== task.id;
         });
+        Object.assign(state, {
+            tasks        : tasks,
+            activeTask   : null,
+            oldActiveTask: null,
+        });
+    },
+    [types.DELETE_TIME_ENTRY](state, timeEntry) {
+        // state.tasks.splice(task.index, 1);
+        const tasks = state.tasks.map((task) => {
+            task.time_entries = task.time_entries.filter((timeEntryInArray) => {
+                // console.log(durationInArray.id !== duration.id);
+                return timeEntryInArray.id !== timeEntry.id;
+            });
+            return task;
+        });
+        // console.log(tasks);
         Object.assign(state, {
             tasks        : tasks,
             activeTask   : null,

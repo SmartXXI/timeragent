@@ -2,7 +2,10 @@
     <div>
         <el-container direction="vertical">
         <nav-menu-auth></nav-menu-auth>
-        <el-main>
+        <el-main
+                v-loading.fullscreen.lock="loading"
+                element-loading-background="rgba(255, 255, 255, 1)"
+        >
             <el-row>
                 <el-col :span="16" :offset="4">
                     <div class="pull-right">
@@ -126,6 +129,7 @@
         mixins: [notification],
         data() {
             return {
+                loading         : true,
                 isCreating      : false,
                 isEditing       : false,
                 showModal       : false,
@@ -139,11 +143,20 @@
         },
         created() {
             if (this.$route.name === 'editTeam') {
-                this.$store.dispatch('getOneTeam', { teamId: this.teamId });
+                this.$store.dispatch('getOneTeam', { teamId: this.teamId })
+                    .then(() => this.loading = false)
+                    .catch((error) => {
+                        if (error.response.status === 403) {
+                            this.showError('Access denied');
+                            this.$router.go(-1);
+                            this.loading = false;
+                        }
+                    });
                 this.isEditing = true;
             }
             if (this.$route.name === 'newTeam') {
                 this.isCreating = true;
+                this.loading = false;
             }
             this.$store.dispatch('getExistsMembers');
         },

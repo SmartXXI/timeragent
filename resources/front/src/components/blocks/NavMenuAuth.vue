@@ -4,34 +4,10 @@
             <el-row>
                 <el-col :span="16" :offset="4">
                     <span class="logo">
-                        <img class="hat" src="../../assets/images/hat.png">
                         <router-link to="/">
                             <img class="logo" src="../../assets/images/logo.svg" alt="logo"/>
                         </router-link>
                     </span>
-                    <el-col :span="2" :offset="2" class="control-buttons"
-                            v-if="$route.path == '/'">
-                        <el-button title="Start timer"
-                                   type="success"
-                                   plain
-                                   size="mini"
-                                   v-if="!timerStarted"
-                                   @click="startTimer">
-                            <i class="fa fa-play"></i>
-                        </el-button>
-                        <!--<button class="btn btn-tier-continue" v-if="timerStarted">-->
-                        <!--<i class="fa fa-plus"></i>-->
-                        <!--</button>-->
-                        <el-button title="Stop timer"
-                                   type="danger"
-                                   plain
-                                   size="mini"
-                                   @click="stopTimer"
-                                   v-if="timerStarted"
-                                   :disabled="!timerStarted">
-                            <i class="fa fa-stop"></i>
-                        </el-button>
-                    </el-col>
                     <el-menu
                             class="el-menu-demo"
                             :router="true" :default-active="$route.path"
@@ -92,8 +68,10 @@
             return {
                 isOpened: null,
                 task    : {
-                    id         : 'id',
+                    id         : 0,
                     description: '',
+                    project_id : null,
+                    task_id    : null,
                 },
             };
         },
@@ -101,9 +79,6 @@
             this.$store.dispatch('getUser');
         },
         computed: {
-            timerStarted() {
-                return this.$store.state.timerStarted;
-            },
             user() {
                 return this.$store.state.user;
             },
@@ -114,25 +89,6 @@
         methods: {
             showSubMenu(name) {
                 this.isOpened = (this.isOpened === null) ? name : null;
-            },
-            startTimer() {
-                this.getTodayTasks();
-                this.$store.dispatch('startTimer');
-                this.$store.dispatch('createTask', { task: this.task });
-            },
-            stopTimer() {
-                this.getTodayTasks();
-                const taskId = this.$store.state.activeTask;
-                const activeTask = this.$store.getters.tasks.find((task) => {
-                    return task.id === taskId;
-                });
-                this.$store.dispatch('stopTimer');
-                this.$store.dispatch('stopTask', { task_id: activeTask.id, task: activeTask });
-            },
-            getTodayTasks() {
-                if (this.$store.state.date !== this.date) {
-                    this.$store.dispatch('getTasks', { date: this.date });
-                }
             },
             subIsActive(input) {
                 const paths = Array.isArray(input) ? input : [input];
@@ -435,12 +391,5 @@
 <style>
     .logo {
         position: relative;
-    }
-
-    .hat {
-        width: 48px;
-        position: absolute;
-        left: -16px;
-        z-index: 1;
     }
 </style>

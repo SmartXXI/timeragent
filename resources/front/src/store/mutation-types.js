@@ -6,6 +6,7 @@ export const UPDATE_TASK = 'UPDATE_TASK';
 export const CONTINUE_TASK = 'CONTINUE_TASK';
 export const STOP_TASK = 'STOP_TASK';
 export const DELETE_TASK = 'DELETE_TASK';
+export const DELETE_TIME_ENTRY = 'DELETE_TIME_ENTRY';
 export const ADD_TIME_ENTRY = 'ADD_TIME_ENTRY';
 export const GET_USER = 'GET_USER';
 export const SET_TEAMS = 'SET_TEAMS';
