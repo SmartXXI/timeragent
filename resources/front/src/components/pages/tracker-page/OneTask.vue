@@ -160,7 +160,11 @@ export default {
             // return moment.utc(total.asMilliseconds()).format('HH [h] mm [min]');
             const hours = total.hours();
             const minutes = total.minutes();
-            return (hours > 0 ? hours + ' h ' : '') + minutes + ' min ';
+            if (minutes < 1) {
+                const seconds = total.seconds();
+                return `${seconds} sec`;
+            }
+            return `${(hours > 0 ? `${hours}  h ` : '')} ${minutes} min `;
 		},
         active() {
             return !!this.task.time_entries.find((timeEntry) => {
