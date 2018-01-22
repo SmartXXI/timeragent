@@ -4,7 +4,7 @@
 			<el-col :span="2">
 				<el-checkbox v-model="tasks[index].checked"></el-checkbox>
 			</el-col>
-			<el-col :span="12">
+			<el-col :span="10">
 				<span v-if="task.description != null " class="description" @dblclick="showEditor">{{ task.description }}</span>
 				<span v-else @dblclick="showEditor"> (no description) </span>
 				<transition name="editor">
@@ -17,8 +17,9 @@
 			<!--<el-col :span="4">-->
 				<!--<span v-if="task.startTime !== null"><span >{{ spendTime }}</span></span>-->
 			<!--</el-col>-->
-            <el-col :span="4">
-                {{ total }}
+            <el-col :span="6">
+                {{ formatTotal(task.total) }}<br>
+                {{ formatToday(total) }}
             </el-col>
 			<el-col :span="2">
 				<span title="Stop task">
@@ -76,6 +77,9 @@
                     Add Time Entry
                 </el-button>
             </el-col>
+            <el-row>
+                <el-progress :percentage="taskProgress"></el-progress>
+            </el-row>
 		</el-row>
         <el-row>
             <el-col :span="20">
@@ -157,15 +161,16 @@ export default {
                 return moment.duration(moment(endTime, 'YYYY-MM-DD HH:mm:ss')
                     .diff(moment(cur.startTime, 'YYYY-MM-DD HH:mm:ss'))).add(prev);
             }, null);
-            // return moment.utc(total.asMilliseconds()).format('HH [h] mm [min]');
-            const hours = total.hours();
-            const minutes = total.minutes();
-            if (minutes < 1) {
-                const seconds = total.seconds();
-                return `${seconds} sec`;
-            }
-            return `${(hours > 0 ? `${hours}  h ` : '')} ${minutes} min `;
+
+            return total;
 		},
+        taskProgress() {
+            let percentages = 0;
+            const eta = moment.duration(this.task.eta).asSeconds();
+            const total = moment.duration(this.task.total).asSeconds();
+            percentages = (total / eta) * 100;
+            return Math.round(percentages);
+        },
         active() {
             return !!this.task.time_entries.find((timeEntry) => {
                 return timeEntry.active === 1;
@@ -178,6 +183,21 @@ export default {
     methods: {
         showEditor() {
             this.isEditing = true;
+        },
+        formatTotal(time) {
+            if (moment.duration(time).seconds() === this.total.seconds()) return;
+            const total = moment.duration(time);
+            return `Total: ${(total.hours() > 0 ? `${total.hours()}  h ` : '')} ${total.minutes()} min `;
+        },
+        formatToday(total) {
+            const hours = total.hours();
+            const minutes = total.minutes();
+            console.log(minutes);
+            if (minutes < 1) {
+                const seconds = total.seconds();
+                return `Today: ${seconds} sec`;
+            }
+            return `Today: ${(hours > 0 ? `${hours}  h ` : '')} ${minutes} min `;
         },
         showTimeEntryCreator() {
             this.addingTimeEntry = true;

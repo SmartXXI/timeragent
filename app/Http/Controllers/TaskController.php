@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\TimeEntry;
 use Illuminate\Http\Request;
 use \App\Task;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 
 class TaskController extends Controller
@@ -18,7 +19,7 @@ class TaskController extends Controller
         $user_id = Auth::user()->id;
 
 
-        return Task::where('user_id', Auth::id())
+        $tasks =  Task::where('user_id', Auth::id())
             ->whereHas('timeEntries', function($sql) use($request) {
                 $sql->whereDate('startTime', $request->date);
             })
@@ -32,18 +33,27 @@ class TaskController extends Controller
                     ->sortBy('startTime')
                     ->last()
                     ->startTime;
-            })
-            ->values()
-            ->toArray();
-//            ->map(function (TasksDuration $duration) {
-//                return array_merge(
-//                    $duration->toArray(),
-//                    [
-//                        'description' => $duration->task->description,
-//                        'project_id'  => $duration->task->project_id,
-//                    ]
-//                );
-//            });
+            });
+
+        return $tasks->map(function (Task $task) {
+            $newTask = Task::find($task->id);
+            $total = Carbon::createFromFormat('H:i:s', '00:00:00');
+            foreach ($newTask->timeEntries as $timeEntry) {
+                $startTime = Carbon::createFromFormat('Y-m-d H:i:s', $timeEntry->startTime);
+                if ($timeEntry->endTime != null) {
+                    $endTime = Carbon::createFromFormat('Y-m-d H:i:s', $timeEntry->endTime);
+                } else continue;
+                $total = $total->addSeconds($endTime->diffInSeconds($startTime));
+            }
+            return array_merge(
+                $task->toArray(),
+                [
+                    'total' => $total->toTimeString(),
+                ]
+            );
+        })
+        ->values()
+        ->toArray();
 
     }
 
@@ -52,6 +62,7 @@ class TaskController extends Controller
         $task_data = [
             'description' => $task['description'],
             'user_id' => Auth::user()->id,
+            'eta'     => $task['eta'],
             'project_id' => $task['project_id'],
         ];
         $created_task = Task::create($task_data);
@@ -81,6 +92,7 @@ class TaskController extends Controller
 
         $task_data = [];
     	$task_data['description'] = $request->task['description'];
+    	$task_data['eta'] = $request->task['eta'];
         if (isset($request->task['project_id'])) {
             $task_data['project_id'] = $request->task['project_id'];
         }

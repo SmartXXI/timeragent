@@ -10,6 +10,7 @@ class Task extends Model
         'description',
         'active',
         'user_id',
+        'eta',
         'project_id',
         'created_at',
     ];

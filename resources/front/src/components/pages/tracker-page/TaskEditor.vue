@@ -17,7 +17,14 @@
                     </el-col>
                     <el-col :span="6">
                         <el-col :span="20">
-                            <el-input placeholder="Estimate"></el-input> <span style="color: red">Demo</span>
+                            <el-time-picker
+                                    placeholder="Estimate"
+                                    v-model="localTask.eta"
+                                    format="HH:mm"
+                                    value-format="HH:mm:ss"
+                                    :default-value="defaultEstimate"
+                            >
+                            </el-time-picker><span style="color: red">Demo</span>
                         </el-col>
                     </el-col>
                     <el-col :span="6">
@@ -66,6 +73,7 @@
                 localTask: {
                     id         : 0,
                     description: '',
+                    eta        : '',
                     checked    : false,
                     project_id : '',
                 },
@@ -82,6 +90,11 @@
             Http.get('api/projects').then((response) => {
                 this.projects = response.data;
             });
+        },
+        computed: {
+            defaultEstimate() {
+                return moment(1, 'hour').format('YYYY-MM-DD HH:mm:ss');
+            },
         },
         methods: {
             closeEditor() {
