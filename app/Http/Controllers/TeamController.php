@@ -114,8 +114,7 @@ class TeamController extends Controller
 
         $all['name'] = $request->team['name'];
         $team->update($all);
-//        $team->load('users');
-//        return $team;
+        return $team;
     }
     public function getExistsMembers(Request $request) {
         $user = Auth::user();
