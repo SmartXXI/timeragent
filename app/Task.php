@@ -23,4 +23,14 @@ class Task extends Model
         return $this->hasMany('App\TimeEntry');
     }
 
+    public function totalDuration($date)
+    {
+        return $this->timeEntries()
+            ->whereNotNull('endTime')
+            ->whereDate('startTime', '!=', $date)
+            ->select(\DB::raw('SUM(TIME_TO_SEC(TIMEDIFF(`endTime`, `startTime`))) as total'))
+            ->first()
+            ->total;
+    }
+
 }

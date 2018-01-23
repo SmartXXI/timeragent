@@ -19,7 +19,7 @@
 			<!--</el-col>-->
             <el-col :span="6">
                 {{ formatTotal(task.total) }}<br>
-                {{ formatToday(total) }}
+                {{ ($store.getters.date === date) ? formatTodayTotal(todayTotal) : '' }}
             </el-col>
 			<el-col :span="2">
 				<span title="Stop task">
@@ -62,6 +62,7 @@
             </el-col>
 		</el-row>
 		<el-row v-if="showTimeEntries">
+            <el-row>
             <el-col :span="20">
                 <div v-for="timeEntry in task.time_entries">
                     <time-entry :timeEntry="timeEntry"></time-entry>
@@ -77,7 +78,8 @@
                     Add Time Entry
                 </el-button>
             </el-col>
-            <el-row>
+            </el-row>
+            <el-row v-if="task.eta">
                 <el-progress :percentage="taskProgress"></el-progress>
             </el-row>
 		</el-row>
@@ -152,7 +154,7 @@ export default {
             const minutes = spendTime.minutes();
             return `${(hours > 0 ? `${hours} h ` : '')} ${minutes} min`;
         },
-        total() {
+        todayTotal() {
             let spendTime = '';
             const total = this.task.time_entries.reduce((prev, cur) => {
                 let endTime = cur.endTime;
@@ -167,8 +169,8 @@ export default {
         taskProgress() {
             let percentages = 0;
             const eta = moment.duration(this.task.eta).asSeconds();
-            const total = moment.duration(this.task.total).asSeconds();
-            percentages = (total / eta) * 100;
+            const total = this.canculateTotal(this.task.eta);
+            percentages = (total.asSeconds() / eta) * 100;
             return Math.round(percentages);
         },
         active() {
@@ -184,15 +186,21 @@ export default {
         showEditor() {
             this.isEditing = true;
         },
+        canculateTotal(time) {
+            let total = moment.duration(0, 'seconds');
+            if (time !== null) {
+                total = moment.duration(parseInt(time, 10), 'seconds');
+            }
+            total = moment.duration(total.asSeconds() + this.todayTotal.asSeconds(), 'seconds');
+            return total;
+        },
         formatTotal(time) {
-            if (moment.duration(time).seconds() === this.total.seconds()) return;
-            const total = moment.duration(time);
+            const total = this.canculateTotal(time);
             return `Total: ${(total.hours() > 0 ? `${total.hours()}  h ` : '')} ${total.minutes()} min `;
         },
-        formatToday(total) {
+        formatTodayTotal(total) {
             const hours = total.hours();
             const minutes = total.minutes();
-            console.log(minutes);
             if (minutes < 1) {
                 const seconds = total.seconds();
                 return `Today: ${seconds} sec`;

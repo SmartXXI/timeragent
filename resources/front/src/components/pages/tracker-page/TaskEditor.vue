@@ -24,7 +24,7 @@
                                     value-format="HH:mm:ss"
                                     :default-value="defaultEstimate"
                             >
-                            </el-time-picker><span style="color: red">Demo</span>
+                            </el-time-picker>
                         </el-col>
                     </el-col>
                     <el-col :span="6">

@@ -19,7 +19,7 @@ class TaskController extends Controller
         $user_id = Auth::user()->id;
 
 
-        $tasks =  Task::where('user_id', Auth::id())
+        return  Task::where('user_id', Auth::id())
             ->whereHas('timeEntries', function($sql) use($request) {
                 $sql->whereDate('startTime', $request->date);
             })
@@ -33,28 +33,17 @@ class TaskController extends Controller
                     ->sortBy('startTime')
                     ->last()
                     ->startTime;
-            });
-
-        return $tasks->map(function (Task $task) {
-            $newTask = Task::find($task->id);
-            $total = Carbon::createFromFormat('H:i:s', '00:00:00');
-            foreach ($newTask->timeEntries as $timeEntry) {
-                $startTime = Carbon::createFromFormat('Y-m-d H:i:s', $timeEntry->startTime);
-                if ($timeEntry->endTime != null) {
-                    $endTime = Carbon::createFromFormat('Y-m-d H:i:s', $timeEntry->endTime);
-                } else continue;
-                $total = $total->addSeconds($endTime->diffInSeconds($startTime));
-            }
-            return array_merge(
-                $task->toArray(),
-                [
-                    'total' => $total->toTimeString(),
-                ]
-            );
-        })
-        ->values()
-        ->toArray();
-
+            })
+            ->map(function (Task $task) use($request) {
+                return array_merge(
+                    $task->toArray(),
+                    [
+                        'total' => $task->totalDuration($request->date),
+                    ]
+                );
+            })
+            ->values()
+            ->toArray();
     }
 
     public function createTask(Request $request) {
