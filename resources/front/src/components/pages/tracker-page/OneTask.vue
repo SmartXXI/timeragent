@@ -201,8 +201,8 @@ export default {
         formatTodayTotal(total) {
             const hours = total.hours();
             const minutes = total.minutes();
-            if (minutes < 1) {
-                const seconds = total.seconds();
+            if (total.asMinutes() < 1) {
+                const seconds = total.asSeconds();
                 return `Today: ${seconds} sec`;
             }
             return `Today: ${(hours > 0 ? `${hours}  h ` : '')} ${minutes} min `;
@@ -383,5 +383,11 @@ export default {
 
     .editor-enter, .editor-leave-to {
         opacity: 0;
+    }
+</style>
+
+<style>
+    .el-icon-arrow-down, .el-icon-arrow-up {
+        cursor: pointer;
     }
 </style>

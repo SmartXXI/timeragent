@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div @dblclick="showEditor">
+        <div class="time-entry" @dblclick="showEditor">
             {{ format(timeEntry.startTime) }} - {{ (timeEntry.endTime) ? format(timeEntry.endTime) : 'now' }}
         </div>
         <time-entry-editor v-if="isEditing"
@@ -50,6 +50,8 @@
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
-
+<style>
+    .time-entry {
+        cursor: pointer;
+    }
 </style>
