@@ -6,21 +6,17 @@
                     <el-col :span="12">
                         <div class="flex-container">
                             <el-col :span="22">
-                                <el-form-item>
-                                    <el-input placeholder="Enter description"
-                                              :class="{ 'has-error': $v.localTask.description.$error }"
-                                              v-model="localTask.description"
-                                              prefix-icon="el-icon-edit-outline"
-                                              autofocus
-                                              @input="$v.localTask.description.$touch()"
-                                    >
-                                    </el-input>
-                                    <i class="fa fa-exclamation-circle error-icon" v-if="$v.localTask.description.$error">
-                                        <div class="errors">
-                                            <span class="error-message" v-if="!$v.localTask.description.required">Field is required</span>
-                                        </div>
-                                    </i>
-                                </el-form-item>
+                                <el-input placeholder="Enter description"
+                                          :class="{ 'has-error': $v.localTask.description.$error }"
+                                          v-model="localTask.description"
+                                          prefix-icon="el-icon-edit-outline"
+                                          autofocus
+                                          @input="$v.localTask.description.$touch()"
+                                >
+                                </el-input>
+                                <div class="errors"  v-if="$v.localTask.description.$error">
+                                    <span class="error-message" v-if="!$v.localTask.description.required">Field is required</span>
+                                </div>
                             </el-col>
                         </div>
                     </el-col>

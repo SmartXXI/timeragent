@@ -53,6 +53,7 @@
         display: block;
         color: red;
         margin-top: 2px;
+        font-size: 13px;
     }
 
 
