@@ -8,9 +8,18 @@
                             <el-col :span="22">
                                 <el-form-item>
                                     <el-input placeholder="Enter description"
+                                              :class="{ 'has-error': $v.localTask.description.$error }"
                                               v-model="localTask.description"
                                               prefix-icon="el-icon-edit-outline"
-                                              autofocus></el-input>
+                                              autofocus
+                                              @input="$v.localTask.description.$touch()"
+                                    >
+                                    </el-input>
+                                    <i class="fa fa-exclamation-circle error-icon" v-if="$v.localTask.description.$error">
+                                        <div class="errors">
+                                            <span class="error-message" v-if="!$v.localTask.description.required">Field is required</span>
+                                        </div>
+                                    </i>
                                 </el-form-item>
                             </el-col>
                         </div>
@@ -40,12 +49,14 @@
                                    size="middle"
                                    v-if="editTask"
                                    @click.prevent="updateTask"
+                                   :disabled="formInvalid"
                                    title="Save editing"
                         > Save </el-button>
                         <el-button type="success"
                                    size="middle"
                                    v-if="addingTask"
                                    @click.prevent="addTask"
+                                   :disabled="formInvalid"
                                    title="Add task"
                         > Save </el-button>
                         <el-button
@@ -64,6 +75,7 @@
 
 <script>
     import moment from 'moment';
+    import { required } from 'vuelidate/lib/validators';
     import Http from '../../../helpers/Http';
 
     export default {
@@ -95,6 +107,9 @@
             defaultEstimate() {
                 return moment(1, 'hour').format('YYYY-MM-DD HH:mm:ss');
             },
+            formInvalid() {
+                return this.$v.$invalid;
+            },
         },
         methods: {
             closeEditor() {
@@ -106,6 +121,13 @@
             },
             addTask() {
                 this.$emit('add-task', this.localTask);
+            },
+        },
+        validations: {
+            localTask: {
+                description: {
+                    required,
+                },
             },
         },
     };
