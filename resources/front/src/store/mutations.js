@@ -129,19 +129,19 @@ export default {
     },
     [types.DELETE_TIME_ENTRY](state, timeEntry) {
         // state.tasks.splice(task.index, 1);
-        const tasks = state.tasks.map((task) => {
-            task.time_entries = task.time_entries.filter((timeEntryInArray) => {
-                // console.log(durationInArray.id !== duration.id);
-                return timeEntryInArray.id !== timeEntry.id;
-            });
-            return task;
-        });
-        // console.log(tasks);
-        Object.assign(state, {
-            tasks        : tasks,
-            activeTask   : null,
-            oldActiveTask: null,
-        });
+        // const tasks = state.tasks.map((task) => {
+        //     task.time_entries = task.time_entries.filter((timeEntryInArray) => {
+        //         // console.log(durationInArray.id !== duration.id);
+        //         return timeEntryInArray.id !== timeEntry.id;
+        //     });
+        //     return task;
+        // });
+        // // console.log(tasks);
+        // Object.assign(state, {
+        //     tasks        : tasks,
+        //     activeTask   : null,
+        //     oldActiveTask: null,
+        // });
     },
 
     [types.ADD_TIME_ENTRY](state, task) {

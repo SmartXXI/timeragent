@@ -66,7 +66,7 @@ export default {
             }
         }
 
-        if (payload.task.id === oldActiveTimeEntry.task_id) {
+        if (oldActiveTimeEntry && payload.task.id === oldActiveTimeEntry.task_id) {
 
             if (moment().diff(moment(oldActiveTimeEntry.endTime, 'YYYY-MM-DD HH:mm:ss'), 'seconds') > 60) {
                 Http.post('api/create-time-entry', { task })
@@ -96,6 +96,7 @@ export default {
     deleteTask(context, task) {
         Http.post(`api/delete-task/${task.task.id}`)
             .then(() => context.commit(types.DELETE_TASK, { id: task.task.id }));
+            // .then(() => context.commit(types.DELETE_TASK, { id: task.task.id }));
     },
     deleteTimeEntry(context, payload) {
         Http.post(`api/delete-time-entry/${payload.timeEntry.id}`)
