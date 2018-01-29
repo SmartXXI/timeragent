@@ -18,9 +18,11 @@
 				<!--<span v-if="task.startTime !== null"><span >{{ spendTime }}</span></span>-->
 			<!--</el-col>-->
             <el-col :span="6">
+                <div v-if="task.time_entries.length > 0 || task.total">
                 <span v-if="$store.getters.date !== date">{{ formatTotal(task.total) }}<br></span>
                 <span v-if="$store.getters.date === date && task.total">{{ formatTotal(task.total) }}<br></span>
                 {{ ($store.getters.date === date) ? formatTodayTotal(todayTotal) : '' }}
+                </div>
             </el-col>
 			<el-col :span="2">
 				<span title="Stop task">
@@ -156,6 +158,7 @@ export default {
             return `${(hours > 0 ? `${hours} h ` : '')} ${minutes} min`;
         },
         todayTotal() {
+            if (this.task.time_entries.length === 0) return moment.duration(0, 'seconds');
             let spendTime = '';
             const total = this.task.time_entries.reduce((prev, cur) => {
                 let endTime = cur.endTime;

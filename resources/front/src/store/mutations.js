@@ -5,7 +5,9 @@ export default {
     [types.GET_TASKS](state, data) {
         let activeTask;
         const tasks = data.data;
-        if (tasks.length > 0 && tasks[tasks.length - 1].time_entries[tasks[tasks.length - 1].time_entries.length - 1].active === 1) {
+        if (tasks.length > 0
+            && tasks[tasks.length - 1].time_entries.length > 0
+            && tasks[tasks.length - 1].time_entries[tasks[tasks.length - 1].time_entries.length - 1].active === 1) {
             activeTask = tasks[tasks.length - 1].time_entries[tasks[tasks.length - 1].time_entries.length - 1].id;
             Object.assign(state, {
                 activeTask,

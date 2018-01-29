@@ -8,6 +8,7 @@ export default {
             context.commit(types.GET_TASKS, { data: response.data, date: obj.date });
             const tasks = response.data;
             if (tasks.length > 0
+                && tasks[tasks.length - 1].time_entries.length > 0
                 && tasks[tasks.length - 1].time_entries[tasks[tasks.length - 1].time_entries.length - 1].active === 1) {
                 if (context.state.timerID === 0) {
                     context.dispatch('startTimer');

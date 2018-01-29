@@ -20,7 +20,8 @@ class TaskController extends Controller
 
 
         return  Task::where('user_id', Auth::id())
-            ->whereHas('timeEntries', function($sql) use($request) {
+            ->whereDate('created_at', $request->date)
+            ->orWhereHas('timeEntries', function($sql) use($request) {
                 $sql->whereDate('startTime', $request->date);
             })
             ->with(['timeEntries' => function($query) use($request) {
@@ -28,11 +29,13 @@ class TaskController extends Controller
             }])
             ->get()
             ->sortBy(function (Task $task) {
-                return $task
-                    ->timeEntries
-                    ->sortBy('startTime')
-                    ->last()
-                    ->startTime;
+                if ($task->timeEntries->count() > 0) {
+                    return $task
+                        ->timeEntries
+                        ->sortBy('startTime')
+                        ->last()
+                        ->startTime;
+                }
             })
             ->map(function (Task $task) use($request) {
                 return array_merge(
