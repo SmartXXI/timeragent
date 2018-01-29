@@ -18,7 +18,8 @@
 				<!--<span v-if="task.startTime !== null"><span >{{ spendTime }}</span></span>-->
 			<!--</el-col>-->
             <el-col :span="6">
-                {{ formatTotal(task.total) }}<br>
+                <span v-if="$store.getters.date !== date">{{ formatTotal(task.total) }}<br></span>
+                <span v-if="$store.getters.date === date && task.total">{{ formatTotal(task.total) }}<br></span>
                 {{ ($store.getters.date === date) ? formatTodayTotal(todayTotal) : '' }}
             </el-col>
 			<el-col :span="2">
