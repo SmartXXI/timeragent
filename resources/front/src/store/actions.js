@@ -36,7 +36,7 @@ export default {
             // context.commit(types.STOP_TASK);
         }
     },
-    createTask(context, payload) {
+    startTask(context, payload) {
         const startTime = moment().format('YYYY-MM-DD HH:mm:ss');
         const task = {
             description: payload.task.description,
@@ -81,11 +81,12 @@ export default {
             Http.post('api/create-time-entry', { task })
                 .then(() => context.dispatch('getTasks', { date: context.state.date }));
                 // .then(response => context.commit(types.CREATE_TASK, response.data));
-        } else {
-            Http.post('api/create-task', { task })
-                .then(() => context.dispatch('getTasks', { date: context.state.date }));
-                // .then(response => context.commit(types.CREATE_TASK, response.data));
         }
+    },
+    createTask(context, payload) {
+        Http.post('api/create-task', { task: payload.task })
+            .then(() => context.dispatch('getTasks', { date: context.state.date }));
+        // .then(response => context.commit(types.CREATE_TASK, response.data));
     },
     updateTask(context, obj) {
         // context.commit(types.UPDATE_TASK, { task: task.task, index: task.index });
@@ -95,7 +96,7 @@ export default {
     },
     deleteTask(context, task) {
         Http.post(`api/delete-task/${task.task.id}`)
-            .then(() => context.commit(types.DELETE_TASK, { id: task.task.id }));
+            .then(() => context.dispatch('getTasks', { date: context.state.date }));
             // .then(() => context.commit(types.DELETE_TASK, { id: task.task.id }));
     },
     deleteTimeEntry(context, payload) {

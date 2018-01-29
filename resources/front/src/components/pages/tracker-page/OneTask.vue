@@ -247,7 +247,7 @@ export default {
                             this.$store.dispatch('stopTimer');
                             this.$store.dispatch('stopTask', { task: activeTimeEntry });
                         }
-                        this.$store.dispatch('createTask', { task: this.task });
+                        this.$store.dispatch('startTask', { task: this.task });
                         this.$store.dispatch('startTimer');
                     });
             } else {
@@ -257,7 +257,7 @@ export default {
                     this.$store.dispatch('stopTimer');
                     this.$store.dispatch('stopTask', { task: activeTimeEntry });
                 }
-                this.$store.dispatch('createTask', { task: this.task });
+                this.$store.dispatch('startTask', { task: this.task });
                 this.$store.dispatch('startTimer');
             }
         },

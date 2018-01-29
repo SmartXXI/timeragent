@@ -84,6 +84,7 @@
                     eta        : '',
                     checked    : false,
                     project_id : '',
+                    created_at : '',
                 },
                 oldTask : {},
                 projects: {},
@@ -116,6 +117,8 @@
                 this.$emit('update-task', this.localTask);
             },
             addTask() {
+                this.localTask.created_at = moment(this.$store.getters.date, 'YYYY-MM-DD')
+                    .format('YYYY-MM-DD HH:mm:ss');
                 this.$emit('add-task', this.localTask);
             },
         },

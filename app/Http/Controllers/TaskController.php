@@ -56,18 +56,19 @@ class TaskController extends Controller
             'user_id' => Auth::user()->id,
             'eta'     => $task['eta'],
             'project_id' => $task['project_id'],
+            'created_at' => $task['created_at'],
         ];
         $created_task = Task::create($task_data);
 
-        $time_entry = [
-            'active' => $task['active'],
-            'task_id' => $created_task->id,
-            'startTime' => $task['startTime'],
-            'spendTime' => $task['spendTime'],
-            'endTime' => $task['endTime'],
-        ];
-
-        $time_entry = TimeEntry::create($time_entry);
+//        $time_entry = [
+//            'active' => $task['active'],
+//            'task_id' => $created_task->id,
+//            'startTime' => $task['startTime'],
+//            'spendTime' => $task['spendTime'],
+//            'endTime' => $task['endTime'],
+//        ];
+//
+//        $time_entry = TimeEntry::create($time_entry);
 
 
 //        return response(array_merge(
