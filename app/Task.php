@@ -10,6 +10,7 @@ class Task extends Model
         'description',
         'active',
         'user_id',
+        'eta',
         'project_id',
         'created_at',
     ];
@@ -20,6 +21,16 @@ class Task extends Model
 
     public function timeEntries() {
         return $this->hasMany('App\TimeEntry');
+    }
+
+    public function totalDuration($date)
+    {
+        return $this->timeEntries()
+            ->whereNotNull('endTime')
+            ->whereDate('startTime', '!=', $date)
+            ->select(\DB::raw('SUM(TIME_TO_SEC(TIMEDIFF(`endTime`, `startTime`))) as total'))
+            ->first()
+            ->total;
     }
 
 }

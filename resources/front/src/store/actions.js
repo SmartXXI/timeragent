@@ -40,6 +40,7 @@ export default {
         const task = {
             description: payload.task.description,
             task_id    : payload.task.id,
+            eta        : payload.task.eta,
             checked    : false,
             active     : true,
             project_id : payload.task.project_id,

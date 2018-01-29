@@ -40,9 +40,6 @@
                                 @blur="clearStartTime"
                         ></el-time-picker>
                          <!-- errors block -->
-                        <i class="fa fa-exclamation-circle error-icon" v-if="$v.localTimeEntry.startTime.$error">
-
-                        </i>
                             <span v-if="$v.localTimeEntry.startTime.$error">
                             <span
                                     class="error-message"
@@ -70,9 +67,6 @@
                                 :disabled="(timeEntry) ? $store.state.activeTask === timeEntry.id : false"
                         ></el-time-picker>
                         <!-- errors block -->
-                        <i class="fa fa-exclamation-circle error-icon" v-if="$v.localTimeEntry.endTime.$error">
-
-                        </i>
                         <span v-if="$v.localTimeEntry.endTime.$error">
                             <span class="error-message" v-if="!$v.localTimeEntry.endTime.required">Field is required</span>
                             <span class="error-message" v-if="!$v.localTimeEntry.endTime.validTime">Invalid time</span>

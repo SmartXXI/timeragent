@@ -38,11 +38,9 @@
                                               v-model="project.name"
                                               @input="$v.project.name.$touch()"
                                     ></el-input>
-                                    <i class="fa fa-exclamation-circle error-icon" v-if="$v.project.name.$error">
-                                        <div class="errors">
-                                            <span class="error-message" v-if="!$v.project.name.required">Field is required</span>
-                                        </div> 
-                                    </i>
+                                    <div class="errors" v-if="$v.project.name.$error">
+                                        <span class="error-message" v-if="!$v.project.name.required">Field is required</span>
+                                    </div>
                             </div>
 
                             <el-tabs v-model="activeTabName">

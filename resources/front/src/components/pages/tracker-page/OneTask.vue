@@ -4,7 +4,7 @@
 			<el-col :span="2">
 				<el-checkbox v-model="tasks[index].checked"></el-checkbox>
 			</el-col>
-			<el-col :span="12">
+			<el-col :span="10">
 				<span v-if="task.description != null " class="description" @dblclick="showEditor">{{ task.description }}</span>
 				<span v-else @dblclick="showEditor"> (no description) </span>
 				<transition name="editor">
@@ -17,8 +17,9 @@
 			<!--<el-col :span="4">-->
 				<!--<span v-if="task.startTime !== null"><span >{{ spendTime }}</span></span>-->
 			<!--</el-col>-->
-            <el-col :span="4">
-                {{ total }}
+            <el-col :span="6">
+                {{ formatTotal(task.total) }}<br>
+                {{ ($store.getters.date === date) ? formatTodayTotal(todayTotal) : '' }}
             </el-col>
 			<el-col :span="2">
 				<span title="Stop task">
@@ -61,6 +62,7 @@
             </el-col>
 		</el-row>
 		<el-row v-if="showTimeEntries">
+            <el-row>
             <el-col :span="20">
                 <div v-for="timeEntry in task.time_entries">
                     <time-entry :timeEntry="timeEntry"></time-entry>
@@ -76,6 +78,10 @@
                     Add Time Entry
                 </el-button>
             </el-col>
+            </el-row>
+            <el-row v-if="task.eta">
+                <el-progress :percentage="taskProgress"></el-progress>
+            </el-row>
 		</el-row>
         <el-row>
             <el-col :span="20">
@@ -148,7 +154,7 @@ export default {
             const minutes = spendTime.minutes();
             return `${(hours > 0 ? `${hours} h ` : '')} ${minutes} min`;
         },
-        total() {
+        todayTotal() {
             let spendTime = '';
             const total = this.task.time_entries.reduce((prev, cur) => {
                 let endTime = cur.endTime;
@@ -157,15 +163,16 @@ export default {
                 return moment.duration(moment(endTime, 'YYYY-MM-DD HH:mm:ss')
                     .diff(moment(cur.startTime, 'YYYY-MM-DD HH:mm:ss'))).add(prev);
             }, null);
-            // return moment.utc(total.asMilliseconds()).format('HH [h] mm [min]');
-            const hours = total.hours();
-            const minutes = total.minutes();
-            if (minutes < 1) {
-                const seconds = total.seconds();
-                return `${seconds} sec`;
-            }
-            return `${(hours > 0 ? `${hours}  h ` : '')} ${minutes} min `;
+
+            return total;
 		},
+        taskProgress() {
+            let percentages = 0;
+            const eta = moment.duration(this.task.eta).asSeconds();
+            const total = this.canculateTotal(this.task.eta);
+            percentages = (total.asSeconds() / eta) * 100;
+            return Math.round(percentages);
+        },
         active() {
             return !!this.task.time_entries.find((timeEntry) => {
                 return timeEntry.active === 1;
@@ -178,6 +185,27 @@ export default {
     methods: {
         showEditor() {
             this.isEditing = true;
+        },
+        canculateTotal(time) {
+            let total = moment.duration(0, 'seconds');
+            if (time !== null) {
+                total = moment.duration(parseInt(time, 10), 'seconds');
+            }
+            total = moment.duration(total.asSeconds() + this.todayTotal.asSeconds(), 'seconds');
+            return total;
+        },
+        formatTotal(time) {
+            const total = this.canculateTotal(time);
+            return `Total: ${(total.hours() > 0 ? `${total.hours()}  h ` : '')} ${total.minutes()} min `;
+        },
+        formatTodayTotal(total) {
+            const hours = total.hours();
+            const minutes = total.minutes();
+            if (total.asMinutes() < 1) {
+                const seconds = total.asSeconds();
+                return `Today: ${seconds} sec`;
+            }
+            return `Today: ${(hours > 0 ? `${hours}  h ` : '')} ${minutes} min `;
         },
         showTimeEntryCreator() {
             this.addingTimeEntry = true;
@@ -355,5 +383,11 @@ export default {
 
     .editor-enter, .editor-leave-to {
         opacity: 0;
+    }
+</style>
+
+<style>
+    .el-icon-arrow-down, .el-icon-arrow-up {
+        cursor: pointer;
     }
 </style>

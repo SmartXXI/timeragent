@@ -6,18 +6,30 @@
                     <el-col :span="12">
                         <div class="flex-container">
                             <el-col :span="22">
-                                <el-form-item>
-                                    <el-input placeholder="Enter description"
-                                              v-model="localTask.description"
-                                              prefix-icon="el-icon-edit-outline"
-                                              autofocus></el-input>
-                                </el-form-item>
+                                <el-input placeholder="Enter description"
+                                          :class="{ 'has-error': $v.localTask.description.$error }"
+                                          v-model="localTask.description"
+                                          prefix-icon="el-icon-edit-outline"
+                                          autofocus
+                                          @input="$v.localTask.description.$touch()"
+                                >
+                                </el-input>
+                                <div class="errors"  v-if="$v.localTask.description.$error">
+                                    <span class="error-message" v-if="!$v.localTask.description.required">Field is required</span>
+                                </div>
                             </el-col>
                         </div>
                     </el-col>
                     <el-col :span="6">
                         <el-col :span="20">
-                            <el-input placeholder="Estimate"></el-input> <span style="color: red">Demo</span>
+                            <el-time-picker
+                                    placeholder="Estimate"
+                                    v-model="localTask.eta"
+                                    format="HH:mm"
+                                    value-format="HH:mm:ss"
+                                    :default-value="defaultEstimate"
+                            >
+                            </el-time-picker>
                         </el-col>
                     </el-col>
                     <el-col :span="6">
@@ -33,12 +45,14 @@
                                    size="middle"
                                    v-if="editTask"
                                    @click.prevent="updateTask"
+                                   :disabled="formInvalid"
                                    title="Save editing"
                         > Save </el-button>
                         <el-button type="success"
                                    size="middle"
                                    v-if="addingTask"
                                    @click.prevent="addTask"
+                                   :disabled="formInvalid"
                                    title="Add task"
                         > Save </el-button>
                         <el-button
@@ -57,6 +71,7 @@
 
 <script>
     import moment from 'moment';
+    import { required } from 'vuelidate/lib/validators';
     import Http from '../../../helpers/Http';
 
     export default {
@@ -66,6 +81,7 @@
                 localTask: {
                     id         : 0,
                     description: '',
+                    eta        : '',
                     checked    : false,
                     project_id : '',
                 },
@@ -83,6 +99,14 @@
                 this.projects = response.data;
             });
         },
+        computed: {
+            defaultEstimate() {
+                return moment(1, 'hour').format('YYYY-MM-DD HH:mm:ss');
+            },
+            formInvalid() {
+                return this.$v.$invalid;
+            },
+        },
         methods: {
             closeEditor() {
                 this.localTask = Object.assign({}, this.oldTask);
@@ -93,6 +117,13 @@
             },
             addTask() {
                 this.$emit('add-task', this.localTask);
+            },
+        },
+        validations: {
+            localTask: {
+                description: {
+                    required,
+                },
             },
         },
     };
