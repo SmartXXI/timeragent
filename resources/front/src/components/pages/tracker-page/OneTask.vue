@@ -40,21 +40,28 @@
 				</span>
 			</el-col>
 			<el-col :span="2">
-				<span>
-					<el-dropdown :hide-on-click="false">
-                        <span class="el-dropdown-link">
-                            <i class="el-icon-more"></i>
-                        </span>
-                        <el-dropdown-menu slot="dropdown">
-                            <el-dropdown-item>
-                                <span @click.prevent="showEditor"><i class="el-icon-edit" ></i> Edit</span>
-                            </el-dropdown-item>
-                            <el-dropdown-item>
-                                <span  @click.prevent="dialogVisible = true"><i class="el-icon-delete" ></i> Delete</span>
-                            </el-dropdown-item>
-                        </el-dropdown-menu>
-                    </el-dropdown>
-				</span>
+				<!--<span>-->
+					<!--<el-dropdown :hide-on-click="false">-->
+                        <!--<span class="el-dropdown-link">-->
+                            <!--<i class="el-icon-more"></i>-->
+                        <!--</span>-->
+                        <!--<el-dropdown-menu slot="dropdown">-->
+                            <!--<el-dropdown-item>-->
+                                <!--<span @click.prevent="showEditor"><i class="el-icon-edit" ></i> Edit</span>-->
+                            <!--</el-dropdown-item>-->
+                            <!--<el-dropdown-item>-->
+                                <!--<span  @click.prevent="dialogVisible = true"><i class="el-icon-delete" ></i> Delete</span>-->
+                            <!--</el-dropdown-item>-->
+                        <!--</el-dropdown-menu>-->
+                    <!--</el-dropdown>-->
+				<!--</span>-->
+                <el-button type="plain"
+                           class="stop-button"
+                           plain
+                           @click.prevent="showEditor"
+                >
+                    <i class="el-icon-edit"></i>
+                </el-button>
 			</el-col>
             <el-col :span="2">
                 <i class="el-icon-arrow-down"
@@ -339,6 +346,10 @@ export default {
 		color: #fff;
 	}
 
+    .description {
+        cursor: pointer;
+    }
+    
 	.col {
 			padding: 20px 35px;
 			padding-right: 0; 
