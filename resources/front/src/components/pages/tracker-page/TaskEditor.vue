@@ -1,16 +1,19 @@
 <template>
     <div>
         <div class="timer-timeentry-editor">
-            <el-form>
+            <el-form
+                    @keyup.enter.native="(editTask) ? updateTask() : addTask()"
+                    @keyup.esc.native="closeEditor"
+            >
                 <el-row>
                     <el-col :span="12">
                         <div class="flex-container">
                             <el-col :span="22">
                                 <el-input placeholder="Enter description"
+                                          ref="description"
                                           :class="{ 'has-error': $v.localTask.description.$error }"
                                           v-model="localTask.description"
                                           prefix-icon="el-icon-edit-outline"
-                                          autofocus
                                           @input="$v.localTask.description.$touch()"
                                 >
                                 </el-input>
@@ -90,6 +93,9 @@
                 projects: {},
             };
         },
+        mounted() {
+            this.$refs.description.focus();
+        },
         created() {
             if (this.task) {
                 this.oldTask = Object.assign({}, this.task);
@@ -114,9 +120,11 @@
                 this.$emit('close-editor');
             },
             updateTask() {
+                if (this.formInvalid) return;
                 this.$emit('update-task', this.localTask);
             },
             addTask() {
+                if (this.formInvalid) return;
                 this.localTask.created_at = moment(this.$store.getters.date, 'YYYY-MM-DD')
                     .format('YYYY-MM-DD HH:mm:ss');
                 this.$emit('add-task', this.localTask);
