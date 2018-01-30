@@ -107,7 +107,7 @@
                 <div v-if="task.time_entries.length"
                      v-for="timeEntry in task.time_entries"
                 >
-                    <time-entry :timeEntry="timeEntry"></time-entry>
+                    <time-entry :timeEntry="timeEntry" @stop-task="stopTask"></time-entry>
                 </div>
                 <div v-if="!task.time_entries.length" class="gray-text">
                     No time has been recorded yet
@@ -153,7 +153,7 @@
             <span>It will not be undone. Continue?</span>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="dialogVisible = false">No</el-button>
-                <el-button type="primary" @click="deleteTask">Yes</el-button>
+                <el-button type="primary" @click="deleteTask" autofocus>Yes</el-button>
             </span>
         </el-dialog>
         <el-dialog
@@ -163,7 +163,7 @@
             <span>Stop previous active task?</span>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="confirmStopActive = false">No</el-button>
-                <el-button type="primary" @click="continueTask(stopActive)">Yes</el-button>
+                <el-button type="primary" @click="continueTask(stopActive)" autofocus>Yes</el-button>
             </span>
         </el-dialog>
     </div>
@@ -327,14 +327,11 @@ export default {
         },
         deleteTask() {
             this.dialogVisible = false;
-            if (this.task.active === true && moment().diff(moment(this.task.startTime, 'HH:mm:ss'), 'seconds') < 60) {
+            const activeTimeEntry = this.getActiveTimeEntry();
+            if (activeTimeEntry && activeTimeEntry.task_id === this.task.id) {
                 this.stopTask();
-            } else if (this.task.active === true) {
-                this.stopTask();
-                this.$store.dispatch('deleteTask', { task: this.task, index: this.index });
-            } else {
-                this.$store.dispatch('deleteTask', { task: this.task, index: this.index });
             }
+            this.$store.dispatch('deleteTask', { task: this.task, index: this.index });
         },
         currentTime() {
             return moment();
