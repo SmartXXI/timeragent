@@ -19,9 +19,12 @@
 			<!--</el-col>-->
             <el-col :span="6">
                 <div v-if="task.time_entries.length > 0 || task.total">
-                <span v-if="$store.getters.date !== date">{{ formatTotal(task.total) }}<br></span>
-                <span v-if="$store.getters.date === date && task.total">{{ formatTotal(task.total) }}<br></span>
-                {{ ($store.getters.date === date) ? formatTodayTotal(todayTotal) : '' }}
+                    <span v-if="$store.getters.date !== date">{{ formatTotal(task.total) }}<br></span>
+                    <span v-if="$store.getters.date === date && task.total">{{ formatTotal(task.total) }}<br></span>
+                    {{ ($store.getters.date === date) ? formatTodayTotal(todayTotal) : '' }}
+                </div>
+                <div v-else>
+                    <span class="gray-text">0 min</span>
                 </div>
             </el-col>
 			<el-col :span="2">
@@ -67,8 +70,13 @@
 		<el-row v-if="showTimeEntries">
             <el-row>
             <el-col :span="20">
-                <div v-for="timeEntry in task.time_entries">
+                <div v-if="task.time_entries.length"
+                     v-for="timeEntry in task.time_entries"
+                >
                     <time-entry :timeEntry="timeEntry"></time-entry>
+                </div>
+                <div v-if="!task.time_entries.length" class="gray-text">
+                    No time has been recorded yet
                 </div>
             </el-col>
             <el-col :span="4">
@@ -393,5 +401,9 @@ export default {
 <style>
     .el-icon-arrow-down, .el-icon-arrow-up {
         cursor: pointer;
+    }
+
+    .gray-text {
+        color: #b4bccc;
     }
 </style>
