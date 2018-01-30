@@ -20,10 +20,16 @@ class TaskController extends Controller
 
 
         return  Task::where('user_id', Auth::id())
-            ->whereDate('created_at', $request->date)
-            ->orWhereHas('timeEntries', function($sql) use($request) {
-                $sql->whereDate('startTime', $request->date);
+            ->where(function ($sql) use ($request) {
+                $sql->whereDate('created_at', $request->date)
+                    ->orWhereHas('timeEntries', function($sql) use($request) {
+                        $sql->whereDate('startTime', $request->date);
+                    });
             })
+//            ->whereDate('created_at', $request->date)
+//            ->orWhereHas('timeEntries', function($sql) use($request) {
+//                $sql->whereDate('startTime', $request->date);
+//            })
             ->with(['timeEntries' => function($query) use($request) {
                 $query->whereDate('startTime', $request->date)->orderBy('startTime');
             }])
