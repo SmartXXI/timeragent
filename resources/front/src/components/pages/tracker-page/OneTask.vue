@@ -55,13 +55,40 @@
                         <!--</el-dropdown-menu>-->
                     <!--</el-dropdown>-->
 				<!--</span>-->
-                <el-button type="plain"
-                           class="stop-button"
-                           plain
-                           @click.prevent="showEditor"
+                <el-popover
+                    ref="menu"
+                    placement="top"
+                    v-model="visibleMenu"
+                    trigger="hover"
                 >
-                    <i class="el-icon-edit"></i>
-                </el-button>
+                    <el-button type="plain"
+                        class="stop-button"
+                        plain
+                        @click.prevent="showEditor"
+                    >
+                        <i class="el-icon-edit"></i>
+                    </el-button>
+                    <el-button type="danger"
+                               class="stop-button"
+                               plain
+                               @click.prevent="dialogVisible = true"
+                    >
+                        <i class="el-icon-delete"></i>
+                    </el-button>
+                </el-popover>
+
+                <span
+                      v-popover:menu
+                >
+                    <i class="el-icon-more"></i>
+                </span>
+                <!--<el-button type="plain"-->
+                           <!--class="stop-button"-->
+                           <!--plain-->
+                           <!--@click.prevent="showEditor"-->
+                <!--&gt;-->
+                    <!--<i class="el-icon-edit"></i>-->
+                <!--</el-button>-->
 			</el-col>
             <el-col :span="2">
                 <i class="el-icon-arrow-down"
@@ -155,6 +182,7 @@ export default {
             isEditing        : false,
             addingTimeEntry  : false,
             dialogVisible    : false,
+            visibleMenu      : false,
             confirmStopActive: false,
             stopActive       : true,
             showTimeEntries  : false,
@@ -349,7 +377,7 @@ export default {
     .description {
         cursor: pointer;
     }
-    
+
 	.col {
 			padding: 20px 35px;
 			padding-right: 0; 
@@ -411,11 +439,15 @@ export default {
 </style>
 
 <style>
-    .el-icon-arrow-down, .el-icon-arrow-up {
+    .el-icon-arrow-down, .el-icon-arrow-up, .el-icon-more {
         cursor: pointer;
     }
 
     .gray-text {
         color: #b4bccc;
+    }
+
+    .el-popover {
+        min-width: 85px;
     }
 </style>
