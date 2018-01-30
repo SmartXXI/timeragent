@@ -2,7 +2,7 @@
     <div>
         <div class="timer-timeentry-editor">
             <el-form
-                    @keyup.enter.native="(editTask) ? updateTask() : addTask()"
+                    @keyup.enter.native="(editingTask) ? updateTask() : addTask()"
                     @keyup.esc.native="closeEditor"
             >
                 <el-row>
@@ -46,7 +46,7 @@
                     <el-col class="action-buttons">
                         <el-button type="success"
                                    size="middle"
-                                   v-if="editTask"
+                                   v-if="editingTask"
                                    @click.prevent="updateTask"
                                    :disabled="formInvalid"
                                    title="Save editing"
@@ -65,6 +65,11 @@
                         >
                             Cancel
                         </el-button>
+                        <el-button type="text"
+                                   v-if="editingTask"
+                                   class="delete_button"
+                                   @click.prevent="deleteTask"
+                        >Delete Task</el-button>
                     </el-col>
                 </el-row>
             </el-form>
@@ -78,7 +83,7 @@
     import Http from '../../../helpers/Http';
 
     export default {
-        props: ['task', 'addingTask', 'editTask'],
+        props: ['task', 'addingTask', 'editingTask'],
         data() {
             return {
                 localTask: {
@@ -129,6 +134,9 @@
                     .format('YYYY-MM-DD HH:mm:ss');
                 this.$emit('add-task', this.localTask);
             },
+            deleteTask() {
+                this.$emit('delete-task');
+            },
         },
         validations: {
             localTask: {
@@ -172,6 +180,10 @@
         border-bottom: 2px solid #178fe5;
         outline: 0;
         padding: 6px 0 5px;
+    }
+
+    .delete_button {
+        color: #FA5555;
     }
 
     .actions {

@@ -106,7 +106,8 @@
 			<task-editor v-if="isEditing"
                          @update-task="updateTask"
                          @close-editor="closeEditor"
-                         :editTask="true"
+                         @delete-task="dialogVisible = true"
+                         :editingTask="true"
                          :task="task"
             ></task-editor>
         </el-row>
