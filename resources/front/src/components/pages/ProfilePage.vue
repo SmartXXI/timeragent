@@ -23,28 +23,28 @@
                         <el-col :span="16" :offset="4">
                             <el-row>
                                 <label>Name</label>
-                                    <el-input :class="{ 'has-error': $v.user.name.$error }"
+                                    <el-input :class="{ 'has-error': $v.localUser.name.$error }"
                                               placeholder="Enter your name"
-                                              v-model="user.name"
-                                              @input="$v.user.name.$touch()"
+                                              v-model="localUser.name"
+                                              @input="$v.localUser.name.$touch()"
                                     ></el-input>
-                                    <i class="fa fa-exclamation-circle error-icon" v-if="$v.user.name.$error">
+                                    <i class="fa fa-exclamation-circle error-icon" v-if="$v.localUser.name.$error">
                                         <div class="errors">
-                                            <span class="error-message" v-if="!$v.user.name.required">Field is required</span>
+                                            <span class="error-message" v-if="!$v.localUser.name.required">Field is required</span>
                                         </div> 
                                     </i>
                             </el-row>
                             <el-row>
                                 <label>Email</label>
-                                    <el-input :class="{ 'has-error': $v.user.email.$error }"
+                                    <el-input :class="{ 'has-error': $v.localUser.email.$error }"
                                               placeholder="Enter your email"
-                                              v-model="user.email"
-                                              @input="$v.user.email.$touch()"
+                                              v-model="localUser.email"
+                                              @input="$v.localUser.email.$touch()"
                                     ></el-input>
-                                    <i class="fa fa-exclamation-circle error-icon" v-if="$v.user.email.$error">
+                                    <i class="fa fa-exclamation-circle error-icon" v-if="$v.localUser.email.$error">
                                         <div class="errors">
-                                            <span class="error-message" v-if="!$v.user.email.required">Field is required</span>
-                                            <span class="error-message" v-if="!$v.user.email.email">Invalid email</span>
+                                            <span class="error-message" v-if="!$v.localUser.email.required">Field is required</span>
+                                            <span class="error-message" v-if="!$v.localUser.email.email">Invalid email</span>
                                         </div>
                                     </i>
                             </el-row>
@@ -55,13 +55,13 @@
                                               <!--v-model="user.billable_rate"-->
                                               <!--@input="$v.user.billable_rate.$touch()"-->
                                     <!--&gt;</el-input>-->
-                                    <el-input-number v-model="user.billable_rate" :min="0"></el-input-number>
+                                    <el-input-number v-model="localUser.billable_rate" :min="0"></el-input-number>
                                     <!--<i class="fa fa-exclamation-circle error-icon" v-if="$v.user.billable_rate.$error">-->
                                         <!--<div class="errors">-->
                                             <!--<span class="error-message" v-if="!$v.user.billable_rate.required">Invalid data</span>-->
                                         <!--</div>-->
                                     <!--</i>-->
-                                <el-radio-group v-model="user.billable_currency">
+                                <el-radio-group v-model="localUser.billable_currency">
                                     <el-radio-button label="$" title="Dollar USA"></el-radio-button>
                                     <el-radio-button label="€" title="Euro"></el-radio-button>
                                     <el-radio-button label="₴" title="Hryvna"></el-radio-button>
@@ -75,13 +75,13 @@
                                               <!--v-model="user.cost_rate"-->
                                               <!--@input="$v.user.cost_rate.$touch()"-->
                                     <!--&gt;</el-input>-->
-                                <el-input-number v-model="user.cost_rate" :min="0"></el-input-number>
+                                <el-input-number v-model="localUser.cost_rate" :min="0"></el-input-number>
                                     <!--<i class="fa fa-exclamation-circle error-icon" v-if="$v.user.cost_rate.$error">-->
                                         <!--<div class="errors">-->
                                             <!--<span class="error-message" v-if="!$v.user.cost_rate.numeric">Invalid data</span>-->
                                         <!--</div>-->
                                     <!--</i>-->
-                                <el-radio-group v-model="user.cost_currency">
+                                <el-radio-group v-model="localUser.cost_currency">
                                     <el-radio-button label="$" title="Dollar USA"></el-radio-button>
                                     <el-radio-button label="€" title="Euro"></el-radio-button>
                                     <el-radio-button label="₴" title="Hryvna"></el-radio-button>
@@ -107,8 +107,21 @@
 
     export default {
         mixins: [notification],
+        data() {
+            return {
+                localUser: {
+                    name         : '',
+                    email        : '',
+                    billable_rate: '',
+                    cost_rate    : '',
+                },
+            };
+        },
         created() {
-            this.$store.dispatch('getUser');
+            this.$store.dispatch('getUser')
+                .then(() => {
+                    Object.assign(this.localUser, this.user);
+                });
         },
         computed: {
             formInvalid() {
@@ -121,7 +134,7 @@
         methods: {
             updateUser() {
                 if (this.$v.$invalid) return;
-                this.$store.dispatch('updateUser', { user: this.user })
+                this.$store.dispatch('updateUser', { user: this.localUser })
                 .then(() => {
                     this.showSuccess('Profile saved successful');
                     this.$router.go(-1);
@@ -134,22 +147,24 @@
         components: {
             NavMenuAuth,
         },
-        validations: {
-            user: {
-                name: {
-                    required,
-                },
-                email: {
-                    required,
-                    email,
-                },
+        validations() {
+            return {
+                localUser: {
+                    name: {
+                        required,
+                    },
+                    email: {
+                        required,
+                        email,
+                    },
 //                billable_rate: {
 //                    numeric,
 //                },
 //                cost_rate: {
 //                    numeric,
 //                },
-            },
+                },
+            };
         },
     };
 </script>

@@ -115,7 +115,7 @@ export default {
             .then(() => context.dispatch('getTasks', { date: context.state.date }));
     },
     getUser(context) {
-        Http.get('api/user')
+        return Http.get('api/user')
             .then(response => context.commit(types.GET_USER, response.data));
     },
     updateUser(context, payload) {
