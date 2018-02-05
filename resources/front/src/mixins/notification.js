@@ -16,9 +16,10 @@ const notification = {
         },
         showWarning(messageText = 'Warning') {
             this.$notify({
-                title  : 'Warning',
-                message: messageText,
-                type   : 'warning',
+                title                   : 'Warning',
+                dangerouslyUseHTMLString: true,
+                message                 : messageText,
+                type                    : 'warning',
             });
         },
     },
