@@ -37,7 +37,14 @@
                 this.isEditing = false;
             },
             deleteTimeEntry(timeEntry) {
-                this.$store.dispatch('deleteTimeEntry', { timeEntry });
+                if (this.timeEntry.active === 1
+                    && moment().diff(moment(this.timeEntry.startTime, 'HH:mm:ss'), 'seconds') < 60) {
+                    this.$emit('stop-task');
+                } else if (this.timeEntry.active === 1) {
+                    this.$store.dispatch('deleteTimeEntry', { timeEntry });
+                } else {
+                    this.$store.dispatch('deleteTimeEntry', { timeEntry });
+                }
             },
             closeEditor() {
                 this.isEditing = false;

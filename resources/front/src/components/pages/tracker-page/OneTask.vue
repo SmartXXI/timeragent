@@ -18,8 +18,14 @@
 				<!--<span v-if="task.startTime !== null"><span >{{ spendTime }}</span></span>-->
 			<!--</el-col>-->
             <el-col :span="6">
-                {{ formatTotal(task.total) }}<br>
-                {{ ($store.getters.date === date) ? formatTodayTotal(todayTotal) : '' }}
+                <div v-if="task.time_entries.length > 0 || task.total">
+                    <span v-if="$store.getters.date !== date">{{ formatTotal(task.total) }}<br></span>
+                    <span v-if="$store.getters.date === date && task.total">{{ formatTotal(task.total) }}<br></span>
+                    {{ ($store.getters.date === date) ? formatTodayTotal(todayTotal) : '' }}
+                </div>
+                <div v-else>
+                    <span class="gray-text">0 min</span>
+                </div>
             </el-col>
 			<el-col :span="2">
 				<span title="Stop task">
@@ -34,21 +40,55 @@
 				</span>
 			</el-col>
 			<el-col :span="2">
-				<span>
-					<el-dropdown :hide-on-click="false">
-                        <span class="el-dropdown-link">
-                            <i class="el-icon-more"></i>
-                        </span>
-                        <el-dropdown-menu slot="dropdown">
-                            <el-dropdown-item>
-                                <span @click.prevent="showEditor"><i class="el-icon-edit" ></i> Edit</span>
-                            </el-dropdown-item>
-                            <el-dropdown-item>
-                                <span  @click.prevent="dialogVisible = true"><i class="el-icon-delete" ></i> Delete</span>
-                            </el-dropdown-item>
-                        </el-dropdown-menu>
-                    </el-dropdown>
-				</span>
+				<!--<span>-->
+					<!--<el-dropdown :hide-on-click="false">-->
+                        <!--<span class="el-dropdown-link">-->
+                            <!--<i class="el-icon-more"></i>-->
+                        <!--</span>-->
+                        <!--<el-dropdown-menu slot="dropdown">-->
+                            <!--<el-dropdown-item>-->
+                                <!--<span @click.prevent="showEditor"><i class="el-icon-edit" ></i> Edit</span>-->
+                            <!--</el-dropdown-item>-->
+                            <!--<el-dropdown-item>-->
+                                <!--<span  @click.prevent="dialogVisible = true"><i class="el-icon-delete" ></i> Delete</span>-->
+                            <!--</el-dropdown-item>-->
+                        <!--</el-dropdown-menu>-->
+                    <!--</el-dropdown>-->
+				<!--</span>-->
+                <el-popover
+                    ref="menu"
+                    placement="top"
+                    v-model="visibleMenu"
+                    trigger="hover"
+                >
+                    <el-button type="plain"
+                        class="stop-button"
+                        plain
+                        @click.prevent="showEditor"
+                    >
+                        <i class="el-icon-edit"></i>
+                    </el-button>
+                    <el-button type="danger"
+                               class="stop-button"
+                               plain
+                               @click.prevent="dialogVisible = true"
+                    >
+                        <i class="el-icon-delete"></i>
+                    </el-button>
+                </el-popover>
+
+                <span
+                      v-popover:menu
+                >
+                    <i class="el-icon-more"></i>
+                </span>
+                <!--<el-button type="plain"-->
+                           <!--class="stop-button"-->
+                           <!--plain-->
+                           <!--@click.prevent="showEditor"-->
+                <!--&gt;-->
+                    <!--<i class="el-icon-edit"></i>-->
+                <!--</el-button>-->
 			</el-col>
             <el-col :span="2">
                 <i class="el-icon-arrow-down"
@@ -64,8 +104,13 @@
 		<el-row v-if="showTimeEntries">
             <el-row>
             <el-col :span="20">
-                <div v-for="timeEntry in task.time_entries">
-                    <time-entry :timeEntry="timeEntry"></time-entry>
+                <div v-if="task.time_entries.length"
+                     v-for="timeEntry in task.time_entries"
+                >
+                    <time-entry :timeEntry="timeEntry" @stop-task="stopTask"></time-entry>
+                </div>
+                <div v-if="!task.time_entries.length" class="gray-text">
+                    No time has been recorded yet
                 </div>
             </el-col>
             <el-col :span="4">
@@ -95,7 +140,8 @@
 			<task-editor v-if="isEditing"
                          @update-task="updateTask"
                          @close-editor="closeEditor"
-                         :editTask="true"
+                         @delete-task="dialogVisible = true"
+                         :editingTask="true"
                          :task="task"
             ></task-editor>
         </el-row>
@@ -107,7 +153,7 @@
             <span>It will not be undone. Continue?</span>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="dialogVisible = false">No</el-button>
-                <el-button type="primary" @click="deleteTask">Yes</el-button>
+                <el-button type="primary" @click="deleteTask" autofocus>Yes</el-button>
             </span>
         </el-dialog>
         <el-dialog
@@ -117,7 +163,7 @@
             <span>Stop previous active task?</span>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="confirmStopActive = false">No</el-button>
-                <el-button type="primary" @click="continueTask(stopActive)">Yes</el-button>
+                <el-button type="primary" @click="continueTask(stopActive)" autofocus>Yes</el-button>
             </span>
         </el-dialog>
     </div>
@@ -136,6 +182,7 @@ export default {
             isEditing        : false,
             addingTimeEntry  : false,
             dialogVisible    : false,
+            visibleMenu      : false,
             confirmStopActive: false,
             stopActive       : true,
             showTimeEntries  : false,
@@ -155,6 +202,7 @@ export default {
             return `${(hours > 0 ? `${hours} h ` : '')} ${minutes} min`;
         },
         todayTotal() {
+            if (this.task.time_entries.length === 0) return moment.duration(0, 'seconds');
             let spendTime = '';
             const total = this.task.time_entries.reduce((prev, cur) => {
                 let endTime = cur.endTime;
@@ -243,7 +291,7 @@ export default {
                             this.$store.dispatch('stopTimer');
                             this.$store.dispatch('stopTask', { task: activeTimeEntry });
                         }
-                        this.$store.dispatch('createTask', { task: this.task });
+                        this.$store.dispatch('startTask', { task: this.task });
                         this.$store.dispatch('startTimer');
                     });
             } else {
@@ -253,7 +301,7 @@ export default {
                     this.$store.dispatch('stopTimer');
                     this.$store.dispatch('stopTask', { task: activeTimeEntry });
                 }
-                this.$store.dispatch('createTask', { task: this.task });
+                this.$store.dispatch('startTask', { task: this.task });
                 this.$store.dispatch('startTimer');
             }
         },
@@ -279,14 +327,11 @@ export default {
         },
         deleteTask() {
             this.dialogVisible = false;
-            if (this.task.active === true && moment().diff(moment(this.task.startTime, 'HH:mm:ss'), 'seconds') < 60) {
+            const activeTimeEntry = this.getActiveTimeEntry();
+            if (activeTimeEntry && activeTimeEntry.task_id === this.task.id) {
                 this.stopTask();
-            } else if (this.task.active === true) {
-                this.stopTask();
-                this.$store.dispatch('deleteTask', { task: this.task, index: this.index });
-            } else {
-                this.$store.dispatch('deleteTask', { task: this.task, index: this.index });
             }
+            this.$store.dispatch('deleteTask', { task: this.task, index: this.index });
         },
         currentTime() {
             return moment();
@@ -325,6 +370,10 @@ export default {
 	.active-tag {
 		color: #fff;
 	}
+
+    .description {
+        cursor: pointer;
+    }
 
 	.col {
 			padding: 20px 35px;
@@ -387,7 +436,15 @@ export default {
 </style>
 
 <style>
-    .el-icon-arrow-down, .el-icon-arrow-up {
+    .el-icon-arrow-down, .el-icon-arrow-up, .el-icon-more {
         cursor: pointer;
+    }
+
+    .gray-text {
+        color: #b4bccc;
+    }
+
+    .el-popover {
+        min-width: 85px;
     }
 </style>

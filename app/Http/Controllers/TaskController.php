@@ -20,19 +20,28 @@ class TaskController extends Controller
 
 
         return  Task::where('user_id', Auth::id())
-            ->whereHas('timeEntries', function($sql) use($request) {
-                $sql->whereDate('startTime', $request->date);
+            ->where(function ($sql) use ($request) {
+                $sql->whereDate('created_at', $request->date)
+                    ->orWhereHas('timeEntries', function($sql) use($request) {
+                        $sql->whereDate('startTime', $request->date);
+                    });
             })
+//            ->whereDate('created_at', $request->date)
+//            ->orWhereHas('timeEntries', function($sql) use($request) {
+//                $sql->whereDate('startTime', $request->date);
+//            })
             ->with(['timeEntries' => function($query) use($request) {
                 $query->whereDate('startTime', $request->date)->orderBy('startTime');
             }])
             ->get()
             ->sortBy(function (Task $task) {
-                return $task
-                    ->timeEntries
-                    ->sortBy('startTime')
-                    ->last()
-                    ->startTime;
+                if ($task->timeEntries->count() > 0) {
+                    return $task
+                        ->timeEntries
+                        ->sortBy('startTime')
+                        ->last()
+                        ->startTime;
+                }
             })
             ->map(function (Task $task) use($request) {
                 return array_merge(
@@ -53,18 +62,19 @@ class TaskController extends Controller
             'user_id' => Auth::user()->id,
             'eta'     => $task['eta'],
             'project_id' => $task['project_id'],
+            'created_at' => $task['created_at'],
         ];
         $created_task = Task::create($task_data);
 
-        $time_entry = [
-            'active' => $task['active'],
-            'task_id' => $created_task->id,
-            'startTime' => $task['startTime'],
-            'spendTime' => $task['spendTime'],
-            'endTime' => $task['endTime'],
-        ];
-
-        $time_entry = TimeEntry::create($time_entry);
+//        $time_entry = [
+//            'active' => $task['active'],
+//            'task_id' => $created_task->id,
+//            'startTime' => $task['startTime'],
+//            'spendTime' => $task['spendTime'],
+//            'endTime' => $task['endTime'],
+//        ];
+//
+//        $time_entry = TimeEntry::create($time_entry);
 
 
 //        return response(array_merge(

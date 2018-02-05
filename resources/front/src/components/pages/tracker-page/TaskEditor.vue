@@ -1,16 +1,19 @@
 <template>
     <div>
         <div class="timer-timeentry-editor">
-            <el-form>
+            <el-form
+                    @keyup.enter.native="(editingTask) ? updateTask() : addTask()"
+                    @keyup.esc.native="closeEditor"
+            >
                 <el-row>
                     <el-col :span="12">
                         <div class="flex-container">
                             <el-col :span="22">
                                 <el-input placeholder="Enter description"
+                                          ref="description"
                                           :class="{ 'has-error': $v.localTask.description.$error }"
                                           v-model="localTask.description"
                                           prefix-icon="el-icon-edit-outline"
-                                          autofocus
                                           @input="$v.localTask.description.$touch()"
                                 >
                                 </el-input>
@@ -43,7 +46,7 @@
                     <el-col class="action-buttons">
                         <el-button type="success"
                                    size="middle"
-                                   v-if="editTask"
+                                   v-if="editingTask"
                                    @click.prevent="updateTask"
                                    :disabled="formInvalid"
                                    title="Save editing"
@@ -62,6 +65,11 @@
                         >
                             Cancel
                         </el-button>
+                        <el-button type="text"
+                                   v-if="editingTask"
+                                   class="delete_button"
+                                   @click.prevent="deleteTask"
+                        >Delete Task</el-button>
                     </el-col>
                 </el-row>
             </el-form>
@@ -75,7 +83,7 @@
     import Http from '../../../helpers/Http';
 
     export default {
-        props: ['task', 'addingTask', 'editTask'],
+        props: ['task', 'addingTask', 'editingTask'],
         data() {
             return {
                 localTask: {
@@ -84,10 +92,14 @@
                     eta        : '',
                     checked    : false,
                     project_id : '',
+                    created_at : '',
                 },
                 oldTask : {},
                 projects: {},
             };
+        },
+        mounted() {
+            this.$refs.description.focus();
         },
         created() {
             if (this.task) {
@@ -113,10 +125,17 @@
                 this.$emit('close-editor');
             },
             updateTask() {
+                if (this.formInvalid) return;
                 this.$emit('update-task', this.localTask);
             },
             addTask() {
+                if (this.formInvalid) return;
+                this.localTask.created_at = moment(this.$store.getters.date, 'YYYY-MM-DD')
+                    .format('YYYY-MM-DD HH:mm:ss');
                 this.$emit('add-task', this.localTask);
+            },
+            deleteTask() {
+                this.$emit('delete-task');
             },
         },
         validations: {
@@ -161,6 +180,10 @@
         border-bottom: 2px solid #178fe5;
         outline: 0;
         padding: 6px 0 5px;
+    }
+
+    .delete_button {
+        color: #FA5555;
     }
 
     .actions {

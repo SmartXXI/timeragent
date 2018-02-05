@@ -36,10 +36,10 @@ class TimeEntryController extends Controller
     }
 
     public function deleteTimeEntry(TimeEntry $timeEntry) {
-        if ($timeEntry->task->timeEntries->count() <= 1) {
-            $task = Task::find($timeEntry->task_id);
-            $task->delete();
-        }
+//        if ($timeEntry->task->timeEntries->count() <= 1) {
+//            $task = Task::find($timeEntry->task_id);
+//            $task->delete();
+//        }
         $timeEntry->delete();
     }
 

@@ -5,7 +5,9 @@ export default {
     [types.GET_TASKS](state, data) {
         let activeTask;
         const tasks = data.data;
-        if (tasks.length > 0 && tasks[tasks.length - 1].time_entries[tasks[tasks.length - 1].time_entries.length - 1].active === 1) {
+        if (tasks.length > 0
+            && tasks[tasks.length - 1].time_entries.length > 0
+            && tasks[tasks.length - 1].time_entries[tasks[tasks.length - 1].time_entries.length - 1].active === 1) {
             activeTask = tasks[tasks.length - 1].time_entries[tasks[tasks.length - 1].time_entries.length - 1].id;
             Object.assign(state, {
                 activeTask,
@@ -127,19 +129,19 @@ export default {
     },
     [types.DELETE_TIME_ENTRY](state, timeEntry) {
         // state.tasks.splice(task.index, 1);
-        const tasks = state.tasks.map((task) => {
-            task.time_entries = task.time_entries.filter((timeEntryInArray) => {
-                // console.log(durationInArray.id !== duration.id);
-                return timeEntryInArray.id !== timeEntry.id;
-            });
-            return task;
-        });
-        // console.log(tasks);
-        Object.assign(state, {
-            tasks        : tasks,
-            activeTask   : null,
-            oldActiveTask: null,
-        });
+        // const tasks = state.tasks.map((task) => {
+        //     task.time_entries = task.time_entries.filter((timeEntryInArray) => {
+        //         // console.log(durationInArray.id !== duration.id);
+        //         return timeEntryInArray.id !== timeEntry.id;
+        //     });
+        //     return task;
+        // });
+        // // console.log(tasks);
+        // Object.assign(state, {
+        //     tasks        : tasks,
+        //     activeTask   : null,
+        //     oldActiveTask: null,
+        // });
     },
 
     [types.ADD_TIME_ENTRY](state, task) {
