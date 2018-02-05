@@ -14,14 +14,14 @@
 			<!--<el-col :span="4">-->
 				<!--<small v-if="task.startTime !== null" class="text-muted"> {{ time(task.startTime) }} - <span v-if="task.endTime == null">now</span> <span v-else >{{ time(task.endTime) }}</span> </small>-->
 			<!--</el-col>-->
-			<!--<el-col :span="4">-->
-				<!--<span v-if="task.startTime !== null"><span >{{ spendTime }}</span></span>-->
-			<!--</el-col>-->
+			<el-col :span="2" v-show="false">
+				<span>Progress: {{ taskProgress }}%</span>
+			</el-col>
             <el-col :span="6">
                 <div v-if="task.time_entries.length > 0 || task.total">
                     <span v-if="$store.getters.date !== date">{{ formatTotal(task.total) }}<br></span>
                     <span v-if="$store.getters.date === date && task.total">{{ formatTotal(task.total) }}<br></span>
-                    {{ ($store.getters.date === date) ? formatTodayTotal(todayTotal) : '' }}
+                    <span v-if="$store.getters.date === date">Today: <span :class="{ 'red': limited }">{{ formatTodayTotal(todayTotal) }}</span></span>
                 </div>
                 <div v-else>
                     <span class="gray-text">0 min</span>
@@ -125,7 +125,7 @@
             </el-col>
             </el-row>
             <el-row v-if="task.eta">
-                <el-progress :percentage="taskProgress"></el-progress>
+                <el-progress :percentage="taskProgress" :status="limited ? 'exception' : null"></el-progress>
             </el-row>
 		</el-row>
         <el-row>
@@ -174,9 +174,11 @@ import moment from 'moment';
 import TimeEntryEditor from './TimeEntryEditor';
 import TaskEditor from './TaskEditor';
 import TimeEntry from './TimeEntry';
+import notification from '../../../mixins/notification';
 
 export default {
-    props: ['task', 'index', 'tasks'],
+    props : ['task', 'index', 'tasks'],
+    mixins: [notification],
     data() {
         return {
             isEditing        : false,
@@ -186,6 +188,7 @@ export default {
             confirmStopActive: false,
             stopActive       : true,
             showTimeEntries  : false,
+            limited          : false,
         };
     },
     computed: {
@@ -219,7 +222,12 @@ export default {
             const eta = moment.duration(this.task.eta).asSeconds();
             const total = this.canculateTotal(this.task.eta);
             percentages = (total.asSeconds() / eta) * 100;
-            return Math.round(percentages);
+            if (Math.round(percentages) > 100 && !this.limited) {
+                this.showWarning(`Task <b>${this.task.description}</b> reached time limit`);
+                this.limited = true;
+            }
+            if (Math.round(percentages) < 100 && this.limited) this.limited = false;
+            return (Math.round(percentages) < 100) ? Math.round(percentages) : 100;
         },
         active() {
             return !!this.task.time_entries.find((timeEntry) => {
@@ -251,9 +259,9 @@ export default {
             const minutes = total.minutes();
             if (total.asMinutes() < 1) {
                 const seconds = total.asSeconds();
-                return `Today: ${seconds} sec`;
+                return `${seconds} sec`;
             }
-            return `Today: ${(hours > 0 ? `${hours}  h ` : '')} ${minutes} min `;
+            return `${(hours > 0 ? `${hours}  h ` : '')} ${minutes} min `;
         },
         showTimeEntryCreator() {
             this.addingTimeEntry = true;
@@ -373,6 +381,10 @@ export default {
 
     .description {
         cursor: pointer;
+    }
+
+    .red {
+        color: #f56c6c;
     }
 
 	.col {

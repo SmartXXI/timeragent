@@ -38,9 +38,10 @@
             },
             deleteTimeEntry(timeEntry) {
                 if (this.timeEntry.active === 1
-                    && moment().diff(moment(this.timeEntry.startTime, 'HH:mm:ss'), 'seconds') < 60) {
+                    && moment().diff(moment(this.timeEntry.startTime, 'YYYY-MM-DD HH:mm:ss'), 'seconds') < 60) {
                     this.$emit('stop-task');
                 } else if (this.timeEntry.active === 1) {
+                    this.$emit('stop-task');
                     this.$store.dispatch('deleteTimeEntry', { timeEntry });
                 } else {
                     this.$store.dispatch('deleteTimeEntry', { timeEntry });

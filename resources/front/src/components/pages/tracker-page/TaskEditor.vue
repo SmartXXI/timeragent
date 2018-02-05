@@ -31,8 +31,13 @@
                                     format="HH:mm"
                                     value-format="HH:mm:ss"
                                     :default-value="defaultEstimate"
+                                    @input="$v.localTask.eta.$touch()"
+                                    @blur="clearEta"
                             >
                             </el-time-picker>
+                            <div class="errors" v-if="localTask.eta && $v.localTask.eta.$error">
+                                <span class="error-message" v-if="!$v.localTask.eta.validTime">Invalid time</span>
+                            </div>
                         </el-col>
                     </el-col>
                     <el-col :span="6">
@@ -137,13 +142,39 @@
             deleteTask() {
                 this.$emit('delete-task');
             },
-        },
-        validations: {
-            localTask: {
-                description: {
-                    required,
-                },
+            clearEta(comp) {
+                if (comp.userInput === '') this.localTask.eta = null;
             },
+        },
+        validations() {
+            if (this.localTask.eta) {
+                return {
+                    localTask: {
+                        description: {
+                            required,
+                        },
+                        eta: {
+                            required,
+                            validTime(value) {
+                                if (moment.duration(value).asSeconds() >= 60) {
+                                    return true;
+                                } else {
+                                    return false;
+                                }
+                            },
+                        },
+                    },
+                };
+            } else {
+                return {
+                    localTask: {
+                        description: {
+                            required,
+                        },
+                        eta: {},
+                    },
+                };
+            }
         },
     };
 </script>
