@@ -7,6 +7,11 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Foundation\Auth\RegistersUsers;
 
+use Illuminate\Http\Request;
+use Illuminate\Auth\Events\Registered;
+use Jrean\UserVerification\Traits\VerifiesUsers;
+use Jrean\UserVerification\Facades\UserVerification;
+
 class RegisterController extends Controller
 {
     /*
@@ -21,6 +26,7 @@ class RegisterController extends Controller
     */
 
     use RegistersUsers;
+    use VerifiesUsers;
 
     /**
      * Where to redirect users after registration.
@@ -36,7 +42,7 @@ class RegisterController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('guest');
+        $this->middleware('guest', ['except' => ['getVerification', 'getVerificationError']]);
     }
 
     /**
@@ -67,5 +73,23 @@ class RegisterController extends Controller
             'email' => $data['email'],
             'password' => bcrypt($data['password']),
         ]);
+    }
+
+    public function register(Request $request)
+    {
+        $this->validator($request->all())->validate();
+
+        $user = $this->create($request->all());
+
+        event(new Registered($user));
+
+        $this->guard()->login($user);
+
+        UserVerification::generate($user);
+
+        UserVerification::send($user, 'Verify Account');
+
+        return $this->registered($request, $user)
+            ?: redirect($this->redirectPath());
     }
 }
