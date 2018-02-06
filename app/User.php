@@ -6,10 +6,12 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\HasApiTokens;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Mpociot\Teamwork\Traits\UserHasTeams;
+use Jrean\UserVerification\Traits\VerifiesUsers;
+use Jrean\UserVerification\Traits\UserVerification;
 
 class User extends Authenticatable
 {
-    use HasApiTokens,Notifiable,UserHasTeams;
+    use HasApiTokens,Notifiable,UserHasTeams,UserVerification;
 
     /**
      * The attributes that are mass assignable.

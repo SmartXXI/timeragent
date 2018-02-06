@@ -13,40 +13,41 @@ use Illuminate\Support\Facades\Auth;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
+Route::group(['middleware' => ['isVerified', 'auth:api']], function () {
+    Route::get('/user', 'UserController@index');
 
-Route::middleware('auth:api')->get('/user', 'UserController@index');
+    Route::post('/user', 'UserController@update');
 
-Route::middleware('auth:api')->post('/user', 'UserController@update');
+    Route::get('/tasks', 'TaskController@getTasks');
 
-Route::middleware('auth:api')->get('/tasks', 'TaskController@getTasks');
+    Route::post('/update-task/{task}', 'TaskController@updateTask');
 
-Route::middleware('auth:api')->post('/update-task/{task}', 'TaskController@updateTask');
-
-Route::middleware('auth:api')->post('/create-task', 'TaskController@createTask');
+    Route::post('/create-task', 'TaskController@createTask');
 
 
-Route::middleware('auth:api')->post('/continue-task/{timeEntry}', 'TimeEntryController@continueTask');
+    Route::post('/continue-task/{timeEntry}', 'TimeEntryController@continueTask');
 
-Route::middleware('auth:api')->post('/stop-task/{timeEntry}', 'TimeEntryController@stopTask');
+    Route::post('/stop-task/{timeEntry}', 'TimeEntryController@stopTask');
 
-Route::middleware('auth:api')->post('/delete-task/{task}', 'TaskController@deleteTask');
+    Route::post('/delete-task/{task}', 'TaskController@deleteTask');
 
-Route::middleware('auth:api')->post('/create-time-entry', 'TimeEntryController@createTimeEntry');
-Route::middleware('auth:api')->post('/update-time-entry/{timeEntry}', 'TimeEntryController@updateTimeEntry');
-Route::middleware('auth:api')->post('/delete-time-entry/{timeEntry}', 'TimeEntryController@deleteTimeEntry');
+    Route::post('/create-time-entry', 'TimeEntryController@createTimeEntry');
+    Route::post('/update-time-entry/{timeEntry}', 'TimeEntryController@updateTimeEntry');
+    Route::post('/delete-time-entry/{timeEntry}', 'TimeEntryController@deleteTimeEntry');
 
-Route::middleware('auth:api')->get('/teams', 'TeamController@getTeams');
-Route::middleware('auth:api')->post('/teams/new', 'TeamController@create');
-Route::middleware('auth:api')->post('/teams/invite', 'TeamController@invite');
-Route::middleware('auth:api')->get('/teams/exists-members', 'TeamController@getExistsMembers');
-Route::middleware('auth:api')->post('/teams/{team}/delete', 'TeamController@delete');
-Route::middleware('auth:api')->get('/teams/{team}', 'TeamController@edit')->middleware('can:update,team');
-Route::middleware('auth:api')->post('/teams/{team}', 'TeamController@update');
+    Route::get('/teams', 'TeamController@getTeams');
+    Route::post('/teams/new', 'TeamController@create');
+    Route::post('/teams/invite', 'TeamController@invite');
+    Route::get('/teams/exists-members', 'TeamController@getExistsMembers');
+    Route::post('/teams/{team}/delete', 'TeamController@delete');
+    Route::get('/teams/{team}', 'TeamController@edit')->middleware('can:update,team');
+    Route::post('/teams/{team}', 'TeamController@update');
 
-Route::middleware('auth:api')->get('/projects', 'ProjectController@getProjects');
-Route::middleware('auth:api')->post('/projects/new', 'ProjectController@createProject');
-Route::middleware('auth:api')->get('/projects/teams', 'TeamController@getOwnTeams');
-Route::middleware('auth:api')->get('/projects/users', 'TeamController@getOwnUsers');
-Route::middleware('auth:api')->get('/projects/{project}', 'ProjectController@edit')->middleware('can:update,project');
-Route::middleware('auth:api')->post('/projects/{project}', 'ProjectController@update');
-Route::middleware('auth:api')->post('/projects/{project}/delete', 'ProjectController@delete');
+    Route::get('/projects', 'ProjectController@getProjects');
+    Route::post('/projects/new', 'ProjectController@createProject');
+    Route::get('/projects/teams', 'TeamController@getOwnTeams');
+    Route::get('/projects/users', 'TeamController@getOwnUsers');
+    Route::get('/projects/{project}', 'ProjectController@edit')->middleware('can:update,project');
+    Route::post('/projects/{project}', 'ProjectController@update');
+    Route::post('/projects/{project}/delete', 'ProjectController@delete');
+});

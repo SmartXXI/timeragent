@@ -16,7 +16,7 @@ Route::get('/', function () {
         return redirect()->to(config('app.promo_url'));
     }
     return view('welcome');
-});
+})->middleware('isVerified');
 
 Auth::routes();
 
@@ -24,39 +24,11 @@ Auth::routes();
         // Route::get('/', 'HomeController@index')->name('home');
 // });
 
-Route::get('/', 'HomeController@index')->name('home');
+Route::get('/', 'HomeController@index')->name('home')->middleware('isVerified');
 
-Route::get('/redirect', function() {
-    // Build the query parameter string to pass auth information to our request
-    $query = http_build_query([
-        'client_id' => 3,
-        // 'redirect_uri' => 'http://time-tracker-laravel.dev/callback',
-        'redirect_uri' => 'http://localhost:8080/#/tracker',
-        'response_type' => 'code',
-        'scope' => ''
-    ]);
-
-    // Redirect the user to the OAuth authorization page
-    return redirect('http://time-tracker-laravel.dev/oauth/authorize?' . $query);
-});
-
-Route::get('/callback', function() {
-	$http = new GuzzleHttp/Client;
-
-	$response = $http->post('time-tracker-laravel/oauth/token', [
-		'form_params' => [
-			'grant_type' => 'authorization_code',
-			'client_id' => 3,
-			'client_secret' => 'jAnXxvF96Gw5iPW5vmWlcjZ8L098B4t57fakMRTx',
-			'redirect_uri' => 'http://time-tracker-laravel.dev/callback',
-			'code' => $request->code,
-		],
-	]);
-
-	return json_decode((string) $response->getBody(), true);
-});
-
-
+Route::get('/email-verification/not-verified', function() {
+    return view('laravel-user-verification::user-not-verified');
+})->name('userNotVerified')->middleware('auth');
 
 
 /**
