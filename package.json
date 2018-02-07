@@ -22,5 +22,9 @@
         "eslint-plugin-import": "^2.8.0",
         "eslint-plugin-vue": "^3.13.1",
         "laravel-mix": "^1.7.2"
+    },
+    "dependencies": {
+        "css-loader": "^0.28.9",
+        "sass-loader": "^6.0.6"
     }
 }
