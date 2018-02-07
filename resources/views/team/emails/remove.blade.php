@@ -1,0 +1,1 @@
+You have been removed from team <b>{{ $team->name }}</b>.<br>

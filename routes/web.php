@@ -29,6 +29,7 @@ Route::get('/', 'HomeController@index')->name('home')->middleware('isVerified');
 Route::get('/email-verification/not-verified', function() {
     return view('laravel-user-verification::user-not-verified');
 })->name('userNotVerified')->middleware('auth');
+Route::get('teams/{team}/{user}/accept/{token}', 'TeamController@acceptInvite')->name('teams.accept_invite')->middleware('auth');
 
 
 /**
@@ -49,5 +50,5 @@ Route::group(['prefix' => 'teams', 'namespace' => 'Teamwork'], function()
     Route::post('members/{id}', 'TeamMemberController@invite')->name('teams.members.invite');
     Route::delete('members/{id}/{user_id}', 'TeamMemberController@destroy')->name('teams.members.destroy');
 
-    Route::get('accept/{token}', 'AuthController@acceptInvite')->name('teams.accept_invite')->middleware('auth');
+//    Route::get('accept/{token}', 'AuthController@acceptInvite')->name('teams.accept_invite')->middleware('auth');
 });

@@ -1,0 +1,1 @@
+User {{ $user->name  }} accepted invitation to join team <b>{{$team->name}}</b>.<br>
