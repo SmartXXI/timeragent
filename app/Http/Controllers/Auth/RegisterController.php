@@ -83,13 +83,39 @@ class RegisterController extends Controller
 
         event(new Registered($user));
 
-        $this->guard()->login($user);
+        $this->sendVerifyEmail($user->email);
 
-        UserVerification::generate($user);
+    }
 
-        UserVerification::send($user, 'Verify Account');
+    public function getVerification(Request $request, $token)
+    {
+        if (! $this->validateRequest($request)) {
+            return redirect($this->redirectIfVerificationFails());
+        }
 
-        return $this->registered($request, $user)
-            ?: redirect($this->redirectPath());
+        try {
+            $user = UserVerification::process($request->input('email'), $token, $this->userTable());
+        } catch (UserNotFoundException $e) {
+            return redirect($this->redirectIfVerificationFails());
+        } catch (UserIsVerifiedException $e) {
+            return redirect($this->redirectIfVerified());
+        } catch (TokenMismatchException $e) {
+            return redirect($this->redirectIfVerificationFails());
+        }
+
+        if (config('user-verification.auto-login') === true) {
+            auth()->loginUsingId($user->id);
+        }
+
+        return redirect()->route('login')->with('message', 'Email verification success. You can login to your account');
+    }
+
+    public function sendVerifyEmail($email) {
+        $user = User::where('email', $email)->first();
+        if (!is_null($user)) {
+            UserVerification::generate($user);
+            UserVerification::send($user, 'Verify Account');
+            return redirect()->route('login')->with('message', 'The activation email has been sent to ' . $user->email);
+        }
     }
 }

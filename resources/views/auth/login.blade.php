@@ -36,9 +36,25 @@
                 <p class="fieldset">
                     <input class="full-width" type="submit" value="Login">
                 </p>
+                @if (session('message'))
+                    <div class="alert alert-success">
+                        {{ session('message') }}
+                    </div>
+                @endif
             </form>
 
-            <p class="cd-form-bottom-message"><a href="{{ route('password.request') }}">Forgot your password?</a></p>
+            <p class="cd-form-bottom-message">
+                <a href="{{ route('password.request') }}">Forgot your password?</a>
+                @if ($errors->has('email'))
+                    <a href="{{ route('send.verify.email', old('email')) }}"
+                       onclick="event.preventDefault(); document.getElementById('send-email').submit();">
+                        Send activation email again
+                    </a>
+                    <form id="send-email" class="cd-form" method="POST" action="{{ route('send.verify.email', old('email')) }}">
+                        {{ csrf_field() }}
+                    </form>
+                @endif
+            </p>
         </div> <!-- cd-login -->
 
         <a href="#0" class="cd-close-form">Close</a>
