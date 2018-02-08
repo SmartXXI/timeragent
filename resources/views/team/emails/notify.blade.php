@@ -1,7 +1,6 @@
-{{--You have been invited to join team <b>{{$team->name}}</b>.<br>--}}
-{{--Click <a href="{{route('teams.accept_invite', ['team' => $team->id, 'user' => $user->id, 'invite' => $invite->accept_token])}}">here</a> to join.--}}
+{{--User {{ $user->name  }} accepted invitation to join team <b>{{$team->name}}</b>.<br>--}}
 
-        <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
@@ -142,7 +141,7 @@
                                                 <tr>
                                                     <td style="color:#187272;">
                                                         <br>
-                                                        You have been invited to join team <b>{{$team->name}}</b>
+                                                        User {{ $user->name  }} accepted invitation to join team <b>{{$team->name}}</b>.<br>
                                                         <br>
                                                         <br>
                                                     </td>
@@ -150,23 +149,6 @@
                                             </table>
                                         </center>
 
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <div><!--[if mso]>
-                                            <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="http://" style="height:50px;v-text-anchor:middle;width:200px;" arcsize="8%" stroke="f" fillcolor="#178f8f">
-                                                <w:anchorlock/>
-                                                <center>
-                                            <![endif]-->
-                                            <a href="{{route('teams.accept_invite', ['team' => $team->id, 'user' => $user->id, 'invite' => $invite->accept_token])}}"
-                                               style="background-color:#178f8f;border-radius:4px;color:#ffffff;display:inline-block;font-family:Helvetica, Arial, sans-serif;font-size:16px;font-weight:bold;line-height:50px;text-align:center;text-decoration:none;width:200px;-webkit-text-size-adjust:none;">Accept invite</a>
-                                            <!--[if mso]>
-                                            </center>
-                                            </v:roundrect>
-                                            <![endif]--></div>
-                                        <br>
-                                        <br>
                                     </td>
                                 </tr>
                             </table>

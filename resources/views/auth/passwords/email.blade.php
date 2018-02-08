@@ -1,47 +1,26 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
-    <div class="row">
-        <div class="col-md-8 col-md-offset-2">
-            <div class="panel panel-default">
-                <div class="panel-heading">Reset Password</div>
 
-                <div class="panel-body">
-                    @if (session('status'))
-                        <div class="alert alert-success">
-                            {{ session('status') }}
-                        </div>
+<div class="cd-user-modal is-visible"> <!-- this is the entire modal form, including the background -->
+    <div class="cd-user-modal-container"> <!-- this is the container wrapper -->
+        <div class="panel-title">Reset Password</div>
+
+            <form class="cd-form" method="POST" action="{{ route('password.email') }}">
+                {{ csrf_field() }}
+                <p class="fieldset">
+                    <label class="image-replace cd-email" for="signin-email">E-mail</label>
+                    <input class="full-width has-padding has-border {{ $errors->has('email') ? 'has-error' : '' }}" id="signin-email"
+                           type="email" name="email" value="{{ old('email') }}" placeholder="Email" required autofocus>
+                    @if ($errors->has('email'))
+                        <span class="cd-error-message is-visible">{{ $errors->first('email') }}</span>
                     @endif
+                </p>
 
-                    <form class="form-horizontal" method="POST" action="{{ route('password.email') }}">
-                        {{ csrf_field() }}
-
-                        <div class="form-group{{ $errors->has('email') ? ' has-error' : '' }}">
-                            <label for="email" class="col-md-4 control-label">E-Mail Address</label>
-
-                            <div class="col-md-6">
-                                <input id="email" type="email" class="form-control" name="email" value="{{ old('email') }}" required>
-
-                                @if ($errors->has('email'))
-                                    <span class="help-block">
-                                        <strong>{{ $errors->first('email') }}</strong>
-                                    </span>
-                                @endif
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <div class="col-md-6 col-md-offset-4">
-                                <button type="submit" class="btn btn-primary">
-                                    Send Password Reset Link
-                                </button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+                <p class="fieldset">
+                    <input class="full-width" type="submit" value="Send Password Reset Link">
+                </p>
+            </form>
+    </div> <!--cd-user-modal-container -->
+</div> <!-- cd-user-modal -->
 @endsection

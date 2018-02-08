@@ -2,25 +2,14 @@
 
 <!-- Main Content -->
 @section('content')
-    <div class="container">
-        <div class="row">
-            <div class="col-md-8 col-md-offset-2">
-                <div class="panel panel-default">
-                    {{--<div class="panel-heading">Your account is not verified yet</div>--}}
-                    <div class="panel-body">
-                    <span class="help-block">
-                        <strong>Your account is not verified yet. Verification email has been sent on {{ auth()->user()->email  }}.</strong>
-                    </span>
-                        <div class="form-group">
-                            <div class="col-md-12">
-                                <a href="{{url('/')}}" class="btn btn-primary">
-                                    {!! trans('laravel-user-verification::user-verification.verification_error_back_button') !!}
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+    <div class="cd-user-modal is-visible"> <!-- this is the entire modal form, including the background -->
+        <div class="cd-user-modal-container"> <!-- this is the container wrapper -->
+
+            <div class="panel">
+                <strong>Your account is not activated yet. Activation email has been sent on {{ auth()->user()->email  }}.</strong>
             </div>
-        </div>
-    </div>
+
+            {{--<a href="#0" class="cd-close-form">Close</a>--}}
+        </div> <!--cd-user-modal-container -->
+    </div> <!-- cd-user-modal -->
 @endsection

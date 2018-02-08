@@ -49,10 +49,12 @@ class TeamController extends Controller
     	$invite_team = Team::find($team_id);
 
     	foreach ($request->members as $memberEmail) {
-
-            Teamwork::inviteToTeam($memberEmail, $team_id, function ($invite) {
-                Mail::send('teamwork.emails.invite', ['team' => $invite->team, 'invite' => $invite], function ($m) use ($invite) {
-                    $m->to($invite->email)->subject('Invitation to join team ' . $invite->team->name);
+            $user = User::where('email', $memberEmail)->first();
+//            http_response_code(500);
+//            dd($user);
+            Teamwork::inviteToTeam($memberEmail, $team_id, function ($invite) use($user) {
+                Mail::send('teamwork.emails.invite', ['team' => $invite->team, 'user' => $user, 'invite' => $invite], function ($message) use ($invite) {
+                    $message->to($invite->email)->subject('Invitation to join team ' . $invite->team->name);
                 });
                 // Send email to user
             });
@@ -106,6 +108,20 @@ class TeamController extends Controller
             ];
         }
 
+        $team->users
+            ->filter(function ($user) use ($team, $request) {
+                if ($team->owner_id == $user->id) {
+                    return false;
+                } else {
+                    return !in_array($user->id, $request->teamUsers);
+                }
+            })
+            ->each(function ($user) use ($team) {
+                Mail::send('team.emails.remove', ['team' => $team], function ($message) use($user, $team) {
+                    $message->to($user->email)->subject('You have been removed from team "' . $team->name . '"');
+                });
+            });
+
         foreach ($projects as $project) {
             $project->usersWithTeam($team->id)->sync($team_users);
         }
@@ -116,6 +132,27 @@ class TeamController extends Controller
         $team->update($all);
         return $team;
     }
+
+    public function acceptInvite(Team $team, User $user, $token)
+    {
+        $invite = Teamwork::getInviteFromAcceptToken($token);
+        if (!$invite) {
+            abort(404);
+        }
+        $owner_email = User::find($team->owner_id)->email;
+        if (auth()->check()) {
+            Teamwork::acceptInvite($invite);
+            // return redirect()->route('teams.index');
+            Mail::send('team.emails.notify', ['team' => $team, 'user' => $user], function ($message) use($team, $owner_email) {
+                $message->to($owner_email)->subject('Accepted invitation to "' . $team->name . '"');
+            });
+            return redirect('/#/teams');
+        } else {
+            session(['invite_token' => $token]);
+            return redirect()->to('login');
+        }
+    }
+
     public function getExistsMembers(Request $request) {
         $user = Auth::user();
         $teams = $user->teams;
