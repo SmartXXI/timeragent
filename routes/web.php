@@ -27,8 +27,10 @@ Auth::routes();
 Route::get('/', 'HomeController@index')->name('home')->middleware(['isVerified','auth']);
 
 Route::get('teams/{team}/{user}/accept/{token}', 'TeamController@acceptInvite')->name('teams.accept_invite')->middleware('auth');
-Route::post('send-verify-email/{email}', 'Auth\RegisterController@sendVerifyEmail')->name('send.verify.email');
-
+Route::get('resend-verify-email', function() {
+    return view('auth.verifying.email');
+})->name('verify.email');
+Route::post('resend-verify-email', 'Auth\RegisterController@resendVerifyEmail')->name('verify.email');
 /**
  * Teamwork routes
  */
