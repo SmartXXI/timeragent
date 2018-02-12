@@ -1,7 +1,11 @@
 @extends('layouts.app')
 
 @section('content')
-
+    @if (session('success'))
+        <div class="alert alert-success">
+            {{ session('success') }}
+        </div>
+    @endif
 <div class="cd-user-modal is-visible"> <!-- this is the entire modal form, including the background -->
     <div class="cd-user-modal-container"> <!-- this is the container wrapper -->
         <div class="panel-title">Login</div>
@@ -36,11 +40,6 @@
                 <p class="fieldset">
                     <input class="full-width" type="submit" value="Login">
                 </p>
-                @if (session('message'))
-                    <div class="alert alert-success">
-                        {{ session('message') }}
-                    </div>
-                @endif
             </form>
 
             <p class="cd-form-bottom-message">

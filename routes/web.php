@@ -31,6 +31,9 @@ Route::get('resend-verify-email', function() {
     return view('auth.verifying.email');
 })->name('verify.email');
 Route::post('resend-verify-email', 'Auth\RegisterController@resendVerifyEmail')->name('verify.email');
+Route::get('verification-sent', function() {
+    return view('auth.verifying.verification-sent');
+})->name('verify.sent');
 /**
  * Teamwork routes
  */

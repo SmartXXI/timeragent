@@ -85,8 +85,7 @@ class RegisterController extends Controller
 
         $this->sendVerifyEmail($user);
 
-        return redirect()->route('login')
-            ->with('message', 'The activation email has been sent to ' . $user->email);
+        return redirect()->route('verify.sent')->with(['email' => $user->email]);
     }
 
     public function resendVerifyEmail(Request $request) {
@@ -102,8 +101,7 @@ class RegisterController extends Controller
         $user = User::where('email', $request->email)->first();
 
         $this->sendVerifyEmail($user);
-        return redirect()->route('login')
-            ->with('message', 'The activation email has been sent to ' . $user->email);
+        return redirect()->route('verify.sent')->with(['email' => $user->email]);
     }
 
     public function getVerification(Request $request, $token)
@@ -126,7 +124,7 @@ class RegisterController extends Controller
             auth()->loginUsingId($user->id);
         }
 
-        return redirect()->route('login')->with('message', 'Email verification success. You can login to your account');
+        return redirect()->route('login')->withSuccess('Email verification success. You can login to your account');
     }
 
     protected function sendVerifyEmail(User $user) {
