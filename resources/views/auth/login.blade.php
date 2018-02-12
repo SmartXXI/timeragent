@@ -46,13 +46,9 @@
             <p class="cd-form-bottom-message">
                 <a href="{{ route('password.request') }}">Forgot your password?</a>
                 @if ($errors->has('email'))
-                    <a href="{{ route('send.verify.email', old('email')) }}"
-                       onclick="event.preventDefault(); document.getElementById('send-email').submit();">
+                    <a href="{{ route('verify.email') }}">
                         Send activation email again
                     </a>
-                    <form id="send-email" class="cd-form" method="POST" action="{{ route('send.verify.email', old('email')) }}">
-                        {{ csrf_field() }}
-                    </form>
                 @endif
             </p>
         </div> <!-- cd-login -->
