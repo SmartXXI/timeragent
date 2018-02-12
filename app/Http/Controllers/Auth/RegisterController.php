@@ -91,17 +91,19 @@ class RegisterController extends Controller
 
     public function resendVerifyEmail(Request $request) {
         $validator = Validator::make($request->all(), [
-            'email' => 'required|string|email',
+            'email' => 'required|string|email|exists:users,email',
         ]);
+        if ($validator->fails()) {
+            return redirect()
+                ->back()
+                ->withInput()
+                ->withErrors($validator);
+        }
         $user = User::where('email', $request->email)->first();
-        if (!is_null($user)) {
-            $this->sendVerifyEmail($user);
-            return redirect()->route('login')
-                ->with('message', 'The activation email has been sent to ' . $user->email);
-        }
-        else {
-            return redirect()->back()->with('message', 'This credentials do not match our records')->withInput();
-        }
+
+        $this->sendVerifyEmail($user);
+        return redirect()->route('login')
+            ->with('message', 'The activation email has been sent to ' . $user->email);
     }
 
     public function getVerification(Request $request, $token)
