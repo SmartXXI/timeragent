@@ -21,7 +21,6 @@
         "eslint-config-vue": "^2.0.2",
         "eslint-plugin-vue": "^2.1.0",
         "font-awesome": "^4.7.0",
-        "lodash": "^4.17.5",
         "moment": "^2.20.1",
         "node-sass": "^4.7.2",
         "qs": "^6.5.1",
