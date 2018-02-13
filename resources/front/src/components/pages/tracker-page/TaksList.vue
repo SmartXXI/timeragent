@@ -5,7 +5,6 @@
 </template>
 
 <script>
-    import moment from 'moment';
     import OneTask from './OneTask';
 
     export default {

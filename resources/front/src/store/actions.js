@@ -8,8 +8,12 @@ export default {
             context.commit(types.GET_TASKS, { data: response.data, date: obj.date });
             const tasks = response.data;
             if (tasks.length > 0
-                && tasks[tasks.length - 1].time_entries.length > 0
-                && tasks[tasks.length - 1].time_entries[tasks[tasks.length - 1].time_entries.length - 1].active === 1) {
+                && tasks[tasks.length - 1]
+                    .time_entries.length > 0
+                && tasks[tasks.length - 1]
+                    .time_entries[tasks[tasks.length - 1]
+                        .time_entries.length - 1]
+                    .active === 1) {
                 if (context.state.timerID === 0) {
                     context.dispatch('startTimer');
                 }
@@ -29,7 +33,7 @@ export default {
         } else {
             const endTime = moment().format('YYYY-MM-DD HH:mm:ss');
             Http.post(`api/stop-task/${obj.task.id}`, { endTime })
-                .then((response) => {
+                .then(() => {
                     context.commit(types.STOP_TASK, { withDelete: false });
                     context.dispatch('getTasks', { date: context.state.date });
                 });
@@ -52,61 +56,51 @@ export default {
 
         let oldActiveTimeEntry = {};
         if (context.getters.oldActiveTask) {
-            context.getters.tasks.map((task) => { // find active task in all tasks
-                oldActiveTimeEntry = task.time_entries.find((timeEntry) => {
-                    return timeEntry.id === context.getters.oldActiveTask;
-                });
+            context.getters.tasks.map((localTask) => { // find active task in all tasks
+                oldActiveTimeEntry = localTask.time_entries.find(timeEntry => (
+                    timeEntry.id === context.getters.oldActiveTask
+                ));
+                return localTask;
             });
         } else {
             const tasks = Object.assign(context.getters.tasks);
             if (tasks.length > 0) {
                 oldActiveTimeEntry = tasks[tasks.length - 1]
                     .time_entries[tasks[tasks.length - 1]
-                    .time_entries.length - 1];
+                        .time_entries.length - 1];
             }
         }
 
         if (oldActiveTimeEntry && payload.task.id === oldActiveTimeEntry.task_id) {
-
             if (moment().diff(moment(oldActiveTimeEntry.endTime, 'YYYY-MM-DD HH:mm:ss'), 'seconds') > 60) {
                 Http.post('api/create-time-entry', { task })
-                    .then(response => context.dispatch('getTasks', { date: context.state.date }));
-                    // .then(response => context.commit(types.CREATE_TASK, response.data));
+                    .then(() => context.dispatch('getTasks', { date: context.state.date }));
             } else {
                 Http.post(`api/continue-task/${oldActiveTimeEntry.id}`)
                     .then(() => context.dispatch('getTasks', { date: context.state.date }));
-                    // .then(() => context.commit(types.CONTINUE_TASK, { task_id: context.state.oldActiveTask }));
             }
         } else if (payload.task.id) {
             Http.post('api/create-time-entry', { task })
                 .then(() => context.dispatch('getTasks', { date: context.state.date }));
-                // .then(response => context.commit(types.CREATE_TASK, response.data));
         }
     },
     createTask(context, payload) {
         Http.post('api/create-task', { task: payload.task })
             .then(() => context.dispatch('getTasks', { date: context.state.date }));
-        // .then(response => context.commit(types.CREATE_TASK, response.data));
     },
     updateTask(context, obj) {
-        // context.commit(types.UPDATE_TASK, { task: task.task, index: task.index });
         Http.post(`api/update-task/${obj.task.id}`, { task: obj.task })
             .then(() => context.dispatch('getTasks', { date: context.state.date }));
-
     },
     deleteTask(context, task) {
         Http.post(`api/delete-task/${task.task.id}`)
             .then(() => context.dispatch('getTasks', { date: context.state.date }));
-            // .then(() => context.commit(types.DELETE_TASK, { id: task.task.id }));
     },
     deleteTimeEntry(context, payload) {
         Http.post(`api/delete-time-entry/${payload.timeEntry.id}`)
             .then(() => context.dispatch('getTasks', { date: context.state.date }));
     },
     addTimeEntry(context, task) {
-        // Http.post('api/create-task', { task })
-        //     .then(response => context.commit(types.ADD_TIME_ENTRY, response.data));
-        // context.commit(types.ADD_TIME_ENTRY, task);
         Http.post('api/create-time-entry', { task })
             .then(() => context.dispatch('getTasks', { date: context.state.date }));
     },
@@ -155,11 +149,11 @@ export default {
             team     : payload.team,
             teamUsers: payload.teamUsers,
         })
-        .then((response) => {
-            if (payload.emailsToInvite !== []) {
-                context.dispatch('inviteMembers', { teamId: response.data.id, emailsToInvite: payload.emailsToInvite });
-            }
-        });
+            .then((response) => {
+                if (payload.emailsToInvite !== []) {
+                    context.dispatch('inviteMembers', { teamId: response.data.id, emailsToInvite: payload.emailsToInvite });
+                }
+            });
     },
     clearTeam(context) {
         context.commit(types.CLEAR_TEAM);
@@ -175,10 +169,7 @@ export default {
     updateProject(context, payload) {
         return Http.post(`api/projects/${payload.projectId}`, {
             project     : payload.project,
-            // addedTeams  : payload.addedTeams,
-            // deletedTeams: payload.deletedTeams,
             projectTeams: payload.projectTeams,
-            // addedMembers: payload.addedMembers,
             projectUsers: payload.projectUsers,
         });
     },
