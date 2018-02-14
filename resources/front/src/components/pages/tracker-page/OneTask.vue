@@ -21,12 +21,12 @@
                 <div v-if="task.time_entries.length > 0 || task.total">
                     <span v-if="$store.getters.date !== date">
                         <span v-show="$store.getters.date !== date">
-                            Total: {{ formatTotal(task.total) }}
+                            Total: <span :class="{ 'red': limited }">{{ formatTotal(task.total) }}</span>
                         </span>
                     </span>
                     <span v-if="$store.getters.date === date && task.total">
                         <span v-show="$store.getters.date !== date">
-                            Total: {{ formatTotal(task.total) }}
+                            Total: <span :class="{ 'red': limited }"> {{ formatTotal(task.total) }}</span>
                         </span>
                     </span>
                     <span v-if="$store.getters.date === date">Today:
@@ -414,5 +414,5 @@ export default {
     .el-popover {
         min-width: 85px;
     }
-    
+
 </style>
