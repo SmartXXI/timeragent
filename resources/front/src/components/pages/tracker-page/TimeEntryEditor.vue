@@ -2,29 +2,6 @@
     <div>
     <div class="timer-timeentry-editor">
         <el-form>
-            <!--<el-row>-->
-                <!--<el-col :span="16">-->
-                    <!--<div class="flex-container">-->
-                        <!--<el-col :span="22">-->
-                            <!--<el-form-item>-->
-                                <!--<el-input placeholder="Enter description"-->
-                                          <!--v-model="localTask.description"-->
-                                          <!--prefix-icon="el-icon-edit-outline"-->
-                                          <!--autofocus></el-input>-->
-                            <!--</el-form-item>-->
-                        <!--</el-col>-->
-                    <!--</div>-->
-                <!--</el-col>-->
-                <!--<el-col :span="8">-->
-                    <!--<el-select v-model="localTask.project_id" :disabled="projects.length > 0 ? false : true">-->
-                        <!--<el-option value="" label="No project"></el-option>-->
-                        <!--<el-option v-for="(project, index) in projects" :label="project.name" :value="project.id" :key="project.id"></el-option>-->
-                    <!--</el-select>-->
-                <!--</el-col>-->
-            <!--</el-row>-->
-            <!--<el-row>-->
-                <!--<div v-for="duration in localTask.duration">{{ duration.startTime }} - {{ (duration.endTime) ? duration.endTime : 'now' }}</div>-->
-            <!--</el-row>-->
             <el-row>
                 <el-col class="time-pickers" :span="24">
                     <el-col :span="9">
@@ -211,43 +188,42 @@
                         },
                     },
                 };
-            } else {
-                return {
-                    localTimeEntry: {
-                        startTime: {
-                            required,
-                            validTime(value) {
-                                let valid = false;
-                                const today = moment().format('YYYY-MM-DD');
-                                if (moment(this.$store.getters.date, 'YYYY-MM-DD').isBefore(moment(today, 'YYYY-MM-DD'))) {
-                                    valid = true;
-                                } else {
-                                    valid = moment(value, 'HH:mm:ss').isBefore(moment());
-                                }
-                                return valid && value !== '';
-                            },
-                        },
-                        endTime: {
-                            required,
-                            validTime(value) {
-                                let isAfter = true;
-                                let valid = false;
-                                const today = moment().format('YYYY-MM-DD');
-                                if (this.localTimeEntry.startTime !== '') {
-                                    isAfter = moment(this.localTimeEntry.endTime, 'HH:mm:ss')
-                                        .isAfter(moment(this.localTimeEntry.startTime, 'HH:mm:ss'));
-                                }
-                                if (moment(this.$store.getters.date, 'YYYY-MM-DD').isBefore(moment(today, 'YYYY-MM-DD'))) {
-                                    valid = true;
-                                } else {
-                                    valid = moment(value, 'HH:mm:ss').isBefore(moment());
-                                }
-                                return valid && value !== '' && isAfter;
-                            },
+            }
+            return {
+                localTimeEntry: {
+                    startTime: {
+                        required,
+                        validTime(value) {
+                            let valid = false;
+                            const today = moment().format('YYYY-MM-DD');
+                            if (moment(this.$store.getters.date, 'YYYY-MM-DD').isBefore(moment(today, 'YYYY-MM-DD'))) {
+                                valid = true;
+                            } else {
+                                valid = moment(value, 'HH:mm:ss').isBefore(moment());
+                            }
+                            return valid && value !== '';
                         },
                     },
-                };
-            }
+                    endTime: {
+                        required,
+                        validTime(value) {
+                            let isAfter = true;
+                            let valid = false;
+                            const today = moment().format('YYYY-MM-DD');
+                            if (this.localTimeEntry.startTime !== '') {
+                                isAfter = moment(this.localTimeEntry.endTime, 'HH:mm:ss')
+                                    .isAfter(moment(this.localTimeEntry.startTime, 'HH:mm:ss'));
+                            }
+                            if (moment(this.$store.getters.date, 'YYYY-MM-DD').isBefore(moment(today, 'YYYY-MM-DD'))) {
+                                valid = true;
+                            } else {
+                                valid = moment(value, 'HH:mm:ss').isBefore(moment());
+                            }
+                            return valid && value !== '' && isAfter;
+                        },
+                    },
+                },
+            };
         },
     };
 </script>

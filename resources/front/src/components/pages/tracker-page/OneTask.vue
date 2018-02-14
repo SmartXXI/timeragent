@@ -40,21 +40,6 @@
 				</span>
 			</el-col>
 			<el-col :span="2">
-				<!--<span>-->
-					<!--<el-dropdown :hide-on-click="false">-->
-                        <!--<span class="el-dropdown-link">-->
-                            <!--<i class="el-icon-more"></i>-->
-                        <!--</span>-->
-                        <!--<el-dropdown-menu slot="dropdown">-->
-                            <!--<el-dropdown-item>-->
-                                <!--<span @click.prevent="showEditor"><i class="el-icon-edit" ></i> Edit</span>-->
-                            <!--</el-dropdown-item>-->
-                            <!--<el-dropdown-item>-->
-                                <!--<span  @click.prevent="dialogVisible = true"><i class="el-icon-delete" ></i> Delete</span>-->
-                            <!--</el-dropdown-item>-->
-                        <!--</el-dropdown-menu>-->
-                    <!--</el-dropdown>-->
-				<!--</span>-->
                 <el-popover
                     ref="menu"
                     placement="top"
@@ -82,13 +67,6 @@
                 >
                     <i class="el-icon-more"></i>
                 </span>
-                <!--<el-button type="plain"-->
-                           <!--class="stop-button"-->
-                           <!--plain-->
-                           <!--@click.prevent="showEditor"-->
-                <!--&gt;-->
-                    <!--<i class="el-icon-edit"></i>-->
-                <!--</el-button>-->
 			</el-col>
             <el-col :span="2">
                 <i class="el-icon-arrow-down"
@@ -206,17 +184,16 @@ export default {
         },
         todayTotal() {
             if (this.task.time_entries.length === 0) return moment.duration(0, 'seconds');
-            let spendTime = '';
             const total = this.task.time_entries.reduce((prev, cur) => {
-                let endTime = cur.endTime;
-                spendTime = (cur.spendTime) ? cur.spendTime : '';
+                let { endTime } = cur;
+                const spendTime = (cur.spendTime) ? cur.spendTime : ''; //eslint-disable-line
                 if (!endTime) endTime = moment().format('YYYY-MM-DD HH:mm:ss');
                 return moment.duration(moment(endTime, 'YYYY-MM-DD HH:mm:ss')
                     .diff(moment(cur.startTime, 'YYYY-MM-DD HH:mm:ss'))).add(prev);
             }, null);
 
             return total;
-		},
+        },
         taskProgress() {
             let percentages = 0;
             const eta = moment.duration(this.task.eta).asSeconds();
@@ -230,9 +207,7 @@ export default {
             return (Math.round(percentages) < 100) ? Math.round(percentages) : 100;
         },
         active() {
-            return !!this.task.time_entries.find((timeEntry) => {
-                return timeEntry.active === 1;
-            });
+            return !!this.task.time_entries.find(timeEntry => timeEntry.active === 1);
         },
         date() {
             return moment().format('YYYY-MM-DD');
@@ -316,9 +291,10 @@ export default {
         getActiveTimeEntry() {
             let activeTimeEntry = {};
             this.$store.getters.tasks.map((task) => { // find active task in all tasks
-                activeTimeEntry = task.time_entries.find((timeEntry) => {
-                    return timeEntry.id === this.$store.getters.activeTask;
-                });
+                activeTimeEntry = task.time_entries.find(timeEntry => (
+                    timeEntry.id === this.$store.getters.activeTask
+                ));
+                return task;
             });
             return activeTimeEntry;
         },
@@ -327,7 +303,7 @@ export default {
             this.closeEditor();
         },
         getTodayTasks() {
-            return new Promise((resolve, reject) => {
+            return new Promise((resolve) => {
                 if (this.$store.state.date !== this.date) {
                     this.$store.dispatch('getTasks', { date: this.date }).then(() => resolve());
                 }
@@ -386,57 +362,6 @@ export default {
     .red {
         color: #f56c6c;
     }
-
-	.col {
-			padding: 20px 35px;
-			padding-right: 0; 
-		}
-
-		.label-success {
-			background-color: #00bc6a; 
-		}
-
-		.description {
-			margin-right: 10px;
-		}
-
-	.label {
-	    display: inline-block;
-	    padding: 4px 6px;
-	    font-size: 11px;
-	    font-weight: 400;
-	    color: #fff;
-	    vertical-align: baseline;
-	    border-radius: 3px;
-	    text-transform: uppercase;
-	    letter-spacing: .5px;
-	    font-family: "Open Sans",sans-serif;
-	}
-
-	.btn-icon-danger {
-		color: #e26a6a;
-		background: none;
-	}
-
-	.btn-icon-danger:hover:active {
-		color: #e26a6a;
-    	background-color: rgba(226,106,106,.1);
-    	border-color: transparent;
-    	border-radius: 17px;
-	}
-
-	.btn-icon-success {
-		color: rgba(82,82,82,.4);
-    	background-color: transparent;
-    	border-color: transparent;
-	}
-
-	.btn-icon-success:hover {
-		color: #00bc6a;
-    	background-color: rgba(0,188,106,.1);
-    	border-color: transparent;
-    	border-radius: 17px;
-	}
 
 	.editor-enter-active{
         transition: opacity .5s;

@@ -92,9 +92,9 @@
         },
         created() {
             this.$store.dispatch('getTeams')
-            .catch(() => {
-                this.showError('Something went wrong in loading teams...');
-            });
+                .catch(() => {
+                    this.showError('Something went wrong in loading teams...');
+                });
         },
         computed: {
             ...mapGetters([
@@ -145,78 +145,5 @@
 
 	    body {
         background-color: #efefef;
-    }
-
-    .container {
-        margin-top: 70px;
-    }
-
-        .panel-default {
-        border-color: #e0e0e0;
-
-        .panel-heading {
-            color: #525252;
-            background-color: #fff;
-            border-color: #e0e0e0;
-        }
-    }
-
-    .panel-heading {
-        padding: 20px;
-    }
-
-    .panel {
-        margin-bottom: 20px;
-        background-color: #fff;
-        border: 1px solid transparent;
-        border-radius: 3px;
-        -webkit-box-shadow: 0 2px 6px 0 rgba(47, 47, 47, .15);
-        box-shadow: 0 2px 6px 0 rgba(47, 47, 47, .15);
-    }
-
-    .panel-title {
-        font-weight: 300;
-        font-size: 22px;
-    }
-
-    .panel-body {
-        padding: 20px;
-    }
-
-    .flex-container-space-between {
-        display: flex;
-        justify-content: space-between;
-    }
-
-    .btn-primary {
-    	color: #fff;
-    	background-color: #545454;
-    	border-color: #545454;
-    }
-
-	.btn-primary:hover {
-		color: #fff;
-    	background-color: #3b3b3b;
-    	border-color: #3b3b3b;
-	}
-    .col {
-        padding: 20px 35px;
-        padding-right: 0; 
-    }
-    .teams {
-        td {
-            height: 61px;
-            padding: 20px;
-            line-height: 1.42857;
-            vertical-align: top;
-            border-top: 1px solid #e0e0e0;
-        }
-    }
-    .edit-button {
-        margin: 20px 0;
-        text-align: center;
-        a {
-            color: inherit;
-        }
     }
 </style>

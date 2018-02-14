@@ -33,7 +33,7 @@
             };
         },
         created() {
-            const date = this.$store.state.date;
+            const { date } = this.$store.state;
             this.$store.dispatch('getTasks', { date });
         },
         methods: {
@@ -46,7 +46,9 @@
         },
         components: {
             ElContainer,
-            NavMenuAuth, AppPage, TimeEntries,
+            NavMenuAuth,
+            AppPage,
+            TimeEntries,
         },
     };
 </script>

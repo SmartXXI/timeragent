@@ -158,23 +158,21 @@
                             validTime(value) {
                                 if (moment.duration(value).asSeconds() >= 60) {
                                     return true;
-                                } else {
-                                    return false;
                                 }
+                                return false;
                             },
                         },
                     },
                 };
-            } else {
-                return {
-                    localTask: {
-                        description: {
-                            required,
-                        },
-                        eta: {},
-                    },
-                };
             }
+            return {
+                localTask: {
+                    description: {
+                        required,
+                    },
+                    eta: {},
+                },
+            };
         },
     };
 </script>
@@ -192,88 +190,6 @@
 
     .actions {
         margin-top: 20px;
-    }
-
-    .form-control {
-        width: 100%;
-        height: 34px;
-        padding: 6px 0;
-        background-color: transparent;
-        background-image: none;
-        border: none;
-        border-bottom: 1px solid #e0e0e0;
-        border-radius: 0;
-        -webkit-box-shadow: none;
-        transition: border-color ease-in-out .2s;
-    }
-
-    .form-control:focus {
-        border-bottom: 2px solid #178fe5;
-        outline: 0;
-        padding: 6px 0 5px;
-    }
-
-    .delete_button {
-        color: #FA5555;
-    }
-
-    .actions {
-        display: flex;
-        align-items: center;
-        text-align: left;
-    }
-
-    .margin-top-20 {
-        margin-top: 20px !important;
-    }
-
-    .btn-primary {
-        color: #fff;
-        background-color: #545454;
-        border-color: #545454;
-    }
-
-    .btn-primary:hover {
-        color: #fff;
-        background-color: #474747;
-        border-color: #474747;
-    }
-
-    .btn-default {
-        color: #525252;
-        background-color: rgba(0, 0, 0, .05);
-        border-color: rgba(0, 0, 0, .07);
-    }
-
-    .btn-icon-default {
-        display: inline-block;
-        width: 34px;
-        height: 34px;
-        line-height: 34px;
-        border-radius: 17px !important;
-        padding: 0 !important;
-        color: #525252;
-        background-color: transparent;
-        border-color: transparent;
-        font-size: 20px !important;
-    }
-
-    .flex-container {
-        display: flex;
-        justify-content: flex-start;
-    }
-
-    .full-width {
-        width: 100%;
-    }
-
-    .flex-container-space-between {
-        display: flex;
-        justify-content: space-between;
-    }
-
-    .actions > :not(:last-child) {
-        margin-right: 12px;
     }
 
     .timer-timeentry-editor {
