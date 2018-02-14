@@ -15,13 +15,25 @@
 				<!--<small v-if="task.startTime !== null" class="text-muted"> {{ time(task.startTime) }} - <span v-if="task.endTime == null">now</span> <span v-else >{{ time(task.endTime) }}</span> </small>-->
 			<!--</el-col>-->
 			<el-col :span="2" v-show="false">
-				<span>Progress: {{ taskProgress }}%</span>
+				<span v-if="task.eta">Progress: {{ taskProgress }}%</span>
 			</el-col>
             <el-col :span="6">
                 <div v-if="task.time_entries.length > 0 || task.total">
-                    <span v-if="$store.getters.date !== date">{{ formatTotal(task.total) }}<br></span>
-                    <span v-if="$store.getters.date === date && task.total">{{ formatTotal(task.total) }}<br></span>
-                    <span v-if="$store.getters.date === date">Today: <span :class="{ 'red': limited }">{{ formatTodayTotal(todayTotal) }}</span></span>
+                    <span v-if="$store.getters.date !== date">
+                        <span v-show="$store.getters.date !== date">
+                            Total: {{ formatTotal(task.total) }}
+                        </span>
+                    </span>
+                    <span v-if="$store.getters.date === date && task.total">
+                        <span v-show="$store.getters.date !== date">
+                            Total: {{ formatTotal(task.total) }}
+                        </span>
+                    </span>
+                    <span v-if="$store.getters.date === date">Today:
+                        <span :class="{ 'red': limited }">
+                            {{ formatTodayTotal(todayTotal) }}
+                        </span>
+                    </span>
                 </div>
                 <div v-else>
                     <span class="gray-text">0 min</span>
@@ -103,7 +115,17 @@
             </el-col>
             </el-row>
             <el-row v-if="task.eta">
-                <el-progress :percentage="taskProgress" :status="limited ? 'exception' : null"></el-progress>
+                    <el-progress :percentage="taskProgress" :status="limited ? 'exception' : null"></el-progress>
+                    <div v-if="$store.getters.date !== date">
+                            <div class="total">
+                                {{ formatTotal(task.total) }} / {{ formatTime(task.eta) }}
+                            </div>
+                        </div>
+                    <div v-if="$store.getters.date === date && task.total">
+                            <div  class="total">
+                                {{ formatTotal(task.total) }} / {{ formatTime(task.eta) }}
+                            </div>
+                    </div>
             </el-row>
 		</el-row>
         <el-row>
@@ -197,7 +219,7 @@ export default {
         taskProgress() {
             let percentages = 0;
             const eta = moment.duration(this.task.eta).asSeconds();
-            const total = this.canculateTotal(this.task.eta);
+            const total = this.canculateTotal(this.task.total);
             percentages = (total.asSeconds() / eta) * 100;
             if (Math.round(percentages) > 100 && !this.limited) {
                 this.showWarning(`Task <b>${this.task.description}</b> reached time limit`);
@@ -222,12 +244,11 @@ export default {
             if (time !== null) {
                 total = moment.duration(parseInt(time, 10), 'seconds');
             }
-            total = moment.duration(total.asSeconds() + this.todayTotal.asSeconds(), 'seconds');
-            return total;
+            return moment.duration(total.asSeconds() + this.todayTotal.asSeconds(), 'seconds');
         },
         formatTotal(time) {
             const total = this.canculateTotal(time);
-            return `Total: ${(total.hours() > 0 ? `${total.hours()}  h ` : '')} ${total.minutes()} min `;
+            return `${(total.hours() > 0 ? `${total.hours()}  h ` : '')} ${total.minutes()} min `;
         },
         formatTodayTotal(total) {
             const hours = total.hours();
@@ -237,6 +258,10 @@ export default {
                 return `${seconds} sec`;
             }
             return `${(hours > 0 ? `${hours}  h ` : '')} ${minutes} min `;
+        },
+        formatTime(time) {
+            const duration = moment.duration(time);
+            return `${(duration.hours() > 0 ? `${duration.hours()}  h ` : '')} ${duration.minutes()} min `;
         },
         showTimeEntryCreator() {
             this.addingTimeEntry = true;
@@ -370,6 +395,11 @@ export default {
     .editor-enter, .editor-leave-to {
         opacity: 0;
     }
+
+    .total {
+        float: right;
+        margin-right: 50px;
+    }
 </style>
 
 <style>
@@ -384,4 +414,5 @@ export default {
     .el-popover {
         min-width: 85px;
     }
+    
 </style>
