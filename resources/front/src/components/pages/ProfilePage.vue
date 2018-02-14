@@ -90,6 +90,9 @@
                     email        : '',
                     billable_rate: '',
                     cost_rate    : '',
+
+                    billable_currency: '',
+                    cost_currency    : '',
                 },
             };
         },
