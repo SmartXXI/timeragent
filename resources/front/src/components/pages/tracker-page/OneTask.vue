@@ -116,12 +116,12 @@
             </el-row>
             <el-row v-if="task.eta">
                     <el-progress :percentage="taskProgress" :status="limited ? 'exception' : null"></el-progress>
-                    <div v-if="$store.getters.date !== date">
-                            <div class="total">
-                                {{ formatTotal(task.total) }} / {{ formatTime(task.eta) }}
-                            </div>
-                        </div>
-                    <div v-if="$store.getters.date === date && task.total">
+                    <!--<div v-if="$store.getters.date !== date">-->
+                            <!--<div class="total">-->
+                                <!--{{ formatTotal(task.total) }} / {{ formatTime(task.eta) }}-->
+                            <!--</div>-->
+                        <!--</div>-->
+                    <div>
                             <div  class="total">
                                 {{ formatTotal(task.total) }} / {{ formatTime(task.eta) }}
                             </div>
