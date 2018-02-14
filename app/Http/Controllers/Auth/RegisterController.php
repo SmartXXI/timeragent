@@ -85,23 +85,23 @@ class RegisterController extends Controller
 
         $this->sendVerifyEmail($user);
 
-        return redirect()->route('login')
-            ->with('message', 'The activation email has been sent to ' . $user->email);
+        return redirect()->route('verify.sent')->with(['email' => $user->email]);
     }
 
     public function resendVerifyEmail(Request $request) {
         $validator = Validator::make($request->all(), [
-            'email' => 'required|string|email',
+            'email' => 'required|string|email|exists:users,email',
         ]);
+        if ($validator->fails()) {
+            return redirect()
+                ->back()
+                ->withInput()
+                ->withErrors($validator);
+        }
         $user = User::where('email', $request->email)->first();
-        if (!is_null($user)) {
-            $this->sendVerifyEmail($user);
-            return redirect()->route('login')
-                ->with('message', 'The activation email has been sent to ' . $user->email);
-        }
-        else {
-            return redirect()->back()->with('message', 'This credentials do not match our records')->withInput();
-        }
+
+        $this->sendVerifyEmail($user);
+        return redirect()->route('verify.sent')->with(['email' => $user->email]);
     }
 
     public function getVerification(Request $request, $token)
@@ -124,7 +124,7 @@ class RegisterController extends Controller
             auth()->loginUsingId($user->id);
         }
 
-        return redirect()->route('login')->with('message', 'Email verification success. You can login to your account');
+        return redirect()->route('login')->withSuccess('Email verification success. You can login to your account');
     }
 
     protected function sendVerifyEmail(User $user) {
