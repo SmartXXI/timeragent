@@ -38,10 +38,13 @@
                                               placeholder="Enter your email"
                                               v-model="localUser.email"
                                               @input="$v.localUser.email.$touch()"
+                                              @blur="validateEmail"
+                                              disabled
                                     ></el-input>
                                     <div class="errors" v-if="$v.localUser.email.$error">
                                         <span class="error-message" v-if="!$v.localUser.email.required">Field is required</span>
-                                        <span class="error-message" v-if="!$v.localUser.email.email">Invalid email</span>
+                                        <span class="error-message" v-if="!$v.localUser.email.isEmail">Invalid email</span>
+                                        <span class="error-message" v-if="!$v.localUser.email.isUniqueEmail">Email is used by another user</span>
                                     </div>
                             </el-row>
                             <el-row>
@@ -94,6 +97,8 @@
                     billable_currency: '',
                     cost_currency    : '',
                 },
+                isUniqueEmail: true,
+                isEmail      : true,
             };
         },
         created() {
@@ -122,6 +127,25 @@
                         this.showError();
                     });
             },
+            validateEmail() {
+                if (this.localUser.email.match(/^[0-9a-z-\.]+\@[0-9a-z-]{2,}\.[a-z]{2,}$/i)){
+                    this.isEmail = true;
+                } else {
+                    this.isEmail = false;
+                }
+                if (this.localUser.email !== this.user.email) {
+                    this.$store.dispatch('validateEmail', { email: this.localUser.email })
+                        .then((response) => {
+                            if (response.data !== '') {
+                                this.isUniqueEmail = false;
+                            } else {
+                                this.isUniqueEmail = true;
+                            }
+                        });
+                } else {
+                    this.isUniqueEmail = true;
+                }
+            },
         },
         components: {
             NavMenuAuth,
@@ -134,7 +158,12 @@
                     },
                     email: {
                         required,
-                        email,
+                        isEmail() {
+                            return this.isEmail;
+                        },
+                        isUniqueEmail() {
+                            return this.isUniqueEmail;
+                        },
                     },
                 },
             };

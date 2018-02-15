@@ -112,6 +112,9 @@ export default {
         return Http.get('api/user')
             .then(response => context.commit(types.GET_USER, response.data));
     },
+    validateEmail(context, payload) {
+        return Http.post('api/user/validate-email', { email: payload.email });
+    },
     updateUser(context, payload) {
         return Http.post('api/user', { user: payload.user });
     },
