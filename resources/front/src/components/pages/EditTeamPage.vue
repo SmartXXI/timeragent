@@ -46,8 +46,8 @@
                                 <el-tabs v-model="activeTabName">
                                     <el-tab-pane label="Members" name="members">
 
-                                        <el-row>
-                                            <el-col :span="17" :offset="4">
+                                        <el-row type="flex" justify="space-around">
+                                            <el-col :span="17">
                                                 <!--<el-input :class="{ 'has-error': $v.members.$error }"-->
                                                           <!--placeholder="Enter user email..."-->
                                                           <!--v-model="members"-->
@@ -68,14 +68,14 @@
                                                 </el-select>
                                             </el-col>
                                         </el-row>
-                                        <el-row class="transfer">
-                                            <el-col :offset="4">
+                                        <el-row type="flex" justify="space-around" class="transfer">
+                                            <!--<el-col >-->
                                                 <el-transfer v-model="teamUsers"
                                                              :data="membersData"
                                                              :titles="['Exists Members', 'To Add']"
                                                 >
                                                 </el-transfer>
-                                            </el-col>
+                                            <!--</el-col>-->
                                         </el-row>
 
                                     </el-tab-pane>

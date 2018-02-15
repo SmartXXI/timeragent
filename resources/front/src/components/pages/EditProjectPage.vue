@@ -52,8 +52,8 @@
                                         <!--&gt; Add teams to project </el-button>-->
                                     <!--</div>-->
 
-                                    <el-row>
-                                        <el-col :offset="4">
+                                    <el-row type="flex" justify="space-around">
+                                        <!--<el-col :offset="4">-->
                                             <!--<el-transfer v-model="addedTeams"-->
                                             <el-transfer v-model="teamsInTransfer"
                                                          :data="teamsData"
@@ -117,7 +117,7 @@
                                                         <el-button type="success" @click="setTeamsRates">Apply</el-button>
                                                     </span>
                                             </el-dialog>
-                                        </el-col>
+                                        <!--</el-col>-->
                                     </el-row>
 
                                     <!--<div class="teams" v-if="isEditing">-->
@@ -147,8 +147,8 @@
                                     <!--</div>-->
                                 </el-tab-pane>
                                 <el-tab-pane label="Users" name="users">
-                                    <el-row>
-                                        <el-col :offset="4">
+                                    <el-row type="flex" justify="space-around">
+                                        <!--<el-col :offset="4">-->
                                             <el-transfer v-model="usersInTransfer"
                                                          :data="usersData"
                                                          :titles="['All Users', 'Project Users']"
@@ -195,7 +195,7 @@
                                                     <el-button type="success" @click="setUsersRates">Apply</el-button>
                                                 </span>
                                             </el-dialog>
-                                        </el-col>
+                                        <!--</el-col>-->
                                     </el-row>
                                 </el-tab-pane>
                             </el-tabs>

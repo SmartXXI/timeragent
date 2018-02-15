@@ -42,12 +42,13 @@
 			<el-col :span="2">
 				<span title="Stop task">
 					<el-button type="danger" plain v-if="active" @click="stopTask" class="stop-button">
-						<i class="el-icon-close"></i>
+						<!--<i class="el-icon-close"></i>-->
+                        <i class="fa fa-stop"></i>
 					</el-button>
 				</span>
 				<span title="Continue task">
-					<el-button type="success" plain class="start-button">
-                    	<i class="el-icon-caret-right" v-if="!active" @click="checkForActive"></i>
+					<el-button type="success"  v-if="!active" @click="checkForActive" plain class="start-button">
+                    	<i class="fa fa-play"></i>
 					</el-button>
 				</span>
 			</el-col>
@@ -369,11 +370,11 @@ export default {
     }
 
 	.start-button {
-		padding: 0;
+		padding: 5px;
 	}
 
 	.stop-button {
-		padding: 3px;
+		padding: 5px;
 	}
 
 	.active-tag {
