@@ -16,9 +16,6 @@
                             >
                                 Create task
                             </el-button>
-                            <el-button plain disabled>
-                                Add Break
-                            </el-button>
                         </div>
                     </el-col>
                 </el-row>

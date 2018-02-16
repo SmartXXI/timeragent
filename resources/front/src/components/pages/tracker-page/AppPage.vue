@@ -150,6 +150,15 @@
         margin-right: 15px;
     }
 
+    .btn-calendar {
+        color: inherit;
+        text-decoration: none;
+    }
+
+    .btn-calendar:hover {
+        text-decoration: none;
+    }
+
 </style>
 
 <style>

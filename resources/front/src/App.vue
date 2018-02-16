@@ -15,8 +15,6 @@
     @import url('https://fonts.googleapis.com/css?family=Montserrat');
     @import url('https://fonts.googleapis.com/css?family=Lato');
     @import url('https://fonts.googleapis.com/css?family=Open+Sans');
-    @import url('https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css');
-    @import url('https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js');
 
     body {
         font-family : "Open Sans", Helvetica, Arial, sans-serif;
@@ -25,10 +23,14 @@
         color       : #676f7a;
     }
 
+
+
     .has-error {
-        border-bottom : 2px solid #e02c48 !important;
-        color         : #e02c48 !important;
-        border-radius: 4px;
+        color: #e02c48 !important;
+    }
+
+    .has-error input{
+        border-bottom-color: #e02c48 !important;
     }
 
     .has-error:focus {
@@ -80,5 +82,10 @@
     .rate {
         float: right;
         margin-right: 10px;
+    }
+
+
+    .el-transfer {
+        display: inline-block;
     }
 </style>

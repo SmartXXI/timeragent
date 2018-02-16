@@ -325,10 +325,6 @@
         margin-right: 12px;
     }
 
-    .timer-timeentry-editor {
-        padding: 20px 0 20px 0;
-    }
-
 </style>
 
 <style>

@@ -17,7 +17,7 @@ class UserController extends Controller
         $user = User::find($request->user['id']);
         $user->update([
             'name' => $request->user['name'],
-            'email' => $request->user['email'],
+//            'email' => $request->user['email'],
             'billable_rate' => $request->user['billable_rate'],
             'cost_rate' => $request->user['cost_rate'],
             'billable_currency' => $request->user['billable_currency'],
@@ -25,6 +25,12 @@ class UserController extends Controller
 
         ]);
         return $user;
+    }
+
+    public function validateEmail(Request $request) {
+//        http_response_code(500);
+//        dd(!User::where('email', $request->email)->first());
+        return User::where('email', $request->email)->first();
     }
 
 }

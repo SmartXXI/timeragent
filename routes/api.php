@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Auth;
 */
 Route::group(['middleware' => ['isVerified', 'auth:api']], function () {
     Route::get('/user', 'UserController@index');
+    Route::post('/user/validate-email', 'UserController@validateEmail');
 
     Route::post('/user', 'UserController@update');
 
