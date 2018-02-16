@@ -1,7 +1,11 @@
 @extends('layouts.app')
 
 @section('content')
-
+    @if (session('status'))
+        <div class="alert alert-success">
+            {{ session('status') }}
+        </div>
+    @endif
 <div class="cd-user-modal is-visible"> <!-- this is the entire modal form, including the background -->
     <div class="cd-user-modal-container"> <!-- this is the container wrapper -->
         <div class="panel-title">Reset Password</div>
