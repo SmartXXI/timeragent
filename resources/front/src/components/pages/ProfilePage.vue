@@ -67,6 +67,52 @@
                                     <el-radio-button label="£" title="Funt sterling"></el-radio-button>
                                 </el-radio-group>
                             </el-row>
+                            <el-row>
+                                <label>Current password</label><br>
+                                <el-input
+                                        type="password"
+                                        v-model="localUser.currentPassword"
+                                        @input="$v.localUser.currentPassword.$touch()"
+                                        :class="{ 'has-error' : $v.localUser.currentPassword.$error || errors.currentPassword }"
+                                        placeholder="Enter old password"
+                                ></el-input>
+                                <div class="errors" v-if="$v.localUser.currentPassword.$error">
+                                    <span class="error-message" v-if="!$v.localUser.currentPassword.required">Field is required</span>
+                                </div>
+                                <div class="errors" v-if="errors.currentPassword">
+                                    <span class="error-message" v-for="message in errors.currentPassword">{{ message }}</span>
+                                </div>
+                            </el-row>
+                            <el-row>
+                                <label>New password</label><br>
+                                <el-input
+                                        type="password"
+                                        v-model="localUser.newPassword"
+                                        @input="$v.localUser.passwords.$touch(), $v.localUser.newPassword.$touch()"
+                                        @blur="checkForSame"
+                                        :class="{'has-error' : $v.localUser.passwords.$error || $v.localUser.newPassword.$error}"
+                                        placeholder="Enter new password"
+                                ></el-input>
+                                <div class="errors" v-if="$v.localUser.passwords.$error || $v.localUser.newPassword.$error">
+                                    <span class="error-message" v-if="!$v.localUser.passwords.areSame">Passwords are not the same</span>
+                                    <span class="error-message" v-if="!$v.localUser.newPassword.required">Field is required</span>
+                                </div>
+                            </el-row>
+                            <el-row>
+                                <label>Confirm password</label><br>
+                                <el-input
+                                        type="password"
+                                        v-model="localUser.confirmPassword"
+                                        @input="$v.localUser.passwords.$touch(), $v.localUser.confirmPassword.$touch()"
+                                        @blur="checkForSame"
+                                        :class="{'has-error' : $v.localUser.passwords.$error || $v.localUser.confirmPassword.$error}"
+                                        placeholder="Confirm password"
+                                ></el-input>
+                                <div class="errors" v-if="$v.localUser.passwords.$error || $v.localUser.confirmPassword.$error">
+                                    <span class="error-message" v-if="!$v.localUser.passwords.areSame">Passwords are not the same</span>
+                                    <span class="error-message" v-if="!$v.localUser.confirmPassword.required">Field is required</span>
+                                </div>
+                            </el-row>
                         </el-col>
                         </el-row>
             		</el-card>
@@ -93,12 +139,17 @@
                     email        : '',
                     billable_rate: '',
                     cost_rate    : '',
+                    newPassword  : '',
 
+                    currentPassword  : '',
+                    confirmPassword  : '',
                     billable_currency: '',
                     cost_currency    : '',
                 },
                 isUniqueEmail: true,
                 isEmail      : true,
+                samePasswords: true,
+                errors       : [],
             };
         },
         created() {
@@ -123,8 +174,9 @@
                         this.showSuccess('Profile saved successful');
                         this.$router.go(-1);
                     })
-                    .catch(() => {
+                    .catch((error) => {
                         this.showError();
+                        this.errors = error.response.data.errors;
                     });
             },
             validateEmail() {
@@ -146,11 +198,55 @@
                     this.isUniqueEmail = true;
                 }
             },
+            checkForSame() {
+                if (this.localUser.confirmPassword === '' || this.localUser.newPassword === '') {
+                    this.samePasswords = true;
+                    return;
+                }
+                if (this.localUser.newPassword !== this.localUser.confirmPassword) {
+                    console.log('here');
+                    this.samePasswords = false;
+                    return;
+                }
+                this.samePasswords = true;
+            },
         },
         components: {
             NavMenuAuth,
         },
         validations() {
+            if (this.localUser.newPassword !== '' || this.localUser.confirmPassword !== '') {
+                return {
+                    localUser: {
+                        name: {
+                            required,
+                        },
+                        email: {
+                            required,
+                            isEmail() {
+                                return this.isEmail;
+                            },
+                            isUniqueEmail() {
+                                return this.isUniqueEmail;
+                            },
+                        },
+                        currentPassword: {
+                            required,
+                        },
+                        newPassword: {
+                            required,
+                        },
+                        confirmPassword: {
+                            required,
+                        },
+                        passwords: {
+                            areSame() {
+                                return this.samePasswords;
+                            },
+                        },
+                    },
+                };
+            }
             return {
                 localUser: {
                     name: {
@@ -163,6 +259,14 @@
                         },
                         isUniqueEmail() {
                             return this.isUniqueEmail;
+                        },
+                    },
+                    currentPassword: {},
+                    newPassword    : {},
+                    confirmPassword: {},
+                    passwords      : {
+                        areSame() {
+                            return true;
                         },
                     },
                 },
