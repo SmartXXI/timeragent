@@ -24,6 +24,8 @@
                    :visible.sync="showTeamUsersRates"
                    :show-close="false"
                    width="60%"
+                   :close-on-press-escape="false"
+                   :close-on-click-modal="false"
         >
             <el-collapse v-model="openedTeams">
                 <el-collapse-item v-for="(team, index) in teamsForChangeRates.newValue" :key="team.id" :title="team.name" :name="team.name">
@@ -231,6 +233,14 @@
             },
             syncProjectTeams() {
                 this.$emit('set-project-teams', this.projectTeams);
+            },
+            resetBeforeClose(done) {
+                this.$confirm('Are you sure to close this dialog?')
+                    .then(() => {
+                        this.resetAllTeamsRates();
+                        done();
+                    })
+                    .catch(() => {});
             },
         },
     };

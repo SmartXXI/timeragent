@@ -12,6 +12,8 @@
         <el-dialog title="Change rates"
                    :visible.sync="showUsersRates"
                    :show-close="false"
+                   :close-on-press-escape="false"
+                   :close-on-click-modal="false"
         >
             <el-table :data="usersForChangeRates.newValue">
                 <el-table-column label="Name" prop="name"></el-table-column>
