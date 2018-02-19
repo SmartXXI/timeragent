@@ -125,7 +125,7 @@
 </template>
 
 <script>
-    import { required, email } from 'vuelidate/lib/validators';
+    import { required } from 'vuelidate/lib/validators';
     import { mapGetters } from 'vuex';
     import NavMenuAuth from '../blocks/NavMenuAuth';
     import notification from './../../mixins/notification';
@@ -180,7 +180,7 @@
                     });
             },
             validateEmail() {
-                if (this.localUser.email.match(/^[0-9a-z-\.]+\@[0-9a-z-]{2,}\.[a-z]{2,}$/i)){
+                if (this.localUser.email.match(/^[0-9a-z-\.]+\@[0-9a-z-]{2,}\.[a-z]{2,}$/i)) {
                     this.isEmail = true;
                 } else {
                     this.isEmail = false;
@@ -204,7 +204,6 @@
                     return;
                 }
                 if (this.localUser.newPassword !== this.localUser.confirmPassword) {
-                    console.log('here');
                     this.samePasswords = false;
                     return;
                 }

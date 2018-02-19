@@ -104,7 +104,7 @@
                                 <tr>
                                     <td style="font-size: 30px; text-align:center;">
                                         <br>
-                                        Awesome Co
+                                        Timer Agent
                                         <br>
                                         <br>
                                     </td>

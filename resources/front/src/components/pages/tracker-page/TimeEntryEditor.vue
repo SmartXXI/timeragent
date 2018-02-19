@@ -140,8 +140,10 @@
                 this.localTimeEntry = Object.assign({}, this.timeEntry);
                 this.localTimeEntry.startTime = moment(this.timeEntry.startTime, 'YYYY-MM-DD HH:mm:ss')
                     .format('HH:mm:ss');
-                this.localTimeEntry.endTime = moment(this.timeEntry.endTime, 'YYYY-MM-DD HH:mm:ss')
-                    .format('HH:mm:ss');
+                if (this.timeEntry.endTime) {
+                    this.localTimeEntry.endTime = moment(this.timeEntry.endTime, 'YYYY-MM-DD HH:mm:ss')
+                        .format('HH:mm:ss');
+                }
             }
         },
         methods: {
@@ -171,7 +173,9 @@
             reformatTime(object) {
                 const timeEntry = Object.assign(object);
                 timeEntry.startTime = `${this.$store.getters.date} ${moment(this.localTimeEntry.startTime, 'HH:mm:ss').format('HH:mm:ss')}`;
-                timeEntry.endTime = `${this.$store.getters.date} ${moment(this.localTimeEntry.endTime, 'HH:mm:ss').format('HH:mm:ss')}`;
+                if (timeEntry.endTime) {
+                    timeEntry.endTime = `${this.$store.getters.date} ${moment(this.localTimeEntry.endTime, 'HH:mm:ss').format('HH:mm:ss')}`;
+                }
                 return timeEntry;
             },
         },
