@@ -83,10 +83,10 @@
                 @endif
             </p>
             <p class="fieldset">
-                <label class="image-replace cd-password" for="signup-password">Password</label>
+                <label class="image-replace cd-password" for="signup-password">New Password</label>
                 <input class="full-width has-padding has-border {{ $errors->has('password') ? 'has-error' : '' }}"
                        id="signup-password" type="password"
-                       name="password" required placeholder="Password">
+                       name="password" required placeholder="New Password">
                 @if ($errors->has('password'))
                     <span class="cd-error-message is-visible">{{ $errors->first('password') }}</span>
                 @endif
