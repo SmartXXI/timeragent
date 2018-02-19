@@ -174,7 +174,6 @@
                 const timeEntry = Object.assign(object);
                 timeEntry.startTime = `${this.$store.getters.date} ${moment(this.localTimeEntry.startTime, 'HH:mm:ss').format('HH:mm:ss')}`;
                 if (timeEntry.endTime) {
-                    console.log(timeEntry.endTime);
                     timeEntry.endTime = `${this.$store.getters.date} ${moment(this.localTimeEntry.endTime, 'HH:mm:ss').format('HH:mm:ss')}`;
                 }
                 return timeEntry;

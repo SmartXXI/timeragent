@@ -125,7 +125,7 @@
 </template>
 
 <script>
-    import { required, email } from 'vuelidate/lib/validators';
+    import { required } from 'vuelidate/lib/validators';
     import { mapGetters } from 'vuex';
     import NavMenuAuth from '../blocks/NavMenuAuth';
     import notification from './../../mixins/notification';
