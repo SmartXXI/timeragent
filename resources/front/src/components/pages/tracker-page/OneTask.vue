@@ -383,6 +383,9 @@ export default {
 
     .description {
         cursor: pointer;
+        vertical-align: middle;
+        padding: 4px;
+        display: inline-block;
     }
 
     .red {
