@@ -89,6 +89,22 @@
         display: inline-block;
     }
 
+    .delete_button {
+        color: #FA5555;
+    }
+
+    .delete_button:active {
+        color: #FA5555;
+    }
+
+    .delete_button:hover {
+        color: #FA5555;
+    }
+
+    .delete_button:focus {
+        color: #FA5555;
+    }
+
     .gray-text {
         color: #b4bccc;
     }

@@ -252,10 +252,6 @@ export default {
         margin-top: 40px;
     }
 
-    .delete_button {
-        color: #FA5555;
-    }
-
 	.page-title {
 	    padding: 0;
 	    font-size: 28px;
