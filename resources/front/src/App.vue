@@ -88,4 +88,8 @@
     .el-transfer {
         display: inline-block;
     }
+
+    .gray-text {
+        color: #b4bccc;
+    }
 </style>
