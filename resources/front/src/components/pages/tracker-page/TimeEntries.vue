@@ -5,16 +5,29 @@
                 <el-row justify="start">
                     <el-col :span="1">
                             <el-checkbox v-bind:disabled="!tasksExists"
-                                         v-bind:checked="isChecked"></el-checkbox>
+                                         v-model="isCheckedAll"
+                                         :indeterminate="isIndeterminate"
+                                         @change="checkAll"
+                            ></el-checkbox>
                     </el-col>
                     <el-col :span="6">
-                        <div v-if="!isChecked" class="actions full-width">
+                        <div v-if="!checkedTasks.length" class="actions full-width">
                             <el-button
                                     @click="showEditor"
                                     type="primary"
                                     plain
                             >
                                 Create task
+                            </el-button>
+                        </div>
+                        <div v-else>
+                            <el-button
+                                type="danger"
+                                plain
+                                icon="el-icon-delete"
+                                @click="confirmDelete = true"
+                            >
+                                Delete
                             </el-button>
                         </div>
                     </el-col>
@@ -27,12 +40,32 @@
                     ></task-editor>
 
                     <div class="tasks-section">
-                        <tasks-list v-if="tasksExists"></tasks-list>
+                        <div v-if="tasksExists">
+                            <one-task
+                                    v-for="(task, index) in tasks" :key="task.id"
+                                    :task="task"
+                                    :index="index"
+                                    :tasks="tasks"
+                                    @check-task="checkTask"
+                                    :isChecked="checkedAll"
+                            ></one-task>
+                        </div>
                     </div>
                     <div v-if="!tasksExists" class="well text-center">
                         No work time is recorded for this day.
                     </div>
                 </div>
+                <el-dialog
+                    title="Delete tasks"
+                    :visible.sync="confirmDelete"
+                    width="30%"
+                >
+                    <p>It will not be undone. Continue?</p>
+                    <span slot="footer">
+                        <el-button @click="confirmDelete = false">No</el-button>
+                        <el-button type="primary" @click="deleteTasks">Yes</el-button>
+                    </span>
+                </el-dialog>
             </el-card>
         </el-col>
     </div>
@@ -41,8 +74,8 @@
 <script>
     import moment from 'moment';
     import TimeEntryEditor from './TimeEntryEditor';
-    import TasksList from './TaksList';
     import TaskEditor from './TaskEditor';
+    import OneTask from './OneTask';
 
     export default {
         data() {
@@ -50,13 +83,14 @@
                 addingTask  : false,
                 timerID     : null,
                 time        : null,
-                checkedTasks: 0,
+                checkedTasks: [],
+                isCheckedAll: false,
+
+                confirmDelete  : false,
+                isIndeterminate: false,
             };
         },
         computed: {
-            isChecked() {
-                return this.tasks.some(this.searchForCheck);
-            },
             tasks() {
                 return this.$store.getters.tasks;
             },
@@ -65,6 +99,15 @@
             },
             date() {
                 return moment().format('YYYY-MM-DD');
+            },
+            checkedAll() {
+                if (this.tasks.length === this.checkedTasks.length) {
+                    return true;
+                }
+                if (this.checkedTasks.length && this.checkedTasks.length < this.tasks.length) {
+                    return null;
+                }
+                return false;
             },
         },
         methods: {
@@ -85,9 +128,64 @@
             currentTime() {
                 return moment();
             },
+            checkTask(payload) {
+                if (payload.value) {
+                    this.checkedTasks.push(payload.taskId);
+                } else {
+                    this.checkedTasks = this.checkedTasks.filter(taskId => taskId !== payload.taskId);
+                }
+
+                if (this.checkedTasks.length === this.tasks.length) {
+                    this.isCheckedAll = true;
+                    this.isIndeterminate = false;
+                } else if (this.checkedTasks.length && this.checkedTasks.length < this.tasks.length) {
+                    this.isIndeterminate = true;
+                    this.isCheckedAll = false;
+                } else {
+                    this.isCheckedAll = false;
+                    this.isIndeterminate = false;
+                }
+            },
+            checkAll(value) {
+                this.checkedTasks = [];
+                this.isIndeterminate = false;
+                if (value) {
+                    this.tasks.map((task) => {
+                        this.checkedTasks.push(task.id);
+                        return task;
+                    });
+                }
+            },
+            isChecked(taskId) {
+                return this.checkedTasks.find((locTaskId) => locTaskId === taskId);
+            },
+            deleteTasks() {
+                this.confirmDelete = false;
+                if (this.$store.getters.activeTask) {
+                    this.stopTask();
+                }
+                this.$store.dispatch('deleteTask', { tasks: this.checkedTasks });
+                this.checkedTasks = [];
+                this.isIndeterminate = false;
+            },
+            getActiveTimeEntry() {
+                let activeTimeEntry = {};
+                this.$store.getters.tasks.map((task) => { // find active task in all tasks
+                    activeTimeEntry = task.time_entries.find(timeEntry => (
+                        timeEntry.id === this.$store.getters.activeTask
+                    ));
+                    return task;
+                });
+                return activeTimeEntry;
+            },
+            stopTask() {
+                const activeTimeEntry = this.getActiveTimeEntry();
+                this.$store.dispatch('stopTimer');
+                this.$store.dispatch('stopTask', { task: activeTimeEntry });
+            },
         },
         components: {
-            TimeEntryEditor, TasksList, TaskEditor,
+            TimeEntryEditor, TaskEditor, OneTask,
         },
     };
 </script>

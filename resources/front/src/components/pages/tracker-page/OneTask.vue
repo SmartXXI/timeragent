@@ -2,7 +2,11 @@
 	<div>
 		<el-row v-if="!isEditing">
 			<el-col :span="2">
-				<el-checkbox v-model="tasks[index].checked"></el-checkbox>
+				<el-checkbox
+                        v-model="checked"
+                        @change="checkTask"
+                >
+                </el-checkbox>
 			</el-col>
 			<el-col :span="10">
 				<span v-if="task.description != null " class="description" @dblclick="showEditor">{{ task.description }}</span>
@@ -178,7 +182,7 @@ import TimeEntry from './TimeEntry';
 import notification from '../../../mixins/notification';
 
 export default {
-    props : ['task', 'index', 'tasks'],
+    props : ['task', 'index', 'tasks', 'isChecked'],
     mixins: [notification],
     data() {
         return {
@@ -190,7 +194,15 @@ export default {
             stopActive       : true,
             showTimeEntries  : false,
             limited          : false,
+
+            checked: false,
         };
+    },
+    watch: {
+        isChecked(value) {
+            if (value === null) return;
+            this.checked = value;
+        },
     },
     computed: {
         spendTime() {
@@ -341,13 +353,20 @@ export default {
             if (activeTimeEntry && activeTimeEntry.task_id === this.task.id) {
                 this.stopTask();
             }
-            this.$store.dispatch('deleteTask', { task: this.task, index: this.index });
+            this.$store.dispatch('deleteTask', { tasks: [this.task.id], index: this.index });
+            this.checkTask(false); //uncheck task
         },
         currentTime() {
             return moment();
         },
         time(time) {
             return moment(time, 'HH:mm:ss').format('HH:mm');
+        },
+        checkTask(value) {
+            this.$emit('check-task', {
+                taskId: this.task.id,
+                value,
+            });
         },
     },
     components: {
