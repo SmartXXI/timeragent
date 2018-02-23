@@ -408,10 +408,6 @@ export default {
         cursor: pointer;
     }
 
-    .gray-text {
-        color: #b4bccc;
-    }
-
     .el-popover {
         min-width: 85px;
     }
