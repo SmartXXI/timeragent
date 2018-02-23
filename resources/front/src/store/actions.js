@@ -92,8 +92,8 @@ export default {
         Http.post(`api/update-task/${obj.task.id}`, { task: obj.task })
             .then(() => context.dispatch('getTasks', { date: context.state.date }));
     },
-    deleteTask(context, task) {
-        Http.post(`api/delete-task/${task.task.id}`)
+    deleteTask(context, payload) {
+        Http.post('api/delete-task', { tasks: payload.tasks })
             .then(() => context.dispatch('getTasks', { date: context.state.date }));
     },
     deleteTimeEntry(context, payload) {

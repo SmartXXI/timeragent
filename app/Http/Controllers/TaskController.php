@@ -101,12 +101,16 @@ class TaskController extends Controller
     	return response($task);
     }
 
-    public function deleteTask(Task $task) {
-        if ($task->timeEntries->count() > 0) {
-            foreach ($task->timeEntries as $timeEntry) {
-                TimeEntry::find($timeEntry->id)->delete();
-            }
+    public function deleteTask(Request $request)
+    {
+        $validator = \Validator::make($request->all(), [
+            'tasks' => 'required|array|min:1',
+            'tasks.*' => 'numeric|exists:tasks,id'
+        ]);
+        if ($validator->passes()) {
+            Task::whereIn('id', $request->tasks)->delete();
+        } else {
+            throw new \InvalidArgumentException('Invalid tasks ids');
         }
-        $task->delete();
     }
 }

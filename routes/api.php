@@ -30,7 +30,7 @@ Route::group(['middleware' => ['isVerified', 'auth:api']], function () {
 
     Route::post('/stop-task/{timeEntry}', 'TimeEntryController@stopTask');
 
-    Route::post('/delete-task/{task}', 'TaskController@deleteTask');
+    Route::post('/delete-task', 'TaskController@deleteTask');
 
     Route::post('/create-time-entry', 'TimeEntryController@createTimeEntry');
     Route::post('/update-time-entry/{timeEntry}', 'TimeEntryController@updateTimeEntry');
