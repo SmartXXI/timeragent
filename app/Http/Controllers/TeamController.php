@@ -13,7 +13,9 @@ class TeamController extends Controller
 {
     public function getTeams(Request $request) {
         $user = Auth::user();
-    	$teams = $user->teams;
+    	$teamsWithUser = $user->teams;
+    	$ownTeams = Team::where('owner_id', $user->id)->get();
+    	$teams = $teamsWithUser->merge($ownTeams);
         $teams->map(function(Team $team) {
             $team->owner_name = User::find($team->owner_id)->name;
             $team->load('users');
@@ -29,14 +31,7 @@ class TeamController extends Controller
 		$team->owner_id = $user->getKey();
 		$team->name = $request->team['name'];
 		$team->save();
-//		$user->attachTeam($team);
-
-//        foreach($request->members as $member) {
-//            $member = User::find($member);
-//            $member->attachTeam($team);
-//        }
         $team_users = $request->teamUsers;
-        $team_users[] = $user->id;
 
         $team->users()->sync($team_users);
 
@@ -161,18 +156,16 @@ class TeamController extends Controller
         foreach($teams as $team) {
             foreach ($team->users as $user) {
                 $noUser = false;
-                if ($user->id != Auth::user()->id) {
-                    if(count($existsMembers) == 0) $existsMembers[] = $user; 
-                    foreach($existsMembers as $member) {
-                        if ($member->id == $user->id) {
-                            $noUser = false;
-                            break;
-                        }
-                        else $noUser = true;
+                if(count($existsMembers) == 0) $existsMembers[] = $user;
+                foreach($existsMembers as $member) {
+                    if ($member->id == $user->id) {
+                        $noUser = false;
+                        break;
                     }
-                    if($noUser) {
-                        $existsMembers[] = $user;
-                    }
+                    else $noUser = true;
+                }
+                if($noUser) {
+                    $existsMembers[] = $user;
                 }
             }
         } 
