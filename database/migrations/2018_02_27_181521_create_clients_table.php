@@ -31,9 +31,9 @@ class CreateClientsTable extends Migration
                 ->onUpdate('cascade');
 
             $table->string('name');
-            $table->text('address');
-            $table->string('invoice_prefix', 2);
-            $table->float('rate');
+            $table->text('address')->nullable();
+            $table->string('invoice_prefix', 2)->nullable();
+            $table->float('rate')->nullable();
             $table->timestamps();
         });
     }

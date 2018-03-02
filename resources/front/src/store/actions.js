@@ -197,6 +197,23 @@ export default {
             context.commit(types.SET_EXISTS_MEMBERS, response.data);
         });
     },
+    createOrganization(context, payload) {
+        return Http.post('api/organizations/new', { organization: payload.organization });
+    },
+    updateOrganization(context, payload) {
+        return Http.post(`api/organizations/${payload.organization.id}`, {
+            organization: payload.organization,
+        });
+    },
+    getOneOrganization(context, payload) {
+        return Http.get(`api/organizations/${payload.id}`)
+            .then((response) => {
+                context.commit(types.SET_ONE_ORGANIZATION, response.data);
+            });
+    },
+    clearOrganization(context) {
+        context.commit(types.CLEAR_ORGANIZATION);
+    },
     logout() {
         return Http.post('logout');
     },

@@ -35,4 +35,7 @@ export default {
     existsMembers(state) {
         return state.existsMembers;
     },
+    organization(state) {
+        return state.organization;
+    },
 };

@@ -13,33 +13,60 @@
                             :router="true" :default-active="$route.path"
                             mode="horizontal"
                         >
-                        <el-menu-item index="/">
+                        <el-menu-item index="/personal">
                             <router-link to="/">
                                 <span>Time</span>
                             </router-link>
                         </el-menu-item>
-                        <!--<el-menu-item index="2">Processing Center</el-menu-item>-->
-                        <el-submenu index="3">
+                        <el-menu-item :index="generateUrl('projects')" v-if="isOrganization">
+                            <router-link to="/projects">
+                                <span>Projects</span>
+                            </router-link>
+                        </el-menu-item>
+                        <el-menu-item :index="generateUrl('teams')" v-if="isOrganization">
+                            <router-link to="/teams">
+                                Teams
+                            </router-link>
+                        </el-menu-item>
+                        <el-menu-item :index="generateUrl('clients')" v-if="isOrganization">
+                            <router-link to="/">
+                                <span>Clients</span>
+                            </router-link>
+                        </el-menu-item>
+                        <el-submenu index="3" v-if="isPersonal">
                             <template slot="title">Manage</template>
-                            <el-menu-item index="/teams">
+                            <el-menu-item :index="generateUrl('teams')" v-if="isPersonal">
                                 <router-link to="/teams">
                                     Teams
                                 </router-link>
                             </el-menu-item>
-                            <!--<el-menu-item index="/clients">-->
-                                <!--<router-link to="/clients">-->
-                                    <!--<span>Clients</span>-->
-                                <!--</router-link>-->
-                            <!--</el-menu-item>-->
-                            <el-menu-item index="/projects">
+                            <el-menu-item :index="generateUrl('projects')" v-if="isPersonal">
                                 <router-link to="/projects">
                                     <span>Projects</span>
                                 </router-link>
                             </el-menu-item>
                         </el-submenu>
-                        <el-submenu index="4">
+                        <el-submenu index="4" v-if="isPersonal">
                             <template slot="title">{{ user.name }}</template>
-                            <el-menu-item index="/profile">
+                            <div v-for="organization in user.organizations">
+                                <el-menu-item :index="`/organization/${organization.id}/view`">
+                                    <router-link :to="{
+                                            name: 'organization',
+                                            params: {
+                                                segment: 'organization',
+                                                organizationId: organization.id
+                                            }
+                                        }">
+                                        {{ organization.name }}
+                                    </router-link>
+                                </el-menu-item>
+                            </div>
+                            <el-menu-item index="/organization/new">
+                                <router-link to="/organization/new">
+                                    <i class="el-icon-plus"></i> New Organization
+                                </router-link>
+                            </el-menu-item>
+                            <el-menu-item :index="generateUrl('profile')">
                                 <router-link to="/profile">
                                     Profile
                                 </router-link>
@@ -49,6 +76,17 @@
                                     <span>Log out</span>
                                 </router-link>
                             </el-menu-item>
+                        </el-submenu>
+                        <el-submenu index="4" v-if="isOrganization">
+                            <template slot="title">{{ organization.name }}</template>
+                            <div v-for="user in organization.users">
+                                <el-menu-item index="/personal/">
+                                    <router-link
+                                            :to="{ name: 'tasks', params: { segment: 'personal' } }">
+                                        {{ user.name }}
+                                    </router-link>
+                                </el-menu-item>
+                            </div>
                         </el-submenu>
                     </el-menu>
                 </el-col>
@@ -61,9 +99,12 @@
 <script>
     import ElRow from 'element-ui/packages/row/src/row';
     import moment from 'moment';
+    import { mapGetters } from 'vuex';
 
     export default {
-        components: { ElRow },
+        components: {
+            ElRow,
+        },
         data() {
             return {
                 isOpened: null,
@@ -76,14 +117,31 @@
             };
         },
         created() {
-            this.$store.dispatch('getUser');
+            if (this.$route.params.segment === 'organization') {
+                localStorage.setItem('profile', 'organization');
+                this.$store.dispatch('getOneOrganization', { id: this.$route.params.organizationId });
+            }
+            if (this.$route.params.segment === 'personal') {
+                localStorage.setItem('profile', 'personal');
+                this.$store.dispatch('getUser');
+            }
         },
         computed: {
-            user() {
-                return this.$store.state.user;
-            },
+            ...mapGetters([
+                'organization',
+                'user',
+            ]),
             date() {
                 return moment().format('YYYY-MM-DD');
+            },
+            isOrganization() {
+                return this.profile === 'organization';
+            },
+            isPersonal() {
+                return this.$route.params.segment === 'personal';
+            },
+            profile() {
+                return localStorage.getItem('profile');
             },
         },
         methods: {
@@ -101,6 +159,12 @@
                     this.isOpened = null;
                 }, 300);
             },
+            generateUrl(url) {
+                if (this.$route.params.organizationId) {
+                    return `${this.$route.params.segment}/${this.$route.params.organizationId}/${url}`;
+                }
+                return `${this.$route.params.segment}/${url}`;
+            },
             logout() {
                 this.$store.dispatch('logout');
                 this.$router.go('/');
@@ -111,6 +175,11 @@
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss" rel="stylesheet/scss" scoped>
+
+    .el-menu-item a {
+        display: block;
+        width: 100%;
+    }
 
     .control-buttons {
         padding: 17px;
