@@ -19,4 +19,5 @@ export default {
     ownUsers     : [],
     existsMembers: [],
     organization : {},
+    profileStatus: '',
 };

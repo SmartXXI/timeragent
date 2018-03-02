@@ -13,9 +13,9 @@
                             :router="true" :default-active="$route.path"
                             mode="horizontal"
                         >
-                        <el-menu-item index="/personal">
-                            <router-link to="/">
-                                <span>Time</span>
+                        <el-menu-item :index="generateUrl('tasks')">
+                            <router-link to="/tasks">
+                                <span>Tasks</span>
                             </router-link>
                         </el-menu-item>
                         <el-menu-item :index="generateUrl('projects')" v-if="isOrganization">
@@ -61,7 +61,7 @@
                                     </router-link>
                                 </el-menu-item>
                             </div>
-                            <el-menu-item index="/organization/new">
+                            <el-menu-item :index="generateUrl('organizations/new')">
                                 <router-link to="/organization/new">
                                     <i class="el-icon-plus"></i> New Organization
                                 </router-link>
@@ -80,9 +80,14 @@
                         <el-submenu index="4" v-if="isOrganization">
                             <template slot="title">{{ organization.name }}</template>
                             <div v-for="user in organization.users">
-                                <el-menu-item index="/personal/">
+                                <el-menu-item index="/personal/tasks">
                                     <router-link
-                                            :to="{ name: 'tasks', params: { segment: 'personal' } }">
+                                            :to="{
+                                                name: 'tasks',
+                                                params: {
+                                                    segment: 'personal'
+                                                }
+                                            }">
                                         {{ user.name }}
                                     </router-link>
                                 </el-menu-item>
@@ -138,7 +143,7 @@
                 return this.profile === 'organization';
             },
             isPersonal() {
-                return this.$route.params.segment === 'personal';
+                return this.profile === 'personal';
             },
             profile() {
                 return localStorage.getItem('profile');
@@ -160,10 +165,10 @@
                 }, 300);
             },
             generateUrl(url) {
-                if (this.$route.params.organizationId) {
-                    return `${this.$route.params.segment}/${this.$route.params.organizationId}/${url}`;
+                if (this.isOrganization) {
+                    return `/${this.$route.params.segment}/${this.$route.params.organizationId}/${url}`;
                 }
-                return `${this.$route.params.segment}/${url}`;
+                return `/${this.$route.params.segment}/${url}`;
             },
             logout() {
                 this.$store.dispatch('logout');

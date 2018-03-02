@@ -26,7 +26,7 @@ export default new Router({
             component: GenericLayout,
             children : [
                 {
-                    path     : '/',
+                    path     : 'tasks',
                     name     : 'tasks',
                     component: Tracker,
                 },
@@ -67,6 +67,11 @@ export default new Router({
                     name     : 'Profile',
                     component: Profile,
                 },
+                {
+                    path     : 'organizations/new',
+                    name     : 'newOrganization',
+                    component: EditOrganization,
+                },
             ],
         },
 
@@ -81,9 +86,9 @@ export default new Router({
                     component: Organization,
                 },
                 {
-                    path     : 'new',
-                    name     : 'newOrganization',
-                    component: EditOrganization,
+                    path     : ':organizationId/tasks',
+                    name     : 'tasksOrg',
+                    component: Tracker,
                 },
                 {
                     path     : ':organizationId/edit',
@@ -142,7 +147,7 @@ export default new Router({
         },
         {
             path    : '/',
-            redirect: 'personal',
+            redirect: 'personal/tasks',
         },
         // {
         //     path     : '/',
