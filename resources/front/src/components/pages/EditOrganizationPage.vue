@@ -119,6 +119,9 @@
                 });
             }
         },
+        destroyed() {
+            this.$store.dispatch('clearOrganization');
+        },
         methods: {
             createOrganization() {
                 if (this.formInvalid) return;
