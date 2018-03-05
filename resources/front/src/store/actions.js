@@ -214,6 +214,39 @@ export default {
     clearOrganization(context) {
         context.commit(types.CLEAR_ORGANIZATION);
     },
+    getClients(context, payload) {
+        return Http.post('api/clients', { organization_id: payload.organization_id })
+            .then((response) => {
+                context.commit(types.SET_CLIENTS, response.data);
+            });
+    },
+    createClient(context, payload) {
+        return Http.post('api/clients/new', {
+            client        : payload.client,
+            organizationId: payload.organizationId,
+        });
+    },
+    updateClient(context, payload) {
+        return Http.post(`api/clients/${payload.client.id}`, { client: payload.client });
+    },
+    getOneClient(context, payload) {
+        return Http.get(`api/clients/${payload.id}`)
+            .then((response) => {
+                context.commit(types.SET_ONE_CLIENT, response.data);
+            });
+    },
+    clearClient(context) {
+        context.commit(types.CLEAR_CLIENT);
+    },
+
+
+
+
+
+
+
+
+
     logout() {
         return Http.post('logout');
     },

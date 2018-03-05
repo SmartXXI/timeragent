@@ -138,4 +138,17 @@ export default {
     [types.CLEAR_ORGANIZATION](state, organization = {}) {
         Object.assign(state, { organization });
     },
+    [types.SET_CLIENTS](state, clients) {
+        Object.assign(state, { clients });
+    },
+    [types.SET_ONE_CLIENT](state, client) {
+        Object.assign(state, { client });
+    },
+    [types.CLEAR_CLIENT](state) {
+        Object.assign(state, {
+            client: {
+                contacts: {},
+            },
+        });
+    },
 };

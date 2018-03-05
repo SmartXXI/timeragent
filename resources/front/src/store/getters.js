@@ -38,4 +38,10 @@ export default {
     organization(state) {
         return state.organization;
     },
+    clients(state) {
+        return state.clients;
+    },
+    client(state) {
+        return state.client;
+    },
 };

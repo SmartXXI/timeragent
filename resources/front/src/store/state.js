@@ -20,4 +20,9 @@ export default {
     existsMembers: [],
     organization : {},
     profileStatus: '',
+
+    clients: [],
+    client : {
+        contact: {},
+    },
 };

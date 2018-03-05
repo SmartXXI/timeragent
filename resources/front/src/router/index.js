@@ -12,6 +12,8 @@ import EditProject from '../components/pages/EditProjectPage';
 import Profile from '../components/pages/ProfilePage';
 import EditOrganization from '../components/pages/EditOrganizationPage';
 import Organization from '../components/pages/OrganizationPage';
+import Clients from '../components/pages/ClientsPage';
+import EditClient from '../components/pages/EditClientPage';
 
 Vue.use(Router);
 
@@ -126,6 +128,22 @@ export default new Router({
                     path     : ':organizationId/projects/:projectId',
                     name     : 'editProjectOrg',
                     component: EditProject,
+                    props    : true,
+                },
+                {
+                    path     : ':organizationId/clients',
+                    name     : 'clients',
+                    component: Clients,
+                },
+                {
+                    path     : ':organizationId/clients/new',
+                    name     : 'newClient',
+                    component: EditClient,
+                },
+                {
+                    path     : ':organizationId/clients/:clientId',
+                    name     : 'editClient',
+                    component: EditClient,
                     props    : true,
                 },
                 {

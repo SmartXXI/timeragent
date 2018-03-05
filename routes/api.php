@@ -55,4 +55,9 @@ Route::group(['middleware' => ['isVerified', 'auth:api']], function () {
     Route::post('/organizations/new', 'OrganizationController@create');
     Route::post('/organizations/{organization}', 'OrganizationController@update');
     Route::get('/organizations/{organization}', 'OrganizationController@getOrganization');
+
+    Route::post('/clients', 'ClientController@getClients');
+    Route::post('/clients/new', 'ClientController@create');
+    Route::post('clients/{client}', 'ClientController@update');
+    Route::get('/clients/{client}', 'ClientController@getClient');
 });
