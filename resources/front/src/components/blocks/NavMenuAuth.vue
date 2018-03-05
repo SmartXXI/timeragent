@@ -14,34 +14,34 @@
                             mode="horizontal"
                         >
                         <el-menu-item :index="generateUrl('tasks')">
-                            <router-link to="/tasks">
+                            <router-link :to="generateUrl('tasks')">
                                 <span>Tasks</span>
                             </router-link>
                         </el-menu-item>
                         <el-menu-item :index="generateUrl('projects')" v-if="isOrganization">
-                            <router-link to="/projects">
+                            <router-link :to="generateUrl('projects')">
                                 <span>Projects</span>
                             </router-link>
                         </el-menu-item>
                         <el-menu-item :index="generateUrl('teams')" v-if="isOrganization">
-                            <router-link to="/teams">
+                            <router-link :to="generateUrl('teams')">
                                 Teams
                             </router-link>
                         </el-menu-item>
                         <el-menu-item :index="generateUrl('clients')" v-if="isOrganization">
-                            <router-link to="/">
+                            <router-link :to="generateUrl('clients')">
                                 <span>Clients</span>
                             </router-link>
                         </el-menu-item>
                         <el-submenu index="3" v-if="isPersonal">
                             <template slot="title">Manage</template>
                             <el-menu-item :index="generateUrl('teams')" v-if="isPersonal">
-                                <router-link to="/teams">
+                                <router-link :to="generateUrl('teams')">
                                     Teams
                                 </router-link>
                             </el-menu-item>
                             <el-menu-item :index="generateUrl('projects')" v-if="isPersonal">
-                                <router-link to="/projects">
+                                <router-link :to="generateUrl('projects')">
                                     <span>Projects</span>
                                 </router-link>
                             </el-menu-item>
@@ -62,12 +62,12 @@
                                 </el-menu-item>
                             </div>
                             <el-menu-item :index="generateUrl('organizations/new')">
-                                <router-link to="/organization/new">
+                                <router-link :to="generateUrl('organizations/new')">
                                     <i class="el-icon-plus"></i> New Organization
                                 </router-link>
                             </el-menu-item>
                             <el-menu-item :index="generateUrl('profile')">
-                                <router-link to="/profile">
+                                <router-link :to="generateUrl('profile')">
                                     Profile
                                 </router-link>
                             </el-menu-item>
