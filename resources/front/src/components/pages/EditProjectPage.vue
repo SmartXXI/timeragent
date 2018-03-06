@@ -121,7 +121,7 @@
                                           placeholder="Enter project name"></el-input>
                                 <span slot="footer" class="dialog-footer">
                                     <el-button @click.prevent="showConfirmModal = false">Cancel</el-button>
-                                    <el-button :disabled="!confirmDeleteProject" type="danger" @click.prevent="deletePersonalProject">Delete</el-button>
+                                    <el-button :disabled="!confirmDeleteProject" type="danger" @click.prevent="deleteProject">Delete</el-button>
                                 </span>
                             </el-dialog>
                             </div>
@@ -308,13 +308,13 @@ export default {
                 });
         },
         // Delete project
-        deletePersonalProject() {
+        deleteProject() {
             if (!this.confirmDeleteProject) return;
             this.showConfirmModal = false;
             this.$store.dispatch('deleteProject', { projectId: this.project.id })
                 .then(() => {
                     this.showSuccess('Project deleted successful');
-                    this.$router.push('/projects');
+                    this.$router.go(-1);
                 })
                 .catch(() => {
                     this.showError();
