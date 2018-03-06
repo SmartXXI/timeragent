@@ -25,6 +25,9 @@
                             <el-table-column prop="owner_name"
                                              label="Owner"
                             ></el-table-column>
+                            <el-table-column prop="client_name"
+                                             label="Client"
+                            ></el-table-column>
                             <el-table-column label="Members">
                                 <template slot-scope="scope">
                                     <div v-if="scope.row.teams.length === 1">Team: {{ scope.row.teams[0].name }}</div>
@@ -47,8 +50,11 @@
                             <el-table-column
                                     width="80">
                                 <template slot-scope="scope">
-                                    <div v-if="user.id == scope.row.owner_id">
+                                    <div v-if="user.id === scope.row.owner_id">
                                         <el-button type="plain" size="mini" @click="goToProject(scope.row.id)">Edit</el-button>
+                                    </div>
+                                    <div v-if="organization.id">
+                                        <el-button type="plain" size="mini" @click="goToOrgProject(scope.row.id)">Edit</el-button>
                                     </div>
                                 </template>
                             </el-table-column>
@@ -84,24 +90,47 @@
         data() {
             return {
                 teamsTableVisible: false,
-                teams            : [],
+
+                teams   : [],
+                projects: [],
             };
         },
         created() {
-            this.$store.dispatch('getProjects')
-                .catch(() => {
-                    this.showError('Something went wrong in loading projects...');
-                });
+            if (this.$route.params.segment === 'personal') {
+                this.$store.dispatch('getProjects')
+                    .then(() => {
+                        this.projects = this.personalProjects;
+                    })
+                    .catch(() => {
+                        this.showError('Something went wrong in loading projects...');
+                    });
+            }
+            if (this.$route.params.segment === 'organization') {
+                this.$store.dispatch('getOrganizationProjects', {
+                    id: this.$route.params.organizationId,
+                })
+                    .then(() => {
+                        this.projects = this.organizationProjects;
+                    });
+            }
+        },
+        destroyed() {
+            this.$store.dispatch('clearProjects');
         },
         computed: {
             ...mapGetters([
                 'user',
-                'projects',
+                'organization',
+                'personalProjects',
+                'organizationProjects',
             ]),
         },
         methods: {
             goToProject(projectId) {
                 this.$router.push({ name: 'editProject', params: { projectId } });
+            },
+            goToOrgProject(projectId) {
+                this.$router.push({ name: 'editProjectOrg', params: { projectId } });
             },
             showTeams(teams) {
                 this.teams = teams;

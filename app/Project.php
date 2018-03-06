@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Project extends Model
 {
-	protected $fillable = ['name', 'owner_id'];
+	protected $fillable = ['name', 'owner_id', 'client_id'];
 
     public function teams() {
     	return $this->belongsToMany('App\Team', 'projects_teams', 'project_id', 'team_id');
@@ -57,5 +57,10 @@ class Project extends Model
 
     public function tasks() {
         return $this->hasMany('App\Task', 'project_id');
+    }
+
+    public function client()
+    {
+        return $this->belongsTo('App\Client');
     }
 }

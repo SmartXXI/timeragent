@@ -52,9 +52,15 @@ Route::group(['middleware' => ['isVerified', 'auth:api']], function () {
     Route::post('/projects/{project}', 'ProjectController@update');
     Route::post('/projects/{project}/delete', 'ProjectController@delete');
 
-    Route::post('/organizations/new', 'OrganizationController@create');
-    Route::post('/organizations/{organization}', 'OrganizationController@update');
-    Route::get('/organizations/{organization}', 'OrganizationController@getOrganization');
+    Route::post('/organizations/new', 'Organization\OrganizationController@create');
+    Route::post('/organizations/{organization}', 'Organization\OrganizationController@update');
+    Route::get('/organizations/{organization}', 'Organization\OrganizationController@getOrganization');
+
+    // Organization projects
+    Route::get('organization/{organization}/projects', 'Organization\ProjectController@getProjects');
+    Route::post('organization/{organization}/projects/new', 'Organization\ProjectController@create');
+    Route::get('organization/{organization}/projects/{project}', 'Organization\ProjectController@edit');
+    Route::post('organization/{organization}/projects/{project}', 'Organization\ProjectController@update');
 
     Route::post('/clients', 'ClientController@getClients');
     Route::post('/clients/new', 'ClientController@create');

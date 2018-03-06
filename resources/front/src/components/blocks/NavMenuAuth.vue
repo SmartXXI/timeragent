@@ -131,6 +131,14 @@
                 this.$store.dispatch('getUser');
             }
         },
+        destroyed() {
+            if (this.$route.params.segment === 'personal') {
+                this.$store.dispatch('clearOrganization');
+            }
+            if (this.$route.params.segment === 'organization') {
+                this.$store.dispatch('clearUser');
+            }
+        },
         computed: {
             ...mapGetters([
                 'organization',

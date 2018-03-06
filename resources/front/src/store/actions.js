@@ -112,6 +112,9 @@ export default {
         return Http.get('api/user')
             .then(response => context.commit(types.GET_USER, response.data));
     },
+    clearUser(context) {
+        context.commit(types.CLEAR_USER);
+    },
     validateEmail(context, payload) {
         return Http.post('api/user/validate-email', { email: payload.email });
     },
@@ -123,11 +126,6 @@ export default {
             context.commit(types.SET_TEAMS, response.data);
         });
     },
-    getProjects(context) {
-        return Http.get('api/projects').then((response) => {
-            context.commit(types.SET_PROJECTS, response.data);
-        });
-    },
     addTeam(context, payload) {
         return Http.post('api/teams/new', { team: payload.team, teamUsers: payload.teamUsers }).then((response) => {
             if (payload.emailsToInvite !== []) {
@@ -137,9 +135,6 @@ export default {
     },
     inviteMembers(context, payload) {
         Http.post('api/teams/invite', { members: payload.emailsToInvite, team_id: payload.teamId });
-    },
-    addProject(context, payload) {
-        return Http.post('api/projects/new', { project: payload.project, projectTeams: payload.projectTeams, projectUsers: payload.projectUsers });
     },
     getOneTeam(context, payload) {
         return Http.get(`api/teams/${payload.teamId}`)
@@ -169,8 +164,46 @@ export default {
             context.commit(types.SET_ONE_PROJECT, response.data);
         });
     },
-    updateProject(context, payload) {
+    getOrganizationProject(context, payload) {
+        return Http.get(`api/organization/${payload.orgId}/projects/${payload.projectId}`)
+            .then((response) => {
+                context.commit(types.SET_ONE_PROJECT, response.data);
+            });
+    },
+    getProjects(context) {
+        return Http.get('api/projects').then((response) => {
+            context.commit(types.SET_PERSONAL_PROJECTS, response.data);
+        });
+    },
+    getOrganizationProjects(context, payload) {
+        return Http.get(`api/organization/${payload.id}/projects`)
+            .then((response) => {
+                context.commit(types.SET_ORGANIZATION_PROJECTS, response.data);
+            });
+    },
+    createPersonalProject(context, payload) {
+        return Http.post('api/projects/new', {
+            project     : payload.project,
+            projectTeams: payload.projectTeams,
+            projectUsers: payload.projectUsers,
+        });
+    },
+    createOrganizationProject(context, payload) {
+        return Http.post(`api/organization/${payload.orgId}/projects/new`, {
+            project     : payload.project,
+            projectTeams: payload.projectTeams,
+            projectUsers: payload.projectUsers,
+        });
+    },
+    updatePersonalProject(context, payload) {
         return Http.post(`api/projects/${payload.projectId}`, {
+            project     : payload.project,
+            projectTeams: payload.projectTeams,
+            projectUsers: payload.projectUsers,
+        });
+    },
+    updateOrganizationProject(context, payload) {
+        return Http.post(`api/organization/${payload.orgId}/projects/${payload.projectId}`, {
             project     : payload.project,
             projectTeams: payload.projectTeams,
             projectUsers: payload.projectUsers,
@@ -178,6 +211,9 @@ export default {
     },
     clearProject(context) {
         context.commit(types.CLEAR_PROJECT);
+    },
+    clearProjects(context) {
+        context.commit(types.CLEAR_PROJECTS);
     },
     deleteProject(context, payload) {
         return Http.post(`api/projects/${payload.projectId}/delete`);
@@ -238,15 +274,6 @@ export default {
     clearClient(context) {
         context.commit(types.CLEAR_CLIENT);
     },
-
-
-
-
-
-
-
-
-
     logout() {
         return Http.post('logout');
     },

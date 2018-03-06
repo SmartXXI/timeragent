@@ -11,7 +11,9 @@ export default {
     date         : moment().format('YYYY-MM-DD'),
     user         : {},
     tasks        : [],
-    projects     : [],
+
+    personalProjects: [],
+
     teams        : [],
     team         : {},
     project      : {},
@@ -25,4 +27,6 @@ export default {
     client : {
         contact: {},
     },
+
+    organizationProjects: [],
 };

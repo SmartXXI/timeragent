@@ -17,4 +17,14 @@ class Client extends Model
     public function contact() {
         return $this->belongsTo('App\Contact');
     }
+
+    public function projects()
+    {
+        return $this->hasMany('App\Project');
+    }
+
+    public function organization()
+    {
+        return $this->belongsTo('App\Organization');
+    }
 }

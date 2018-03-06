@@ -18,4 +18,9 @@ class Organization extends Model
     {
         return $this->belongsToMany('App\User');
     }
+
+    public function clients()
+    {
+        return $this->hasMany('App\Client');
+    }
 }

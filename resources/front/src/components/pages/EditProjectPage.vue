@@ -9,21 +9,42 @@
             <el-row>
                 <el-col :span="16" :offset="4">
                 <div class="pull-right">
-                    <el-button type="plain"
-                               @click.prevent="$router.go(-1)"
-                    > Cancel </el-button>
+                    <!--personal-->
+                    <div v-if="profile === 'personal'">
+                        <el-button type="plain"
+                                   @click.prevent="$router.go(-1)"
+                        > Cancel </el-button>
                     <el-button type="success"
                                title="Save project"
                                v-if="isEditing"
-                               @click.prevent="updateProject"
+                               @click.prevent="updatePersonalProject"
                                :disabled="formInvalid"
                     > Save </el-button>
                     <el-button v-if="isCreating"
                                type="success"
                                title="Add Project"
-                               @click.prevent="addProject"
+                               @click.prevent="createPersonalProject"
                                :disabled="formInvalid"
                     > Save </el-button>
+                    </div>
+                     <!--organization-->
+                    <div v-if="profile === 'organization'">
+                        <el-button type="plain"
+                                   @click.prevent="$router.go(-1)"
+                        > Cancel </el-button>
+                    <el-button type="success"
+                               title="Save project"
+                               v-if="isEditing"
+                               @click.prevent="updateOrganizationProject"
+                               :disabled="formInvalid"
+                    > Save </el-button>
+                    <el-button v-if="isCreating"
+                               type="success"
+                               title="Add Project"
+                               @click.prevent="createOrganizationProject"
+                               :disabled="formInvalid"
+                    > Save </el-button>
+                    </div>
                 </div>
                 <span v-if="isEditing" class="page-title"> Edit Project </span>
                 <span v-if="isCreating" class="page-title"> New Project </span>
@@ -32,6 +53,7 @@
                           <el-row>
                         <el-col :span="16" :offset="4">
                             <div>
+                                <el-row>
                                 <label>Name</label>
                                     <el-input :class="{ 'has-error': $v.project.name.$error }"
                                               placeholder="Enter project name"
@@ -41,6 +63,18 @@
                                     <div class="errors" v-if="$v.project.name.$error">
                                         <span class="error-message" v-if="!$v.project.name.required">Field is required</span>
                                     </div>
+                                </el-row>
+                            </div>
+                            <div v-if="profile === 'organization'">
+                                <el-row>
+                                    <label>Client</label>
+                                    <div>
+                                    <el-select v-model="project.client_id" :disabled="clients.length > 0 ? false : true">
+                                        <el-option value="" label="No project"></el-option>
+                                        <el-option v-for="(client, index) in clients" :label="client.name" :value="client.id" :key="client.id"></el-option>
+                                    </el-select>
+                                    </div>
+                                </el-row>
                             </div>
 
                             <el-tabs v-model="activeTabName">
@@ -87,7 +121,7 @@
                                           placeholder="Enter project name"></el-input>
                                 <span slot="footer" class="dialog-footer">
                                     <el-button @click.prevent="showConfirmModal = false">Cancel</el-button>
-                                    <el-button :disabled="!confirmDeleteProject" type="danger" @click.prevent="deleteProject">Delete</el-button>
+                                    <el-button :disabled="!confirmDeleteProject" type="danger" @click.prevent="deletePersonalProject">Delete</el-button>
                                 </span>
                             </el-dialog>
                             </div>
@@ -150,6 +184,36 @@ export default {
                     }
                 });
         }
+        if (this.$route.name === 'editProjectOrg') {
+            this.isEditing = true;
+            this.$store.dispatch('getOrganizationProject', {
+                orgId    : this.$route.params.organizationId,
+                projectId: this.projectId,
+            })
+                .then(() => {
+                    this.loading = false;
+                })
+                .catch((error) => {
+                    if (error.response.status === 403) {
+                        this.showError('Access denied');
+                        this.$router.go(-1);
+                        this.loading = false;
+                    }
+                });
+        }
+        if (this.$route.name === 'newProjectOrg') {
+            this.isCreating = true;
+            this.$store.dispatch('clearProject');
+            this.loading = false;
+        }
+        if (this.$route.params.segment === 'organization') {
+            this.$store.dispatch('getClients', {
+                organization_id: this.$route.params.organizationId,
+            })
+                .catch(() => {
+                    this.showError('Something went wrong in loading clients...');
+                });
+        }
     },
     computed: {
         // Checking is form valid
@@ -161,10 +225,14 @@ export default {
             'project',
             'ownTeams',
             'ownUsers',
+            'clients',
         ]),
         // Checking is verifying name equal project name to confirm deleting
         confirmDeleteProject() {
             return this.projectName === this.project.name;
+        },
+        profile() {
+            return localStorage.getItem('profile');
         },
     },
     destroyed() {
@@ -173,25 +241,25 @@ export default {
     },
     methods: {
         // Add project
-        addProject() {
+        createPersonalProject() {
             if (this.$v.$invalid) return;
-            this.$store.dispatch('addProject', {
+            this.$store.dispatch('createPersonalProject', {
                 project     : this.project,
                 projectTeams: this.projectTeams,
                 projectUsers: this.projectUsers,
             })
                 .then(() => {
                     this.showSuccess('Project saved successful');
-                    this.$router.push('/projects');
+                    this.$router.go(-1);
                 })
                 .catch(() => {
                     this.showError();
                 });
         },
         // Update project
-        updateProject() {
+        updatePersonalProject() {
             if (this.$v.$invalid) return;
-            this.$store.dispatch('updateProject', {
+            this.$store.dispatch('updatePersonalProject', {
                 projectId   : this.project.id,
                 project     : this.project,
                 projectTeams: this.projectTeams,
@@ -199,14 +267,48 @@ export default {
             })
                 .then(() => {
                     this.showSuccess('Project saved successful');
-                    this.$router.push('/projects');
+                    this.$router.go(-1);
+                })
+                .catch((error) => {
+                    this.showError(error);
+                });
+        },
+        // Org projects
+        createOrganizationProject() {
+            if (this.$v.$invalid) return;
+            this.$store.dispatch('createOrganizationProject', {
+                orgId       : this.$route.params.organizationId,
+                project     : this.project,
+                projectTeams: this.projectTeams,
+                projectUsers: this.projectUsers,
+            })
+                .then(() => {
+                    this.showSuccess('Project saved successful');
+                    this.$router.go(-1);
+                })
+                .catch((error) => {
+                    this.showError(error);
+                });
+        },
+        updateOrganizationProject() {
+            if (this.$v.$invalid) return;
+            this.$store.dispatch('updateOrganizationProject', {
+                orgId       : this.$route.params.organizationId,
+                projectId   : this.project.id,
+                project     : this.project,
+                projectTeams: this.projectTeams,
+                projectUsers: this.projectUsers,
+            })
+                .then(() => {
+                    this.showSuccess('Project saved successful');
+                    this.$router.go(-1);
                 })
                 .catch((error) => {
                     this.showError(error);
                 });
         },
         // Delete project
-        deleteProject() {
+        deletePersonalProject() {
             if (!this.confirmDeleteProject) return;
             this.showConfirmModal = false;
             this.$store.dispatch('deleteProject', { projectId: this.project.id })
@@ -248,6 +350,9 @@ export default {
         margin-top: 30px;
     }
 
+    .el-row {
+        margin-top: 20px;
+    }
     .teams {
         margin-top: 40px;
     }

@@ -37,11 +37,11 @@ export default new Router({
                     name     : 'Projects',
                     component: Projects,
                 },
-                // {
-                //     path     : 'projects/new',
-                //     name     : 'newProject',
-                //     component: EditProject,
-                // },
+                {
+                    path     : 'projects/new',
+                    name     : 'newProject',
+                    component: EditProject,
+                },
                 {
                     path     : 'teams',
                     name     : 'Teams',

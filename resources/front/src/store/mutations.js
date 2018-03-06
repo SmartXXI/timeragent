@@ -105,11 +105,11 @@ export default {
     [types.UPDATE_USER](state, user) {
         Object.assign(state, { user });
     },
+    [types.CLEAR_USER](state, user = {}) {
+        Object.assign(state, { user });
+    },
     [types.SET_TEAMS](state, teams) {
         Object.assign(state, { teams });
-    },
-    [types.SET_PROJECTS](state, projects) {
-        Object.assign(state, { projects });
     },
     [types.SET_ONE_TEAM](state, team) {
         Object.assign(state, { team });
@@ -120,8 +120,14 @@ export default {
     [types.SET_ONE_PROJECT](state, project) {
         Object.assign(state, { project });
     },
+    [types.SET_PERSONAL_PROJECTS](state, personalProjects) {
+        Object.assign(state, { personalProjects });
+    },
     [types.CLEAR_PROJECT](state, project = {}) {
         Object.assign(state, { project });
+    },
+    [types.CLEAR_PROJECTS](state, personalProjects = {}, organizationProjects = {}) {
+        Object.assign(state, { personalProjects, organizationProjects });
     },
     [types.SET_OWN_TEAMS](state, ownTeams) {
         Object.assign(state, { ownTeams });
@@ -134,6 +140,9 @@ export default {
     },
     [types.SET_ONE_ORGANIZATION](state, organization) {
         Object.assign(state, { organization });
+    },
+    [types.SET_ORGANIZATION_PROJECTS](state, organizationProjects) {
+        Object.assign(state, { organizationProjects });
     },
     [types.CLEAR_ORGANIZATION](state, organization = {}) {
         Object.assign(state, { organization });

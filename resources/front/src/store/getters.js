@@ -17,8 +17,8 @@ export default {
     teams(state) {
         return state.teams;
     },
-    projects(state) {
-        return state.projects;
+    personalProjects(state) {
+        return state.personalProjects;
     },
     team(state) {
         return state.team;
@@ -37,6 +37,9 @@ export default {
     },
     organization(state) {
         return state.organization;
+    },
+    organizationProjects(state) {
+        return state.organizationProjects;
     },
     clients(state) {
         return state.clients;
