@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\CreateOrganizationRequest;
 use App\Organization;
+use App\Project;
 use Dotenv\Validator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -41,6 +42,23 @@ class OrganizationController extends Controller
                 $query->where('id', Auth::id());
             }]);
     }
+
+    public function getOrganizationProjects(Organization $organization) {
+
+        $projects = Project::whereIn('client_id', $organization->clients)
+            ->get()
+            ->map(function(Project $project) use ($organization) {
+                $project->owner_name = $organization->name;
+                $project->teams->map(function (Team $team) {
+                    $team->owner_name = User::find($team->owner_id)->name;
+                });
+                $project->load('usersWithoutTeam');
+                return $project;
+            });
+
+        return $projects;
+    }
+
     /**
      * Store a newly created resource in storage.
      *

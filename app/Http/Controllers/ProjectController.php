@@ -16,7 +16,11 @@ class ProjectController extends Controller
 		$own_projects = Project::where('owner_id', '=', $user_id)->get();
         $projects = $projects->merge($own_projects);
         $projects->map(function (Project $project) {
-            $project->owner_name = User::find($project->owner_id)->name;
+            if ($project->owner_id) {
+                $project->owner_name = User::find($project->owner_id)->name;
+            } else {
+                $project->owner_name = $project->client->organization->name;
+            }
             $project->teams->map(function (Team $team) {
                 $team->owner_name = User::find($team->owner_id)->name;
             });
@@ -64,8 +68,8 @@ class ProjectController extends Controller
     	return $project;
     }
 
-    public function edit(Project $project) {
-
+    public function edit(Project $project)
+    {
         $project->load(['teams' => function($sql) {
                 $sql->with('users');
             }])
@@ -77,46 +81,6 @@ class ProjectController extends Controller
     }
 
     public function update(Request $request, Project $project) {
-
-//        if ($request->deletedTeams) {
-//            foreach($request->deletedTeams as $team_id) {
-//                $team = Team::find($team_id);
-//                $users = $team->users;
-//                foreach ($users as $user) {
-//                    $project->detachUser($user->id, $team_id);
-//                }
-//                $project->detachTeam($team_id);
-//            }
-//        }
-
-//        if ($request->addedTeams) {
-//            $team_exists = false;
-//            foreach($request->addedTeams as $team_id) {
-//
-//                foreach($project->teams as $team) {
-//                    if ($team->id == $team_id) {
-//
-//                        $team_exists = true;
-//                        break;
-//                    }
-//                }
-//
-//                if ($team_exists == true) continue;
-//
-//                $project->attachTeam($team_id);
-//
-//                $team = Team::find($team_id);
-//
-//                foreach ($team->users as $user) {
-//                    $project->attachUser($user->id, [
-//                            'billable_rate' => $user->billable_rate,
-//                            'cost_rate' => $user->cost_rate,
-//                            'team_id' => $team_id,
-//                        ]
-//                    );
-//                }
-//            }
-//        }
         $project_teams = [];
         foreach ($request->projectTeams as $teamData) {
             $project_teams[] = $teamData['id'];
@@ -128,9 +92,8 @@ class ProjectController extends Controller
             ->each(function(Team $team) use ($project) {
                 $project->usersWithTeam($team->id)->detach();
             });
-//        dd($request->projectTeams);
+
         if ($request->projectTeams) {
-//            $project->teams()->sync($request->projectTeams);
             $project->teams()->sync($project_teams);
         }
         else {
@@ -168,9 +131,7 @@ class ProjectController extends Controller
             ];
         }
 
-           $project->usersWithoutTeam()->sync($project_users);
-        // $data['name'] = $request->project->name;
-        // dd($request['project']['name']);
+        $project->usersWithoutTeam()->sync($project_users);
         $project->update([
             'name' => $request['project']['name'],
         ]);

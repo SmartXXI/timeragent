@@ -61,7 +61,7 @@
                                     <el-row>
                                         <label>Website</label>
                                         <el-input
-                                                placeholder="Enter organization phone"
+                                                placeholder="Enter organization website"
                                                 v-model="organization.website"
                                         ></el-input>
                                     </el-row>
