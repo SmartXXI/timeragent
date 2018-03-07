@@ -23,4 +23,9 @@ class Organization extends Model
     {
         return $this->hasMany('App\Client');
     }
+
+    public function projects()
+    {
+        return $this->hasManyThrough('App\Project', 'App\Client');
+    }
 }

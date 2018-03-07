@@ -7,22 +7,36 @@ use Illuminate\Http\Request;
 use App\Project;
 use App\User;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 
 class ProjectController extends Controller
 {
     public function getProjects(Organization $organization)
     {
-        $projects = Project::whereIn('client_id', $organization->clients->pluck('id'))
-            ->get()
-            ->map(function(Project $project) use ($organization) {
-                $project->owner_name = $organization->name;
-                $project->teams->map(function (Team $team) {
-                    $team->owner_name = User::find($team->owner_id)->name;
-                });
-                $project->client_name = $project->client->name;
-                $project->load('usersWithoutTeam');
-                return $project;
+        $user = $organization
+            ->users()
+            ->withPivot('status')
+            ->where('id', Auth::id())
+            ->first();
+        if ($user->pivot->status === 1) {
+            $projects = $organization->projects;
+        } else {
+            $projects = $organization
+                ->projects()
+                ->whereHas('users', function($query) use($user){
+                    $query->where('id', $user->id);
+                })
+                ->get();
+        }
+
+        $projects->map(function (Project $project) use ($organization) {
+            $project->teams->map(function (Team $team) {
+                $team->owner_name = User::find($team->owner_id)->name;
             });
+            $project->client_name = $project->client->name;
+            $project->load('usersWithoutTeam');
+            return $project;
+        });
 
         return $projects;
     }

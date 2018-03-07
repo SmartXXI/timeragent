@@ -11,19 +11,18 @@ use Illuminate\Support\Facades\Auth;
 class ProjectController extends Controller
 {
 	public function getProjects() {
-		$user_id = Auth::user()->id;
-        $projects = Auth::user()->projects;
-		$own_projects = Project::where('owner_id', '=', $user_id)->get();
+		$user = Auth::user();
+        $projects = $user
+            ->projects()
+            ->whereNull('client_id')
+            ->get();
+		$own_projects = Project::where('owner_id', $user->id)->get();
         $projects = $projects->merge($own_projects);
         $projects->map(function (Project $project) {
-            if ($project->owner_id) {
-                $project->owner_name = User::find($project->owner_id)->name;
-            } else {
-                $project->owner_name = $project->client->organization->name;
-            }
-            $project->teams->map(function (Team $team) {
-                $team->owner_name = User::find($team->owner_id)->name;
-            });
+            $project->owner_name = User::find($project->owner_id)->name;
+//            $project->teams->map(function (Team $team) {
+//                $team->owner_name = User::find($team->owner_id)->name;
+//            });
             $project->load('usersWithoutTeam');
             return $project;
         });
