@@ -31,38 +31,39 @@
                                 <el-col :span="16" :offset="4">
                                     <el-row>
                                         <label>Name</label>
-                                        <el-input :class="{ 'has-error': $v.organization.name.$error }"
-                                                  placeholder="Enter organization name"
-                                                  v-model="organization.name"
-                                                  @input="$v.organization.name.$touch()"
+                                        <el-input :class="{ 'has-error': $v.localOrganization.name.$error }"
+                                                  placeholder="Enter localOrganization name"
+                                                  v-model="localOrganization.name"
+                                                  @input="$v.localOrganization.name.$touch()"
                                         ></el-input>
-                                        <div class="errors" v-if="$v.organization.name.$error">
-                                            <span class="error-message" v-if="!$v.organization.name.required">Field is required</span>
+                                        <div class="errors" v-if="$v.localOrganization.name.$error">
+                                            <span class="error-message" v-if="!$v.localOrganization.name.required">Field is required</span>
                                         </div>
                                     </el-row>
                                     <el-row>
                                         <label>Email</label>
-                                        <el-input :class="{ 'has-error': $v.organization.email.$error }"
+                                        <el-input :class="{ 'has-error': $v.localOrganization.email.$error }"
                                                   placeholder="Enter organization email"
-                                                  v-model="organization.email"
-                                                  @input="$v.organization.email.$touch()"
+                                                  v-model="localOrganization.email"
+                                                  @input="$v.localOrganization.email.$touch()"
+                                                  @blur="validateEmail"
                                         ></el-input>
-                                        <div class="errors" v-if="$v.organization.email.$error">
-                                            <!--<span class="error-message" v-if="!$v.organization.email.required">Field is required</span>-->
+                                        <div class="errors" v-if="$v.localOrganization.email.$error">
+                                            <span class="error-message" v-if="!$v.localOrganization.email.isEmail">InvalidEmail</span>
                                         </div>
                                     </el-row>
                                     <el-row>
                                         <label>Phone</label>
                                         <el-input
                                             placeholder="Enter organization phone"
-                                            v-model="organization.phone"
+                                            v-model="localOrganization.phone"
                                         ></el-input>
                                     </el-row>
                                     <el-row>
                                         <label>Website</label>
                                         <el-input
-                                                placeholder="Enter organization website"
-                                                v-model="organization.website"
+                                                placeholder="Enter localOrganization website"
+                                                v-model="localOrganization.website"
                                         ></el-input>
                                     </el-row>
                                     <el-row>
@@ -71,7 +72,7 @@
                                                 type="textarea"
                                                 :rows="5"
                                                 placeholder="Enter organization address"
-                                                v-model="organization.address"
+                                                v-model="localOrganization.address"
                                         ></el-input>
                                     </el-row>
                                 </el-col>
@@ -86,7 +87,7 @@
 </template>
 
 <script>
-    import { required, email } from 'vuelidate/lib/validators';
+    import { required } from 'vuelidate/lib/validators';
     import { mapGetters } from 'vuex';
     import NavMenuAuth from '../blocks/NavMenuAuth';
     import notification from '../../mixins/notification';
@@ -98,6 +99,9 @@
             return {
                 isCreating: false,
                 isEditing : false,
+                isEmail   : true,
+
+                localOrganization: {},
             };
         },
         computed: {
@@ -116,7 +120,10 @@
                 this.isEditing = true;
                 this.$store.dispatch('getOneOrganization', {
                     id: this.organizationId,
-                });
+                })
+                    .then(() => {
+                        this.localOrganization = this.organization;
+                    });
             }
         },
         destroyed() {
@@ -126,7 +133,7 @@
             createOrganization() {
                 if (this.formInvalid) return;
                 this.$store.dispatch('createOrganization', {
-                    organization: this.organization,
+                    organization: this.localOrganization,
                 })
                     .then(() => {
                         this.showSuccess('Organization created successfully');
@@ -139,7 +146,7 @@
             updateOrganization() {
                 if (this.formInvalid) return;
                 this.$store.dispatch('updateOrganization', {
-                    organization: this.organization,
+                    organization: this.localOrganization,
                 })
                     .then(() => {
                         this.showSuccess('Organization saved successfully');
@@ -149,14 +156,24 @@
                         this.showError();
                     });
             },
+            validateEmail() {
+                if (this.localOrganization.email.match(/^[0-9a-z-\.]+\@[0-9a-z-]{2,}\.[a-z]{2,}$/i)
+                    || this.localOrganization.email === '') {
+                    this.isEmail = true;
+                } else {
+                    this.isEmail = false;
+                }
+            },
         },
         validations: {
-            organization: {
+            localOrganization: {
                 name: {
                     required,
                 },
                 email: {
-                    email,
+                    isEmail() {
+                        return this.isEmail;
+                    },
                 },
             },
         },
