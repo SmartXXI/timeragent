@@ -69,12 +69,19 @@
                                 <el-row>
                                     <label>Client</label>
                                     <div>
-                                    <el-select v-model="project.client_id" :disabled="clients.length > 0 ? false : true">
+                                    <el-select
+                                            v-model="project.client_id"
+                                            :disabled="clients.length > 0 ? false : true"
+                                            @input="$v.project.client_id.$touch()"
+                                    >
                                         <el-option value="" label="No project"></el-option>
                                         <el-option v-for="(client, index) in clients" :label="client.name" :value="client.id" :key="client.id"></el-option>
                                     </el-select>
                                     </div>
                                 </el-row>
+                                <div class="errors" v-if="$v.project.client_id.$error">
+                                    <span class="error-message" v-if="!$v.project.client_id.required">Field is required</span>
+                                </div>
                             </div>
 
                             <el-tabs v-model="activeTabName">
@@ -335,12 +342,26 @@ export default {
         ProjectTeamsTransfer,
         ProjectUsersTransfer,
     },
-    validations: {
-        project: {
-            name: {
-                required,
+    validations() {
+        if (this.profile === 'organization') {
+            return {
+                project: {
+                    name: {
+                        required,
+                    },
+                    client_id: {
+                        required,
+                    },
+                },
+            };
+        }
+        return {
+            project: {
+                name: {
+                    required,
+                },
             },
-        },
+        };
     },
 };
 </script>
