@@ -343,7 +343,7 @@ export default {
         getTodayTasks() {
             return new Promise((resolve) => {
                 if (this.$store.state.date !== this.date) {
-                    this.$store.dispatch('getTasks', { date: this.date }).then(() => resolve());
+                    this.$store.dispatch('getPersonalTasks', { date: this.date }).then(() => resolve());
                 }
             });
         },

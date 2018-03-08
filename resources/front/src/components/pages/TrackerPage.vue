@@ -34,7 +34,12 @@
         },
         created() {
             const { date } = this.$store.state;
-            this.$store.dispatch('getTasks', { date });
+            if (this.$route.params.segment === 'personal') {
+                this.$store.dispatch('getTasks', { date, segment: 'personal' });
+            }
+            if (this.$route.params.segment === 'organization') {
+                this.$store.dispatch('getTasks', { date, segment: 'organization' });
+            }
         },
         methods: {
             startTimer() {

@@ -11,25 +11,22 @@ use Illuminate\Support\Facades\Auth;
 class TaskController extends Controller
 {
     public function getTasks(Request $request) {
-//		$tasks = Task::whereDate('created_at', $request->date)->where('user_id', $user_id)->get();
-//		$tasks->load('duration');
-////		dd($tasks);
-//	    return $tasks;
 
-        $user_id = Auth::user()->id;
+        $user = Auth::user();
 
-
-        return  Task::where('user_id', Auth::id())
+        return  $user
+            ->tasks()
             ->where(function ($sql) use ($request) {
                 $sql->whereDate('created_at', $request->date)
                     ->orWhereHas('timeEntries', function($sql) use($request) {
                         $sql->whereDate('startTime', $request->date);
                     });
             })
-//            ->whereDate('created_at', $request->date)
-//            ->orWhereHas('timeEntries', function($sql) use($request) {
-//                $sql->whereDate('startTime', $request->date);
-//            })
+            ->whereIn('project_id', $user->projects()
+                ->whereNull('client_id')
+                ->orWhere('owner_id', $user->id)
+                ->pluck('id')
+            )
             ->with(['timeEntries' => function($query) use($request) {
                 $query->whereDate('startTime', $request->date)->orderBy('startTime');
             }])

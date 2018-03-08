@@ -124,6 +124,7 @@
         created() {
             if (this.$route.params.segment === 'organization') {
                 localStorage.setItem('profile', 'organization');
+                localStorage.setItem('organizationId', this.$route.params.organizationId);
                 this.$store.dispatch('getOneOrganization', { id: this.$route.params.organizationId });
             }
             if (this.$route.params.segment === 'personal') {
