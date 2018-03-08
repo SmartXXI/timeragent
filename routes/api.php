@@ -59,7 +59,8 @@ Route::group(['middleware' => ['isVerified', 'auth:api']], function () {
     // Organization projects
     Route::get('organization/{organization}/projects', 'Organization\ProjectController@getProjects');
     Route::post('organization/{organization}/projects/new', 'Organization\ProjectController@create');
-    Route::get('organization/{organization}/projects/{project}', 'Organization\ProjectController@edit');
+    Route::get('organization/{organization}/projects/{project}', 'Organization\ProjectController@edit')
+        ->middleware('can:update,project');
     Route::post('organization/{organization}/projects/{project}', 'Organization\ProjectController@update');
     // Organization tasks
     Route::get('/organization/{organization}/tasks', 'Organization\TaskController@getTasks');
