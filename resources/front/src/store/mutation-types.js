@@ -1,4 +1,5 @@
-export const GET_TASKS = 'GET_TASKS';
+export const SET_PERSONAL_TASKS = 'SET_PERSONAL_TASKS';
+export const SET_ORGANIZATION_TASKS = 'SET_ORGANIZATION_TASKS';
 export const START_TIMER = 'START_TIMER';
 export const STOP_TIMER = 'STOP_TIMER';
 export const STOP_TASK = 'STOP_TASK';

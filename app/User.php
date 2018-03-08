@@ -47,4 +47,9 @@ class User extends Authenticatable
     {
         return $this->organizations()->attach($organization_id, $pivot);
     }
+
+    public function tasks()
+    {
+        return $this->hasMany('App\Task');
+    }
 }

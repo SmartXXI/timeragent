@@ -3,9 +3,23 @@ import Http from '../helpers/Http';
 import * as types from './mutation-types';
 
 export default {
-    getTasks(context, obj) {
-        return Http.get(`api/tasks?date=${obj.date}`).then((response) => {
-            context.commit(types.GET_TASKS, { data: response.data, date: obj.date });
+    getTasks(context, payload) {
+        if (localStorage.getItem('profile') === 'personal' || payload.segment === 'personal') {
+            return context.dispatch('getPersonalTasks', {
+                date: payload.date,
+            });
+        }
+        if (localStorage.getItem('profile') === 'organization' || payload.segment === 'organization') {
+            return context.dispatch('getOrganizationTasks', {
+                date : payload.date,
+                orgId: localStorage.getItem('organizationId'),
+            });
+        }
+        return 0;
+    },
+    getPersonalTasks(context, payload) {
+        return Http.get(`api/tasks?date=${payload.date}`).then((response) => {
+            context.commit(types.SET_PERSONAL_TASKS, { data: response.data, date: payload.date });
             const tasks = response.data;
             if (tasks.length > 0
                 && tasks[tasks.length - 1]
@@ -19,6 +33,27 @@ export default {
                 }
             }
         });
+    },
+    getOrganizationTasks(context, payload) {
+        return Http.get(`api/organization/${payload.orgId}/tasks?date=${payload.date}`)
+            .then((response) => {
+                context.commit(types.SET_ORGANIZATION_TASKS, {
+                    data: response.data,
+                    date: payload.date,
+                });
+                const tasks = response.data;
+                if (tasks.length > 0
+                    && tasks[tasks.length - 1]
+                        .time_entries.length > 0
+                    && tasks[tasks.length - 1]
+                        .time_entries[tasks[tasks.length - 1]
+                        .time_entries.length - 1]
+                        .active === 1) {
+                    if (context.state.timerID === 0) {
+                        context.dispatch('startTimer');
+                    }
+                }
+            });
     },
     startTimer(context) {
         context.commit(types.START_TIMER);
@@ -170,7 +205,7 @@ export default {
                 context.commit(types.SET_ONE_PROJECT, response.data);
             });
     },
-    getProjects(context) {
+    getPersonalProjects(context) {
         return Http.get('api/projects').then((response) => {
             context.commit(types.SET_PERSONAL_PROJECTS, response.data);
         });

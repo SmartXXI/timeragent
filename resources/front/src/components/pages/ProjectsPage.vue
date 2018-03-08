@@ -109,7 +109,7 @@
         },
         created() {
             if (this.$route.params.segment === 'personal') {
-                this.$store.dispatch('getProjects')
+                this.$store.dispatch('getPersonalProjects')
                     .then(() => {
                         this.projects = this.personalProjects;
                     })

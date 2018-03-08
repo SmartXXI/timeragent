@@ -61,6 +61,8 @@ Route::group(['middleware' => ['isVerified', 'auth:api']], function () {
     Route::post('organization/{organization}/projects/new', 'Organization\ProjectController@create');
     Route::get('organization/{organization}/projects/{project}', 'Organization\ProjectController@edit');
     Route::post('organization/{organization}/projects/{project}', 'Organization\ProjectController@update');
+    // Organization tasks
+    Route::get('/organization/{organization}/tasks', 'Organization\TaskController@getTasks');
 
     Route::post('/clients', 'ClientController@getClients');
     Route::post('/clients/new', 'ClientController@create');

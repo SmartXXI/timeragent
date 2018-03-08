@@ -11,8 +11,22 @@ export default {
     user(state) {
         return state.user;
     },
+    personalTasks(state) {
+        return state.personalTasks;
+    },
+    organizationTasks(state) {
+        return state.organizationTasks;
+    },
     tasks(state) {
-        return state.tasks;
+        const a = state.organizationTasks;
+        const b = state.personalTasks;
+        if (localStorage.getItem('profile') === 'organization') {
+            return state.organizationTasks;
+        }
+        if (localStorage.getItem('profile') === 'personal') {
+            return state.personalTasks;
+        }
+        return ['a'];
     },
     teams(state) {
         return state.teams;
