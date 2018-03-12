@@ -75,7 +75,7 @@
                 return this.$store.state.activeTask;
             },
             tasks() {
-                return this.$store.state.tasks;
+                return this.$store.getters.tasks;
             },
             totalTime() {
                 if (this.tasks.length > 0) {
@@ -109,18 +109,22 @@
             addDay() {
                 const date = moment(this.date, 'YYYY-MM-DD').add(1, 'day').format('YYYY-MM-DD');
                 this.pickerDate = date;
-                this.$store.dispatch('getTasks', { date });
+                this.getTasks(date);
             },
             subDay() {
                 const date = moment(this.date, 'YYYY-MM-DD').subtract(1, 'day').format('YYYY-MM-DD');
                 this.pickerDate = date;
-                this.$store.dispatch('getTasks', { date });
+                this.getTasks(date);
             },
             showSubMenu(name) {
                 this.isOpened = (this.isOpened === null) ? name : null;
             },
             getTasksByDate(date) {
-                this.$store.dispatch('getTasks', { date });
+                this.getTasks(date);
+            },
+            getTasks(date) {
+                const orgId = this.$route.params.organizationId;
+                this.$store.dispatch('getTasks', { date, orgId });
             },
         },
     };

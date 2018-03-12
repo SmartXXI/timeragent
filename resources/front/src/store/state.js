@@ -10,12 +10,24 @@ export default {
     oldActiveTask: null,
     date         : moment().format('YYYY-MM-DD'),
     user         : {},
-    tasks        : [],
-    projects     : [],
+
+    personalTasks    : [],
+    organizationTasks: [],
+    personalProjects : [],
+
     teams        : [],
     team         : {},
     project      : {},
     ownTeams     : [],
     ownUsers     : [],
     existsMembers: [],
+    organization : {},
+    profileStatus: '',
+
+    clients: [],
+    client : {
+        contact: {},
+    },
+
+    organizationProjects: [],
 };

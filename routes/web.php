@@ -26,7 +26,13 @@ Auth::routes();
 
 Route::get('/', 'HomeController@index')->name('home')->middleware(['isVerified','auth']);
 
-Route::get('teams/{team}/{user}/accept/{token}', 'TeamController@acceptInvite')->name('teams.accept_invite')->middleware('auth');
+Route::get('organization/{organization}/accept', 'Organization\OrganizationController@acceptInvite')
+    ->name('organization.accept_invite')
+    ->middleware('auth');
+
+Route::get('teams/{team}/{user}/accept/{token}', 'TeamController@acceptInvite')
+    ->name('teams.accept_invite')
+    ->middleware('auth');
 Route::get('resend-verify-email', function() {
     return view('auth.verifying.email');
 })->name('verify.email');

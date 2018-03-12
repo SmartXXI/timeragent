@@ -51,4 +51,25 @@ Route::group(['middleware' => ['isVerified', 'auth:api']], function () {
     Route::get('/projects/{project}', 'ProjectController@edit')->middleware('can:update,project');
     Route::post('/projects/{project}', 'ProjectController@update');
     Route::post('/projects/{project}/delete', 'ProjectController@delete');
+
+    Route::post('/organizations/new', 'Organization\OrganizationController@create');
+    Route::post('/organizations/{organization}', 'Organization\OrganizationController@update')
+        ->middleware('can:update,organization');
+    Route::get('/organizations/{organization}', 'Organization\OrganizationController@getOrganization');
+
+    // Organization projects
+    Route::get('organization/{organization}/projects', 'Organization\ProjectController@getProjects');
+    Route::post('organization/{organization}/projects/new', 'Organization\ProjectController@create');
+    Route::get('organization/{organization}/projects/{project}', 'Organization\ProjectController@edit')
+        ->middleware('can:update,project');
+    Route::post('organization/{organization}/projects/{project}', 'Organization\ProjectController@update');
+    // Organization tasks
+    Route::get('/organization/{organization}/tasks', 'Organization\TaskController@getTasks');
+
+    Route::post('/clients', 'ClientController@getClients');
+    Route::post('/clients/new', 'ClientController@create');
+    Route::post('clients/{client}', 'ClientController@update');
+    Route::get('/clients/{client}', 'ClientController@getClient')->middleware('can:update,client');
+
+    Route::post('/organization/{organization}/members/invite', 'Organization\OrganizationController@invite');
 });

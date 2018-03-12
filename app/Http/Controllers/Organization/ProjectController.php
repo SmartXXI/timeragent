@@ -1,41 +1,54 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Organization;
 
+use App\Organization;
 use Illuminate\Http\Request;
 use App\Project;
-use App\Team;
 use App\User;
+use App\Team;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 
 class ProjectController extends Controller
 {
-	public function getProjects() {
-		$user = Auth::user();
-        $projects = $user
-            ->projects()
-            ->whereNull('client_id')
-            ->get();
-		$own_projects = Project::where('owner_id', $user->id)->get();
-        $projects = $projects->merge($own_projects);
-        $projects->map(function (Project $project) {
-            $project->owner_name = User::find($project->owner_id)->name;
-//            $project->teams->map(function (Team $team) {
-//                $team->owner_name = User::find($team->owner_id)->name;
-//            });
+    public function getProjects(Organization $organization)
+    {
+        $user = $organization
+            ->users()
+            ->withPivot('status')
+            ->where('id', Auth::id())
+            ->first();
+        if ($user->pivot->status === 1) {
+            $projects = $organization->projects;
+        } else {
+            $projects = $organization
+                ->projects()
+                ->whereHas('users', function($query) use($user){
+                    $query->where('id', $user->id);
+                })
+                ->get();
+        }
+
+        $projects->map(function (Project $project) use ($organization) {
+            $project->teams->map(function (Team $team) {
+                $team->owner_name = User::find($team->owner_id)->name;
+            });
+            $project->client_name = $project->client->name;
             $project->load('usersWithoutTeam');
             return $project;
         });
-		return $projects;
-	}
 
-    public function createProject(Request $request) {
-    	$data = $request->project;
+        return $projects;
+    }
 
-    	$data['owner_id'] = Auth::user()->id;
-    	$project = Project::create($data);
+    public function create(Request $request, Organization $organization)
+    {
+        $data = $request->project;
 
-    	if ($request->projectTeams) {
+        $project = Project::create($data);
+
+        if ($request->projectTeams) {
             foreach($request->projectTeams as $teamData) {
                 $project->attachTeam($teamData['id']);
 
@@ -64,14 +77,14 @@ class ProjectController extends Controller
             }
         }
 
-    	return $project;
+        return $project;
     }
 
-    public function edit(Project $project)
+    public function edit(Organization $organization, Project $project)
     {
         $project->load(['teams' => function($sql) {
-                $sql->with('users');
-            }])
+            $sql->with('users');
+        }])
             ->load(['users' => function($sql) {
                 $sql->whereNull('team_id');
             }])
@@ -79,7 +92,7 @@ class ProjectController extends Controller
         return $project;
     }
 
-    public function update(Request $request, Project $project) {
+    public function update(Request $request, Organization $organization, Project $project) {
         $project_teams = [];
         foreach ($request->projectTeams as $teamData) {
             $project_teams[] = $teamData['id'];
@@ -132,11 +145,9 @@ class ProjectController extends Controller
 
         $project->usersWithoutTeam()->sync($project_users);
         $project->update([
-            'name' => $request['project']['name'],
+            'name' => $request->project['name'],
+            'client_id' => $request->project['client_id'],
         ]);
-    }
-
-    public function delete(Project $project) {
-        $project->delete();
+        return $project;
     }
 }

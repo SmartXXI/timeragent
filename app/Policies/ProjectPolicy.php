@@ -22,6 +22,18 @@ class ProjectPolicy
 
     public function update(User $user, Project $project)
     {
-        return $user->id === $project->owner_id;
+        if ($project->owner_id) {
+            return $user->id === $project->owner_id;
+        }
+        if ($project->client_id) {
+            return $user->organizations()
+                ->whereHas('projects', function($query) use($project) {
+                    $query->where('projects.id', $project->id);
+                })
+                ->withPivot('status')
+                ->first()
+                ->pivot
+                ->status === 1;
+        }
     }
 }

@@ -23,12 +23,28 @@
                             </el-col>
                         </div>
                     </el-col>
-                    <el-col :span="6">
-                        <el-select v-model="localTask.project_id" :disabled="projects.length > 0 ? false : true">
+                    <el-col :span="6" v-if="$route.params.segment === 'organization'">
+                        <el-select
+                                v-model="localTask.project_id"
+                                :disabled="projects.length > 0 ? false : true"
+                                @input="$v.localTask.project_id.$touch()"
+                        >
                             <el-option value="" label="No project"></el-option>
                             <el-option v-for="(project, index) in projects" :label="project.name" :value="project.id" :key="project.id"></el-option>
                         </el-select>
-                    </el-col>
+                        <div class="errors" v-if="$v.localTask.project_id.$error">
+                            <span class="error-message" v-if="!$v.localTask.project_id.required">This field is required</span>
+                        </div>
+                    </el-col> <!-- project field if organization-->
+                    <el-col :span="6" v-else>
+                        <el-select
+                                v-model="localTask.project_id"
+                                :disabled="projects.length > 0 ? false : true"
+                        >
+                            <el-option value="" label="No project"></el-option>
+                            <el-option v-for="(project, index) in projects" :label="project.name" :value="project.id" :key="project.id"></el-option>
+                        </el-select>
+                    </el-col> <!-- project field -->
                 </el-row>
                 <el-row>
                     <el-col :span="12">
@@ -126,9 +142,18 @@
                 }
             }
 
-            Http.get('api/projects').then((response) => {
-                this.projects = response.data;
-            });
+            if (this.$route.params.segment === 'personal') {
+                Http.get('api/projects').then((response) => {
+                    this.projects = response.data;
+                });
+            }
+            if (this.$route.params.segment === 'organization') {
+                const orgId = this.$route.params.organizationId;
+                Http.get(`api/organization/${orgId}/projects`)
+                    .then((response) => {
+                        this.projects = response.data;
+                    });
+            }
         },
         computed: {
             formInvalid() {
@@ -167,6 +192,18 @@
             },
         },
         validations() {
+            if (this.$route.params.segment === 'organization') {
+                return {
+                    localTask: {
+                        description: {
+                            required,
+                        },
+                        project_id: {
+                            required,
+                        },
+                    },
+                };
+            }
             return {
                 localTask: {
                     description: {

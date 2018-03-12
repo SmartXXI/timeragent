@@ -36,4 +36,20 @@ class User extends Authenticatable
             ->withPivot('billable_rate', 'cost_rate')
             ->withTimestamps();
     }
+
+    public function organizations()
+    {
+        return $this->belongsToMany('App\Organization')
+            ->withPivot('status');
+    }
+
+    public function attachOrganization($organization_id, $pivot = [])
+    {
+        return $this->organizations()->attach($organization_id, $pivot);
+    }
+
+    public function tasks()
+    {
+        return $this->hasMany('App\Task');
+    }
 }

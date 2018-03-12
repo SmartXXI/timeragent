@@ -2,6 +2,10 @@
 
 namespace App\Providers;
 
+use App\Client;
+use App\Organization;
+use App\Policies\ClientPolicy;
+use App\Policies\OrganizationPolicy;
 use App\Team;
 use App\Policies\TeamPolicy;
 use App\Project;
@@ -21,6 +25,8 @@ class AuthServiceProvider extends ServiceProvider
         'App\Model' => 'App\Policies\ModelPolicy',
         Team::class => TeamPolicy::class,
         Project::class=> ProjectPolicy::class,
+        Organization::class=> OrganizationPolicy::class,
+        Client::class => ClientPolicy::class,
     ];
 
     /**

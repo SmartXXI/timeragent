@@ -10,7 +10,8 @@ use App\User;
 class UserController extends Controller
 {
     public function index() {
-        return Auth::user();
+        return Auth::user()
+            ->load('organizations');
     }
 
     public function update(Request $request) {
