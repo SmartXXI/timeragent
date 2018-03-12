@@ -4,11 +4,15 @@ namespace App\Http\Controllers\Organization;
 
 use App\Http\Requests\CreateOrganizationRequest;
 use App\Organization;
+use App\OrganizationInvite;
 use App\Project;
+use App\User;
 use Dotenv\Validator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Password;
 
 class OrganizationController extends Controller
 {
@@ -40,7 +44,7 @@ class OrganizationController extends Controller
     {
         return $organization
             ->load(['users' => function($query) {
-                $query->where('id', Auth::id());
+                $query->where('id', Auth::id())->withPivot('status');
             }]);
     }
     /**
@@ -99,5 +103,48 @@ class OrganizationController extends Controller
     public function destroy(Organization $organization)
     {
         //
+    }
+
+    public function invite(Request $request, Organization $organization)
+    {
+
+        foreach ($request->emails as $email) {
+            $accept_token = Password::getRepository()->createNewToken();
+            $deny_token = Password::getRepository()->createNewToken();
+
+            $all = [
+                'user_id' => Auth::id(),
+                'organization_id' => $organization->id,
+                'email' => $email,
+                'accept_token' => $accept_token,
+                'deny_token' => $deny_token,
+            ];
+            OrganizationInvite::create($all);
+
+            Mail::send('organization.emails.invite', [
+                    'organization' => $organization,
+                    'user' => Auth::user(),
+                    'accept_token' => $accept_token,
+                    'deny_token' => $deny_token,
+                ],
+                function ($message) use ($email, $organization) {
+                    $message
+                        ->to($email)
+                        ->subject('Invitation to join organization ' . $organization->name);
+            });
+        }
+
+        return $organization;
+    }
+
+    public function acceptInvite(Request $request, Organization $organization)
+    {
+        $invite = OrganizationInvite::where('accept_token', $request->token)->first();
+
+        $user = User::where('email', $invite->email)->first();
+
+        $user->attachOrganization($organization->id, ['status' => '2']);
+
+        return redirect()->route('home');
     }
 }

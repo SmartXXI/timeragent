@@ -53,7 +53,8 @@ Route::group(['middleware' => ['isVerified', 'auth:api']], function () {
     Route::post('/projects/{project}/delete', 'ProjectController@delete');
 
     Route::post('/organizations/new', 'Organization\OrganizationController@create');
-    Route::post('/organizations/{organization}', 'Organization\OrganizationController@update');
+    Route::post('/organizations/{organization}', 'Organization\OrganizationController@update')
+        ->middleware('can:update,organization');
     Route::get('/organizations/{organization}', 'Organization\OrganizationController@getOrganization');
 
     // Organization projects
@@ -69,4 +70,6 @@ Route::group(['middleware' => ['isVerified', 'auth:api']], function () {
     Route::post('/clients/new', 'ClientController@create');
     Route::post('clients/{client}', 'ClientController@update');
     Route::get('/clients/{client}', 'ClientController@getClient');
+
+    Route::post('/organization/{organization}/members/invite', 'Organization\OrganizationController@invite');
 });

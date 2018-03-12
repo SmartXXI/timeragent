@@ -6,6 +6,7 @@ import Pricing from '../components/pages/PricingPage';
 import Tracker from '../components/pages/TrackerPage';
 import Projects from '../components/pages/ProjectsPage';
 import Members from '../components/pages/MembersPage';
+import InviteMembers from '../components/pages/InviteMembersPage';
 import Teams from '../components/pages/TeamsPage';
 import EditTeam from '../components/pages/EditTeamPage';
 import EditProject from '../components/pages/EditProjectPage';
@@ -91,6 +92,16 @@ export default new Router({
                     path     : ':organizationId/tasks',
                     name     : 'tasksOrg',
                     component: Tracker,
+                },
+                {
+                    path     : ':organizationId/members',
+                    name     : 'members',
+                    component: Members,
+                },
+                {
+                    path     : ':organizationId/members/invite',
+                    name     : 'inviteMembers',
+                    component: InviteMembers,
                 },
                 {
                     path     : ':organizationId/edit',

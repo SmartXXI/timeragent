@@ -216,6 +216,9 @@ export default {
                 context.commit(types.SET_ORGANIZATION_PROJECTS, response.data);
             });
     },
+    inviteToOrganization(context, payload) {
+        return Http.post(`api/organization/${payload.orgId}/members/invite`, { emails: payload.emails });
+    },
     createPersonalProject(context, payload) {
         return Http.post('api/projects/new', {
             project     : payload.project,

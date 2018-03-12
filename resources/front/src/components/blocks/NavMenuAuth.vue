@@ -18,6 +18,11 @@
                                 <span>Tasks</span>
                             </router-link>
                         </el-menu-item>
+                        <el-menu-item :index="generateUrl('members')" v-if="isOrganization">
+                            <router-link :to="generateUrl('members')">
+                                <span>Members</span>
+                            </router-link>
+                        </el-menu-item>
                         <el-menu-item :index="generateUrl('projects')" v-if="isOrganization">
                             <router-link :to="generateUrl('projects')">
                                 <span>Projects</span>

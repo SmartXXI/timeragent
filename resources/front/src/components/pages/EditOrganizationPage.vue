@@ -152,8 +152,11 @@
                         this.showSuccess('Organization saved successfully');
                         this.$router.go(-1);
                     })
-                    .catch(() => {
-                        this.showError();
+                    .catch((error) => {
+                        if (error.response.status === 403) {
+                            this.showError('Access denied');
+                            this.$router.go(-1);
+                        }
                     });
             },
             validateEmail() {

@@ -20,6 +20,7 @@
                                 type="primary"
                                 plain
                                 title="Click to edit"
+                                v-if="userStatus === 1"
                                 @click.prevent="goToEdit(organization.id)"
                         > Edit </el-button>
                     </div>
@@ -73,12 +74,14 @@
         mixins: [notification],
         data() {
             return {
-
+                userStatus: 0,
             };
         },
         created() {
             this.$store.dispatch('getOneOrganization', { id: this.$route.params.organizationId })
-                .then()
+                .then(() => {
+                    this.userStatus = this.organization.users[0].pivot.status;
+                })
                 .catch();
         },
         destroyed() {
