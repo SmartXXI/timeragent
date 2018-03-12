@@ -29,46 +29,16 @@
                                         <div>{{ scope.row.contact.first_name }} {{ scope.row.contact.last_name }}</div>
                                     </template>
                                 </el-table-column>
-                                <!--<el-table-column label="Members">-->
-                                    <!--<template slot-scope="scope">-->
-                                        <!--<div v-if="scope.row.users.length < 1 "> No members</div>-->
-                                        <!--<div v-if="scope.row.users.length === 1">{{ scope.row.users[0].name }}</div>-->
-                                        <!--<div v-if="scope.row.users.length === 2">-->
-                                            <!--{{ scope.row.users[0].name }} and {{ scope.row.users[1].name }}-->
-                                        <!--</div>-->
-                                        <!--<div v-if="scope.row.users.length === 3">-->
-                                            <!--{{ scope.row.users[0].name }}, {{ scope.row.users[1].name }} and {{ scope.row.users[2].name }}-->
-                                        <!--</div>-->
-                                        <!--<div v-if="scope.row.users.length > 3">-->
-                                            <!--{{ scope.row.users[0].name }}, {{ scope.row.users[1].name }}, {{ scope.row.users[2].name }} and-->
-                                            <!--<el-button type="text" @click="showMembers(scope.row.users)">others...</el-button>-->
-                                        <!--</div>-->
-                                    <!--</template>-->
-                                <!--</el-table-column>-->
                                 <el-table-column
                                         label=""
                                         width="80">
-                                    <template slot-scope="scope">
+                                    <template slot-scope="scope" v-if="userStatus === 1">
                                         <div v-if="organization.id === scope.row.organization_id">
                                             <el-button type="plain" size="mini" @click="goToClient(scope.row.id)">Edit</el-button>
                                         </div>
                                     </template>
                                 </el-table-column>
                             </el-table>
-                            <!--members modal-->
-                            <!--<el-dialog title="Members" :visible.sync="membersTableVisible">-->
-                                <!--<el-table :data="members"-->
-                                          <!--:default-sort="{name: 'name'}">-->
-                                    <!--<el-table-column property="name"-->
-                                                     <!--label="Name"-->
-                                                     <!--sortable-->
-                                    <!--&gt;</el-table-column>-->
-                                    <!--<el-table-column property="email" label="Email"></el-table-column>-->
-                                <!--</el-table>-->
-                                <!--<span slot="footer" class="dialog-footer">-->
-                                        <!--<el-button @click="membersTableVisible = false">Close</el-button>-->
-                                <!--</span>-->
-                            <!--</el-dialog>-->
                         </el-card>
                     </el-col>
                 </el-row>
@@ -104,6 +74,11 @@
                 'organization',
                 'clients',
             ]),
+            userStatus() {
+                return (Object.keys(this.organization).length)
+                    ? this.organization.users[0].pivot.status
+                    : 0;
+            },
         },
         methods: {
             goToClient(clientId) {

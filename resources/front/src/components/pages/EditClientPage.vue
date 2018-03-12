@@ -178,6 +178,12 @@
                 })
                     .then(() => {
                         Object.assign(this.localClient, this.client);
+                    })
+                    .catch((error) => {
+                        if (error.response.status === 403) {
+                            this.showError('Access denied');
+                            this.$router.go(-1);
+                        }
                     });
             }
         },
@@ -213,7 +219,6 @@
                     });
             },
             validateEmail() {
-//                console.log(this.localClient.contact.email);
                 if (this.localClient.contact.email.match(/^[0-9a-z-\.]+\@[0-9a-z-]{2,}\.[a-z]{2,}$/i)) {
                     this.isEmail = true;
                 } else {
