@@ -29,61 +29,22 @@
                             <el-card>
                                 <el-row>
                                     <el-col :span="16" :offset="4">
-                                        <el-row>
-                                            <el-select v-model="emails"
-                                                       multiple
-                                                       filterable
-                                                       allow-create
-                                                       placeholder="Type members emails here"
-                                                       class="members-emails"
-                                            >
-                                            </el-select>
-                                        </el-row>
-                                        <!--<el-row>-->
-                                            <!--<label>Name</label>-->
-                                            <!--<el-input :class="{ 'has-error': $v.localMember.name.$error }"-->
-                                                      <!--placeholder="Enter localOrganization name"-->
-                                                      <!--v-model="localOrganization.name"-->
-                                                      <!--@input="$v.localOrganization.name.$touch()"-->
-                                            <!--&gt;</el-input>-->
-                                            <!--<div class="errors" v-if="$v.localOrganization.name.$error">-->
-                                                <!--<span class="error-message" v-if="!$v.localOrganization.name.required">Field is required</span>-->
-                                            <!--</div>-->
-                                        <!--</el-row>-->
-                                        <!--<el-row>-->
-                                            <!--<label>Email</label>-->
-                                            <!--<el-input :class="{ 'has-error': $v.localOrganization.email.$error }"-->
-                                                      <!--placeholder="Enter organization email"-->
-                                                      <!--v-model="localOrganization.email"-->
-                                                      <!--@input="$v.localOrganization.email.$touch()"-->
-                                                      <!--@blur="validateEmail"-->
-                                            <!--&gt;</el-input>-->
-                                            <!--<div class="errors" v-if="$v.localOrganization.email.$error">-->
-                                                <!--<span class="error-message" v-if="!$v.localOrganization.email.isEmail">InvalidEmail</span>-->
-                                            <!--</div>-->
-                                        <!--</el-row>-->
-                                        <!--<el-row>-->
-                                            <!--<label>Phone</label>-->
-                                            <!--<el-input-->
-                                                    <!--placeholder="Enter organization phone"-->
-                                                    <!--v-model="localOrganization.phone"-->
-                                            <!--&gt;</el-input>-->
-                                        <!--</el-row>-->
-                                        <!--<el-row>-->
-                                            <!--<label>Website</label>-->
-                                            <!--<el-input-->
-                                                    <!--placeholder="Enter localOrganization website"-->
-                                                    <!--v-model="localOrganization.website"-->
-                                            <!--&gt;</el-input>-->
-                                        <!--</el-row>-->
-                                        <el-row>
-                                            <label>Role</label>
-                                            <el-input
-                                                    type="textarea"
-                                                    :rows="5"
-                                                    placeholder="Enter organization address"
-                                                    v-model="localMember.status"
-                                            ></el-input>
+                                        <el-row type="flex" justify="space-around">
+                                            <el-col :span="24">
+                                                <el-select v-model="emails"
+                                                           :class="{ 'has-error': $v.emails.$error }"
+                                                           multiple
+                                                           filterable
+                                                           allow-create
+                                                           placeholder="Type members emails here"
+                                                           class="members-emails"
+                                                           @input="$v.emails.$touch()"
+                                                >
+                                                </el-select>
+                                                <div class="errors" v-if="$v.emails.$error">
+                                                    <span class="error-message" v-if="!$v.emails.required">This field is required</span>
+                                                </div>
+                                            </el-col>
                                         </el-row>
                                     </el-col>
                                 </el-row>
@@ -156,16 +117,9 @@
             },
         },
         validations: {
-//            localOrganization: {
-//                name: {
-//                    required,
-//                },
-//                email: {
-//                    isEmail() {
-//                        return this.isEmail;
-//                    },
-//                },
-//            },
+            emails: {
+                required,
+            },
         },
         components: {
             NavMenuAuth,
@@ -191,5 +145,9 @@
 
     body {
         background-color: #efefef;
+    }
+
+    .members-emails {
+        width: 100%;
     }
 </style>

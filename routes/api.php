@@ -71,5 +71,7 @@ Route::group(['middleware' => ['isVerified', 'auth:api']], function () {
     Route::post('clients/{client}', 'ClientController@update');
     Route::get('/clients/{client}', 'ClientController@getClient')->middleware('can:update,client');
 
+    //Organization members
     Route::post('/organization/{organization}/members/invite', 'Organization\OrganizationController@invite');
+    Route::get('/organization/{organization}/members', 'Organization\OrganizationController@getMembers');
 });

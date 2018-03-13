@@ -1,63 +1,130 @@
 <template>
     <div>
-        <nav-menu-auth></nav-menu-auth>
-        <div class="container">
-                <span class="page-title"> Members </span> 
-            <div class="row">
-                <div class="col-md-12"> 
-                    <div class="panel panel-default"> 
-                        <div class="panel-heading flex-container-space-between">  
-                            <div class="actions pull-left">  
-                                <button class="btn btn-primary" @click="showModal = true"><span class="fa fa-plus"></span> Invite Members</button>  
-                            </div>  
-                            <div class="table-container"> 
-                                <div class="text-muted table-cell ng-binding"></div>
-                            </div> 
-                        </div> 
-                        <div class="panel-body form clear-padding">
-                            <!-- <div class="well text-center" > No projects have been added yet. </div> -->
-                        </div> 
-                    </div>
-                </div>
-            </div>
-        </div>
+        <el-container direction="vertical">
+            <nav-menu-auth></nav-menu-auth>
+            <el-main>
+                <el-row>
+                    <el-col :span="16" :offset="4">
+                        <span class="page-title"> Members </span>
 
-        <div class="modal" v-if="showModal">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <form> 
-                        <div class="modal-header"> 
-                            <button type="button" class="close" @click="showModal = false"> 
-                                <span>×</span>
-                            </button> <h4 class="modal-title ng-binding">Invite Members to Account</h4> 
-                        </div>
-                        <div class="modal-body">
-                            <div class="row">
-                                <div class="col-sm-12">
-                                    <textarea class="form-control" rows="7" placeholder="Write emails one per line."></textarea>
-                                </div>
+                        <el-card>
+                            <div slot="header" class="clearfix">
+                                <router-link to="members/invite"
+                                             class="el-button el-button--primary is-plain"
+                                >
+                                    <i class="el-icon-plus"></i> Invite Members</router-link>
                             </div>
-                        </div> 
-                        <div class="modal-footer">
-                            <button type="submit" class="btn btn-primary">Send Emails</button>
-                            <button type="submit" class="btn btn-default" @click="showModal = false ">Cancel</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-            <div class="modal-backdrop" ></div>
-        </div>
+                            <el-table :data="members"
+                                      stripe
+                                      :default-sort="{ prop: 'name' }"
+                            >
+                                <el-table-column prop="name"
+                                                 label="Name"
+                                                 sortable
+                                ></el-table-column>
+                                <!--<el-table-column-->
+                                        <!--v-if="profile === 'organization'"-->
+                                        <!--prop="client_name"-->
+                                        <!--label="Client"-->
+                                <!--&gt;</el-table-column>-->
+                                <!--<el-table-column label="Members">-->
+                                    <!--<template slot-scope="scope">-->
+                                        <!--<div v-if="scope.row.teams && scope.row.teams.length === 1">-->
+                                            <!--Team: {{ scope.row.teams[0].name }}-->
+                                        <!--</div>-->
+                                        <!--<div v-if="scope.row.teams && scope.row.teams.length === 2">-->
+                                            <!--Teams: {{ scope.row.teams[0].name }} and {{ scope.row.teams[1].name }}-->
+                                        <!--</div>-->
+                                        <!--<div v-if="scope.row.teams && scope.row.teams.length === 3">-->
+                                            <!--Teams: {{ scope.row.teams[0].name }}, {{ scope.row.teams[1].name }} and {{ scope.row.teams[2].name }}-->
+                                        <!--</div>-->
+                                        <!--<div v-if="scope.row.teams && scope.row.teams.length > 3">-->
+                                            <!--Teams: {{ scope.row.teams[0].name }}, {{ scope.row.teams[1].name }}, {{ scope.row.teams[2].name }} and-->
+                                            <!--<el-button type="text" @click="showTeams(scope.row.teams)">others...</el-button>-->
+                                        <!--</div>-->
+                                        <!--<div v-if="scope.row.users_without_team.length === 1">-->
+                                            <!--User: {{ scope.row.users_without_team[0].name }}-->
+                                        <!--</div>-->
+                                        <!--<div v-if="scope.row.users_without_team.length === 2">-->
+                                            <!--Users: {{ scope.row.users_without_team[0].name }} and {{ scope.row.users_without_team[1].name }}-->
+                                        <!--</div>-->
+                                        <!--<div v-if="scope.row.users_without_team.length === 3">-->
+                                            <!--Users: {{ scope.row.users_without_team[0].name }}, {{ scope.row.users_without_team[1].name }} and-->
+                                            <!--{{ scope.row.users_without_team[2].name }}-->
+                                        <!--</div>-->
+                                    <!--</template>-->
+                                <!--</el-table-column>-->
+                                <!--<el-table-column-->
+                                        <!--width="80">-->
+                                    <!--<template slot-scope="scope">-->
+                                        <!--<div v-if="user.id === scope.row.owner_id">-->
+                                            <!--<el-button type="plain" size="mini" @click="goToProject(scope.row.id)">Edit</el-button>-->
+                                        <!--</div>-->
+                                        <!--<div v-if="organization.id">-->
+                                            <!--<el-button type="plain" size="mini" @click="goToOrgProject(scope.row.id)">Edit</el-button>-->
+                                        <!--</div>-->
+                                    <!--</template>-->
+                                <!--</el-table-column>-->
+                            </el-table>
+                        </el-card>
+                    </el-col>
+                </el-row>
+            </el-main>
+        </el-container>
     </div>
 </template>
 
 <script>
+    import { mapGetters } from 'vuex';
     import NavMenuAuth from '../blocks/NavMenuAuth';
+    import notification from '../../mixins/notification';
 
     export default {
+        mixins: [notification],
         data() {
             return {
-                showModal: false,
+                members: [],
             };
+        },
+        created() {
+//            if (this.$route.params.segment === 'personal') {
+//                this.$store.dispatch('getOrganizationMembers')
+//                    .then(() => {
+//                        this.members = this.organizationMembers;
+//                    })
+//                    .catch(() => {
+//                        this.showError('Something went wrong in loading members...');
+//                    });
+//            }
+            if (this.$route.params.segment === 'organization') {
+                this.$store.dispatch('getOrganizationMembers', {
+                    id: this.$route.params.organizationId,
+                })
+                    .then(() => {
+                        this.members = this.organizationMembers;
+                    });
+            }
+        },
+        destroyed() {
+            this.$store.dispatch('clearOrganizationMembers');
+        },
+        computed: {
+            ...mapGetters([
+                'user',
+                'organization',
+                'organizationMembers',
+            ]),
+            profile() {
+                return localStorage.getItem('profile');
+            },
+        },
+        methods: {
+//            goToProject(projectId) {
+//                this.$router.push({ name: 'editProject', params: { projectId } });
+//            },
+//            goToOrgProject(projectId) {
+//                this.$router.push({ name: 'editProjectOrg', params: { projectId } });
+//            },
         },
         components: {
             NavMenuAuth,
@@ -65,6 +132,18 @@
     };
 </script>
 <style lang="scss" rel="stylesheet/css" scoped>
+
+    a.el-button {
+        text-decoration: none;
+    }
+
+    a.el-button:hover {
+        text-decoration: none;
+    }
+    a.el-button:focus {
+        text-decoration: none;
+    }
+
     .page-title {
         padding: 0;
         font-size: 28px;
@@ -75,113 +154,7 @@
         word-break: break-all;
     }
 
-        body {
+    body {
         background-color: #efefef;
-    }
-
-    .container {
-        margin-top: 70px;
-    }
-
-        .panel-default {
-        border-color: #e0e0e0;
-
-        .panel-heading {
-            color: #525252;
-            background-color: #fff;
-            border-color: #e0e0e0;
-        }
-    }
-
-    .panel-heading {
-        padding: 20px;
-    }
-
-    .panel {
-        margin-bottom: 20px;
-        background-color: #fff;
-        border: 1px solid transparent;
-        border-radius: 3px;
-        -webkit-box-shadow: 0 2px 6px 0 rgba(47, 47, 47, .15);
-        box-shadow: 0 2px 6px 0 rgba(47, 47, 47, .15);
-    }
-
-    .panel-title {
-        font-weight: 300;
-        font-size: 22px;
-    }
-
-    .panel-body {
-        padding: 20px;
-    }
-
-    .flex-container-space-between {
-        display: flex;
-        justify-content: space-between;
-    }
-
-    .btn-primary {
-        color: #fff;
-        background-color: #545454;
-        border-color: #545454;
-    }
-
-    .btn-primary:hover {
-        color: #fff;
-        background-color: #3b3b3b;
-        border-color: #3b3b3b;
-    }
-    .modal {
-        display: block;
-    }
-    .modal-backdrop {
-        opacity: .5;
-    }
-    .modal-dialog {
-        z-index: 1050;
-    }
-    .modal-content {
-        margin-top: 120px;
-    }
-    .modal-header {
-        padding: 25px;
-    }
-    .modal-body {
-        padding: 25px;
-    }
-
-    .form-control {
-        width: 100%;
-        padding: 6px 0;
-        background-color: transparent;
-        background-image: none;
-        border: none;
-        border-bottom: 1px solid #e0e0e0;
-        border-radius: 0;
-        -webkit-box-shadow: none;
-        transition: border-color ease-in-out .2s;
-    }
-
-    .form-control:focus {
-        box-shadow: none;
-        border-bottom: 2px solid #178fe5;
-        outline: 0;
-        padding: 6px 0 5px;
-    }
-    .modal-footer {
-        padding: 25px;
-        text-align: left;
-        border-top: 1px solid #e0e0e0;
-
-        .btn-primary {
-            color: #fff;
-            background-color: #545454;
-            border-color: #545454;
-        }
-        .btn-primary:hover {
-            color: #fff;
-            background-color: #3b3b3b;
-            border-color: #3b3b3b;
-        }
     }
 </style>

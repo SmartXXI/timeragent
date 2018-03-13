@@ -315,4 +315,13 @@ export default {
     logout() {
         return Http.post('logout');
     },
+    getOrganizationMembers(context, payload) {
+        return Http.get(`api/organization/${payload.id}/members`)
+            .then((response) => {
+                context.commit(types.SET_ORGANIZATION_MEMBERS, response.data);
+            });
+    },
+    clearOrganizationMembers(context) {
+        context.commit(types.CLEAR_ORGANIZATION_MEMBERS);
+    }
 };
