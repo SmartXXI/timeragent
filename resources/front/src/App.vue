@@ -108,4 +108,8 @@
     .gray-text {
         color: #b4bccc;
     }
+
+    .el-icon-plus {
+        font-size: 14px;
+    }
 </style>

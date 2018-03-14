@@ -47,6 +47,12 @@ class OrganizationController extends Controller
                 $query->where('id', Auth::id())->withPivot('status');
             }]);
     }
+
+    public function getMembers(Organization $organization)
+    {
+        return $organization->users;
+    }
+
     /**
      * Store a newly created resource in storage.
      *

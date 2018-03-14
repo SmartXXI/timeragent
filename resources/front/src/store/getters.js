@@ -61,4 +61,7 @@ export default {
     client(state) {
         return state.client;
     },
+    organizationMembers(state) {
+        return state.organizationMembers;
+    },
 };

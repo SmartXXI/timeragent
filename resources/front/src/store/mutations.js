@@ -224,4 +224,14 @@ export default {
             },
         });
     },
+    [types.SET_ORGANIZATION_MEMBERS](state, organizationMembers) {
+        Object.assign(state, {
+            organizationMembers,
+        });
+    },
+    [types.CLEAR_ORGANIZATION_MEMBERS](state, organizationMembers = {}) {
+        Object.assign(state, {
+            organizationMembers,
+        });
+    },
 };

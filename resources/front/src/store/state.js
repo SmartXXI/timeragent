@@ -30,4 +30,5 @@ export default {
     },
 
     organizationProjects: [],
+    organizationMembers : [],
 };

@@ -170,10 +170,6 @@
         text-decoration: none;
     }
 
-    .el-icon-plus {
-        font-size: 18px;
-    }
-
 	.page-title {
 	    padding: 0;
 	    font-size: 28px;
