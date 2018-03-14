@@ -10,12 +10,6 @@
                                     plain
                                     @click.prevent="$router.go(-1)"
                             >Cancel</el-button>
-                            <!--<el-button type="success"-->
-                                       <!--v-if="isEditing"-->
-                                       <!--title="Click to save"-->
-                                       <!--@click.prevent="updateMember"-->
-                                       <!--:disabled="formInvalid"-->
-                            <!--&gt; Save </el-button>-->
                             <el-button type="success"
                                        v-if="isCreating"
                                        title="Click to create"
