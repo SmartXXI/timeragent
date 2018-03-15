@@ -156,12 +156,30 @@ export default {
     updateUser(context, payload) {
         return Http.post('api/user', { user: payload.user });
     },
-    getTeams(context) {
+    getOneTeam(context, payload) {
+        return Http.get(`api/teams/${payload.teamId}`)
+            .then((response) => {
+                context.commit(types.SET_ONE_TEAM, response.data);
+            });
+    },
+    getPersonalTeams(context) {
         return Http.get('api/teams').then((response) => {
-            context.commit(types.SET_TEAMS, response.data);
+            context.commit(types.SET_PERSONAL_TEAMS, response.data);
         });
     },
-    addTeam(context, payload) {
+    getOrganizationTeams(context, payload) {
+        return Http.get(`api/organization/${payload.orgId}/teams`)
+            .then((response) => {
+                context.commit(types.SET_ORGANIZATION_TEAMS, response.data);
+            });
+    },
+    getOrganizationTeam(context, payload) {
+        return Http.get(`api/organization/${payload.orgId}/teams/${payload.teamId}`)
+            .then((response) => {
+                context.commit(types.SET_ONE_TEAM, response.data);
+            });
+    },
+    createPersonalTeam(context, payload) {
         return Http.post('api/teams/new', { team: payload.team, teamUsers: payload.teamUsers }).then((response) => {
             if (payload.emailsToInvite !== []) {
                 context.dispatch('inviteMembers', { teamId: response.data.id, emailsToInvite: payload.emailsToInvite });
@@ -171,13 +189,7 @@ export default {
     inviteMembers(context, payload) {
         Http.post('api/teams/invite', { members: payload.emailsToInvite, team_id: payload.teamId });
     },
-    getOneTeam(context, payload) {
-        return Http.get(`api/teams/${payload.teamId}`)
-            .then((response) => {
-                context.commit(types.SET_ONE_TEAM, response.data);
-            });
-    },
-    updateTeam(context, payload) {
+    updatePersonalTeam(context, payload) {
         return Http.post(`api/teams/${payload.team.id}`, {
             team     : payload.team,
             teamUsers: payload.teamUsers,
@@ -187,6 +199,12 @@ export default {
                     context.dispatch('inviteMembers', { teamId: response.data.id, emailsToInvite: payload.emailsToInvite });
                 }
             });
+    },
+    updateOrganizationTeam(context, payload) {
+        return Http.post(`api/organization/${payload.orgId}/teams/${payload.teamId}`, {
+            team     : payload.team,
+            teamUsers: payload.teamUsers,
+        });
     },
     clearTeam(context) {
         context.commit(types.CLEAR_TEAM);
@@ -316,12 +334,12 @@ export default {
         return Http.post('logout');
     },
     getOrganizationMembers(context, payload) {
-        return Http.get(`api/organization/${payload.id}/members`)
+        return Http.get(`api/organization/${payload.orgId}/members`)
             .then((response) => {
                 context.commit(types.SET_ORGANIZATION_MEMBERS, response.data);
             });
     },
     clearOrganizationMembers(context) {
         context.commit(types.CLEAR_ORGANIZATION_MEMBERS);
-    }
+    },
 };

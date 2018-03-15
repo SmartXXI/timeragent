@@ -172,8 +172,11 @@ export default {
     [types.CLEAR_USER](state, user = {}) {
         Object.assign(state, { user });
     },
-    [types.SET_TEAMS](state, teams) {
-        Object.assign(state, { teams });
+    [types.SET_PERSONAL_TEAMS](state, personalTeams) {
+        Object.assign(state, { personalTeams });
+    },
+    [types.SET_ORGANIZATION_TEAMS](state, organizationTeams) {
+        Object.assign(state, { organizationTeams });
     },
     [types.SET_ONE_TEAM](state, team) {
         Object.assign(state, { team });

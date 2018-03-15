@@ -74,4 +74,11 @@ Route::group(['middleware' => ['isVerified', 'auth:api']], function () {
     //Organization members
     Route::post('/organization/{organization}/members/invite', 'Organization\OrganizationController@invite');
     Route::get('/organization/{organization}/members', 'Organization\OrganizationController@getMembers');
+
+    //Organization teams
+    Route::get('/organization/{organization}/teams', 'Organization\TeamController@get');
+    Route::get('/organization/{organization}/teams/{team}', 'Organization\TeamController@getTeam')
+        ->middleware('can:update,team');
+    Route::post('/organization/{organization}/teams/{team}', 'Organization\TeamController@create');
+    Route::post('/organization/{organization}/teams/{team}', 'Organization\TeamController@update');
 });

@@ -21,7 +21,7 @@
                         <el-button type="success"
                                    v-if="isCreating"
                                    title="Click to create"
-                                    @click.prevent="addTeam"
+                                    @click.prevent="createPersonalTeam"
                                    :disabled="formInvalid"
                         > Save </el-button>
                     </div>
@@ -58,7 +58,7 @@
                                                         <!--<span class="error-message" v-if="!$v.members.email">Invalid email</span>-->
                                                     <!--</div>-->
                                                 <!--</i>-->
-                                                <el-select v-model="members"
+                                                <el-select v-model="membersEmails"
                                                            multiple
                                                            filterable
                                                            allow-create
@@ -69,13 +69,22 @@
                                             </el-col>
                                         </el-row>
                                         <el-row type="flex" justify="space-around" class="transfer">
-                                            <!--<el-col >-->
                                                 <el-transfer v-model="teamUsers"
                                                              :data="membersData"
                                                              :titles="['Exists Members', 'To Add']"
                                                 >
                                                 </el-transfer>
-                                            <!--</el-col>-->
+                                        </el-row>
+                                        <el-row type="flex" justify="space-around" class="transfer">
+                                            <el-table :data="members"
+                                                      stripe
+                                                      :default-sort="{ prop: 'name' }"
+                                            >
+                                                <el-table-column prop="name"
+                                                                 label="Name"
+                                                                 sortable
+                                                ></el-table-column>
+                                            </el-table>
                                         </el-row>
 
                                     </el-tab-pane>
@@ -118,7 +127,7 @@
 
 <script>
     import { required } from 'vuelidate/lib/validators';
-    import { mapGetters } from 'vuex';
+    import { mapGetters, mapActions } from 'vuex';
     import NavMenuAuth from '../blocks/NavMenuAuth';
     import notification from '../../mixins/notification';
 
@@ -132,8 +141,9 @@
                 isEditing       : false,
                 showModal       : false,
                 showConfirmModal: false,
-                members         : [],
+                membersEmails   : [],
                 teamUsers       : [],
+                members         : [],
                 activeTabName   : 'members',
                 teamName        : '',
                 teamsGenerated  : false,
@@ -141,7 +151,7 @@
         },
         created() {
             if (this.$route.name === 'editTeam') {
-                this.$store.dispatch('getOneTeam', { teamId: this.teamId })
+                this.getOneTeam({ teamId: this.teamId })
                     .then(() => {
                         this.loading = false;
                     })
@@ -153,12 +163,39 @@
                         }
                     });
                 this.isEditing = true;
+                this.getExistsMembers()
+                    .then(() => {
+                        this.members = this.existsMembers;
+                    });
             }
             if (this.$route.name === 'newTeam') {
                 this.isCreating = true;
                 this.loading = false;
+                this.getExistsMembers();
             }
-            this.$store.dispatch('getExistsMembers');
+            if (this.$route.name === 'editTeamOrg') {
+                this.getOrganizationTeam({
+                    orgId : this.$route.params.organizationId,
+                    teamId: this.teamId,
+                })
+                    .then(() => {
+                        this.loading = false;
+                    })
+                    .catch((error) => {
+                        if (error.response.status === 403) {
+                            this.showError('Access denied');
+                            this.$router.go(-1);
+                            this.loading = false;
+                        }
+                    });
+                this.getOrganizationMembers({
+                    orgId: this.$route.params.organizationId,
+                })
+                    .then(() => {
+                        this.members = this.organizationMembers;
+                    });
+                this.isEditing = true;
+            }
         },
         computed: {
             formInvalid() {
@@ -167,14 +204,14 @@
             ...mapGetters([
                 'team',
                 'existsMembers',
+                'organizationMembers',
             ]),
             confirmDeleteTeam() {
                 return this.teamName === this.team.name;
             },
             membersData() {
                 const data = [];
-                const members = this.existsMembers;
-                members.forEach((member) => {
+                this.members.forEach((member) => {
                     data.push({
                         key  : member.id,
                         label: member.name,
@@ -194,12 +231,18 @@
             this.$store.dispatch('clearTeam');
         },
         methods: {
-            addTeam() {
+            ...mapActions([
+                'getOneTeam',
+                'getOrganizationTeam',
+                'getOrganizationMembers',
+                'getExistsMembers',
+            ]),
+            createPersonalTeam() {
                 if (this.$v.$invalid) return;
-                this.$store.dispatch('addTeam', {
+                this.$store.dispatch('createPersonalTeam', {
                     team          : this.team,
                     teamUsers     : this.teamUsers,
-                    emailsToInvite: this.members,
+                    emailsToInvite: this.membersEmails,
                 })
                     .then(() => {
                         this.showSuccess('Team saved successful');
@@ -209,12 +252,12 @@
                         this.showError();
                     });
             },
-            updateTeam() {
+            updatePersonalTeam() {
                 if (this.$v.$invalid) return;
-                this.$store.dispatch('updateTeam', {
+                this.$store.dispatch('updatePersonalTeam', {
                     team          : this.team,
                     teamUsers     : this.teamUsers,
-                    emailsToInvite: this.members,
+                    emailsToInvite: this.membersEmails,
                 })
                     .then(() => {
                         this.showSuccess('Team saved successful');
@@ -223,6 +266,13 @@
                     .catch(() => {
                         this.showError();
                     });
+            },
+            updateOrganizationTeam() {
+                if (this.formInvalid) return;
+                this.$store.dispatch('updateOrganizationTeam', {
+                    team     : this.team,
+                    teamUsers: this.teamUsers,
+                });
             },
             deleteTeam() {
                 if (!this.confirmDeleteTeam) return;

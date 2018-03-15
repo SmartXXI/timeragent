@@ -28,8 +28,11 @@ export default {
         }
         return ['a'];
     },
-    teams(state) {
-        return state.teams;
+    personalTeams(state) {
+        return state.personalTeams;
+    },
+    organizationTeams(state) {
+        return state.organizationTeams;
     },
     personalProjects(state) {
         return state.personalProjects;

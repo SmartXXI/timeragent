@@ -48,8 +48,11 @@
                                         label=""
                                         width="80">
                                     <template slot-scope="scope">
-                                        <div v-if="user.id == scope.row.owner_id">
+                                        <div v-if="scope.row.owner_id">
                                             <el-button type="plain" size="mini" @click="goToTeam(scope.row.id)">Edit</el-button>
+                                        </div>
+                                        <div v-if="scope.row.organization_id">
+                                            <el-button type="plain" size="mini" @click="goToOrgTeam(scope.row.id)">Edit</el-button>
                                         </div>
                                     </template>
                                 </el-table-column>
@@ -78,7 +81,7 @@
 </template>
 
 <script>
-    import { mapGetters } from 'vuex';
+    import { mapGetters, mapActions } from 'vuex';
     import NavMenuAuth from '../blocks/NavMenuAuth';
     import notification from '../../mixins/notification';
 
@@ -88,23 +91,47 @@
             return {
                 membersTableVisible: false,
                 members            : [],
+
+                teams: [],
             };
         },
         created() {
-            this.$store.dispatch('getTeams')
-                .catch(() => {
-                    this.showError('Something went wrong in loading teams...');
-                });
+            if (this.$route.params.segment === 'personal') {
+                this.getPersonalTeams()
+                    .then(() => {
+                        this.teams = this.personalTeams;
+                    })
+                    .catch(() => {
+                        this.showError('Something went wrong in loading teams...');
+                    });
+            }
+            if (this.$route.params.segment === 'organization') {
+                this.getOrganizationTeams({ orgId: this.$route.params.organizationId })
+                    .then(() => {
+                        this.teams = this.organizationTeams;
+                    })
+                    .catch(() => {
+                        this.showError('Something went wrong in loading teams...');
+                    });
+            }
         },
         computed: {
             ...mapGetters([
                 'user',
-                'teams',
+                'personalTeams',
+                'organizationTeams',
             ]),
         },
         methods: {
+            ...mapActions([
+                'getPersonalTeams',
+                'getOrganizationTeams',
+            ]),
             goToTeam(teamId) {
                 this.$router.push({ name: 'editTeam', params: { teamId } });
+            },
+            goToOrgTeam(teamId) {
+                this.$router.push({ name: 'editTeamOrg', params: { teamId } });
             },
             showMembers(members) {
                 this.members = members;

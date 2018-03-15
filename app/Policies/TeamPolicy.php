@@ -22,6 +22,17 @@ class TeamPolicy
 
     public function update(User $user, Team $team)
     {
-        return $user->id === $team->owner_id;
+        if ($team->owner_id) {
+            return $user->id === $team->owner_id;
+        }
+        if ($team->organization_id) {
+            return $user
+                ->organizations()
+                ->where('id', $team->organization_id)
+                ->withPivot('status')
+                ->first()
+                ->pivot
+                ->status === 1;
+        }
     }
 }

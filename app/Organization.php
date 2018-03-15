@@ -28,4 +28,9 @@ class Organization extends Model
     {
         return $this->hasManyThrough('App\Project', 'App\Client');
     }
+
+    public function teams()
+    {
+        return $this->hasMany(Team::class);
+    }
 }

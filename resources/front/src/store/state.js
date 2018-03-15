@@ -14,8 +14,9 @@ export default {
     personalTasks    : [],
     organizationTasks: [],
     personalProjects : [],
+    personalTeams    : [],
+    organizationTeams: [],
 
-    teams        : [],
     team         : {},
     project      : {},
     ownTeams     : [],
