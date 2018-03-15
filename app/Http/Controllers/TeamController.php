@@ -13,7 +13,7 @@ class TeamController extends Controller
 {
     public function getTeams(Request $request) {
         $user = Auth::user();
-    	$teamsWithUser = $user->teams;
+    	$teamsWithUser = $user->teams()->whereNotNull('owner_id')->get();
     	$ownTeams = Team::where('owner_id', $user->id)->get();
     	$teams = $teamsWithUser->merge($ownTeams);
         $teams->map(function(Team $team) {
@@ -80,19 +80,6 @@ class TeamController extends Controller
     }
     public function update(Request $request, Team $team) {
         $projects = $team->projects;
-
-//        foreach ($request->deletedMembers as $member) {
-//            foreach ($projects as $project) {
-//                $project->detachUser($member);
-//            }
-//
-//            $member = User::find($member);
-//            $member->detachTeam($team);
-//        }
-//        foreach($request->addedMembers as $member) {
-//            $member = User::find($member);
-//            $member->attachTeam($team);
-//        }
         $team_users = [];
         foreach ($request->teamUsers as $user_id) {
             $user = User::find($user_id);
@@ -118,13 +105,14 @@ class TeamController extends Controller
             });
 
         foreach ($projects as $project) {
-            $project->usersWithTeam($team->id)->sync($team_users);
+            $project->users()->sync($team_users);
         }
 
         $team->users()->sync($request->teamUsers);
 
-        $all['name'] = $request->team['name'];
-        $team->update($all);
+        $team->update([
+            'name' => $request->team['name'],
+        ]);
         return $team;
     }
 
@@ -148,31 +136,13 @@ class TeamController extends Controller
         }
     }
 
-    public function getExistsMembers(Request $request) {
-        $user = Auth::user();
-        $teams = $user->teams;
-        $existsMembers = [];
-
-        foreach($teams as $team) {
-            foreach ($team->users as $user) {
-                $noUser = false;
-                if(count($existsMembers) == 0) $existsMembers[] = $user;
-                foreach($existsMembers as $member) {
-                    if ($member->id == $user->id) {
-                        $noUser = false;
-                        break;
-                    }
-                    else $noUser = true;
-                }
-                if($noUser) {
-                    $existsMembers[] = $user;
-                }
-            }
-        } 
-        return $existsMembers;
+    public function getAllUsers(Request $request)
+    {
+        return User::where('name', 'LIKE', "$request->queryString%")->get();
     }
 
-    public function delete(Team $team) {
+    public function delete(Team $team)
+    {
         $team->delete();
     }
 }

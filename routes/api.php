@@ -39,7 +39,7 @@ Route::group(['middleware' => ['isVerified', 'auth:api']], function () {
     Route::get('/teams', 'TeamController@getTeams');
     Route::post('/teams/new', 'TeamController@create');
     Route::post('/teams/invite', 'TeamController@invite');
-    Route::get('/teams/exists-members', 'TeamController@getExistsMembers');
+    Route::get('/teams/all-users', 'TeamController@getAllUsers');
     Route::post('/teams/{team}/delete', 'TeamController@delete');
     Route::get('/teams/{team}', 'TeamController@edit')->middleware('can:update,team');
     Route::post('/teams/{team}', 'TeamController@update');
@@ -79,6 +79,6 @@ Route::group(['middleware' => ['isVerified', 'auth:api']], function () {
     Route::get('/organization/{organization}/teams', 'Organization\TeamController@get');
     Route::get('/organization/{organization}/teams/{team}', 'Organization\TeamController@getTeam')
         ->middleware('can:update,team');
-    Route::post('/organization/{organization}/teams/{team}', 'Organization\TeamController@create');
+    Route::post('/organization/{organization}/teams/new', 'Organization\TeamController@create');
     Route::post('/organization/{organization}/teams/{team}', 'Organization\TeamController@update');
 });

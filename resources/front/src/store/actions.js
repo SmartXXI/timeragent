@@ -180,10 +180,15 @@ export default {
             });
     },
     createPersonalTeam(context, payload) {
-        return Http.post('api/teams/new', { team: payload.team, teamUsers: payload.teamUsers }).then((response) => {
-            if (payload.emailsToInvite !== []) {
-                context.dispatch('inviteMembers', { teamId: response.data.id, emailsToInvite: payload.emailsToInvite });
-            }
+        return Http.post('api/teams/new', {
+            team     : payload.team,
+            teamUsers: payload.teamUsers,
+        });
+    },
+    createOrganizationTeam(context, payload) {
+        return Http.post(`api/organization/${payload.orgId}/teams/new`, {
+            team     : payload.team,
+            teamUsers: payload.teamUsers,
         });
     },
     inviteMembers(context, payload) {
@@ -193,15 +198,10 @@ export default {
         return Http.post(`api/teams/${payload.team.id}`, {
             team     : payload.team,
             teamUsers: payload.teamUsers,
-        })
-            .then((response) => {
-                if (payload.emailsToInvite !== []) {
-                    context.dispatch('inviteMembers', { teamId: response.data.id, emailsToInvite: payload.emailsToInvite });
-                }
-            });
+        });
     },
     updateOrganizationTeam(context, payload) {
-        return Http.post(`api/organization/${payload.orgId}/teams/${payload.teamId}`, {
+        return Http.post(`api/organization/${payload.orgId}/teams/${payload.team.id}`, {
             team     : payload.team,
             teamUsers: payload.teamUsers,
         });
@@ -284,9 +284,9 @@ export default {
             context.commit(types.SET_OWN_USERS, response.data);
         });
     },
-    getExistsMembers(context) {
-        return Http.get('api/teams/exists-members').then((response) => {
-            context.commit(types.SET_EXISTS_MEMBERS, response.data);
+    getAllUsers(context, payload) {
+        return Http.get(`api/teams/all-users?queryString=${payload.queryString}`).then((response) => {
+            context.commit(types.SET_ALL_USERS, response.data);
         });
     },
     createOrganization(context, payload) {

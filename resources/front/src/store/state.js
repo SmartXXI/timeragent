@@ -17,11 +17,13 @@ export default {
     personalTeams    : [],
     organizationTeams: [],
 
-    team         : {},
+    team: {
+        users: [],
+    },
     project      : {},
     ownTeams     : [],
     ownUsers     : [],
-    existsMembers: [],
+    allUsers     : [],
     organization : {},
     profileStatus: '',
 

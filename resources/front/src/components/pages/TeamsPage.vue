@@ -10,7 +10,7 @@
                         <el-card>
                             <div slot="header" class="clearfix">
                                 <router-link
-                                        to="/teams/new"
+                                        to="teams/new"
                                         class="el-button el-button--primary is-plain">
                                     <i class="el-icon-plus"></i> New Team
                                 </router-link>
@@ -25,6 +25,7 @@
                                         sortable>
                                 </el-table-column>
                                 <el-table-column
+                                        v-if="$route.params.segment === 'personal'"
                                         prop="owner_name"
                                         label="Owner(Team lead)">
                                 </el-table-column>
@@ -131,7 +132,7 @@
                 this.$router.push({ name: 'editTeam', params: { teamId } });
             },
             goToOrgTeam(teamId) {
-                this.$router.push({ name: 'editTeamOrg', params: { teamId } });
+                this.$router.push({ name: 'editOrgTeam', params: { teamId } });
             },
             showMembers(members) {
                 this.members = members;

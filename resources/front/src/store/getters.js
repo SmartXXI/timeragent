@@ -49,8 +49,8 @@ export default {
     ownUsers(state) {
         return state.ownUsers;
     },
-    existsMembers(state) {
-        return state.existsMembers;
+    allUsers(state) {
+        return state.allUsers;
     },
     organization(state) {
         return state.organization;

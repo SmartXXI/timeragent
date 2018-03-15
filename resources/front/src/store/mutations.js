@@ -202,8 +202,8 @@ export default {
     [types.SET_OWN_USERS](state, ownUsers) {
         Object.assign(state, { ownUsers });
     },
-    [types.SET_EXISTS_MEMBERS](state, existsMembers) {
-        Object.assign(state, { existsMembers });
+    [types.SET_ALL_USERS](state, allUsers) {
+        Object.assign(state, { allUsers });
     },
     [types.SET_ONE_ORGANIZATION](state, organization) {
         Object.assign(state, { organization });

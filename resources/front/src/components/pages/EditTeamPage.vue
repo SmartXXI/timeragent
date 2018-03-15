@@ -9,21 +9,41 @@
             <el-row>
                 <el-col :span="16" :offset="4">
                     <div class="pull-right">
-                        <el-button type="plain"
-                                   @click.prevent="$router.go(-1)"
-                        > Cancel </el-button>
-                        <el-button type="success"
-                                   v-if="isEditing"
-                                   title="Click to save"
-                                    @click.prevent="updateTeam"
-                                   :disabled="formInvalid"
-                        > Save </el-button>
-                        <el-button type="success"
-                                   v-if="isCreating"
-                                   title="Click to create"
-                                    @click.prevent="createPersonalTeam"
-                                   :disabled="formInvalid"
-                        > Save </el-button>
+                        <div v-if="$route.params.segment === 'personal'">
+                            <el-button type="plain"
+                                       @click.prevent="$router.go(-1)"
+                            > Cancel </el-button>
+                            <el-button type="success"
+                                       v-if="isEditing"
+                                       title="Click to save"
+                                        @click.prevent="updatePersonalTeam"
+                                       :disabled="formInvalid"
+                            > Save </el-button>
+                            <el-button type="success"
+                                       v-if="isCreating"
+                                       title="Click to create"
+                                        @click.prevent="createPersonalTeam"
+                                       :disabled="formInvalid"
+                            > Save </el-button>
+                        </div>
+                        <div v-if="$route.params.segment === 'organization'">
+                                <el-button type="plain"
+                                           @click.prevent="$router.go(-1)"
+                                > Cancel </el-button>
+                                <el-button type="success"
+                                           v-if="isEditing"
+                                           title="Click to save"
+                                           @click.prevent="updateOrganizationTeam"
+                                           :disabled="formInvalid"
+                                > Save </el-button>
+                                <el-button type="success"
+                                           v-if="isCreating"
+                                           title="Click to create"
+                                           @click.prevent="createOrganizationTeam"
+                                           :disabled="formInvalid"
+                                > Save </el-button>
+                        </div>
+
                     </div>
                     <span v-if="isCreating" class="page-title"> New Team </span>
                     <span v-if="isEditing" class="page-title"> Edit Team </span>
@@ -47,7 +67,7 @@
                                     <el-tab-pane label="Members" name="members">
 
                                         <el-row type="flex" justify="space-around">
-                                            <el-col :span="17">
+                                            <el-col :span="24">
                                                 <!--<el-input :class="{ 'has-error': $v.members.$error }"-->
                                                           <!--placeholder="Enter user email..."-->
                                                           <!--v-model="members"-->
@@ -58,25 +78,29 @@
                                                         <!--<span class="error-message" v-if="!$v.members.email">Invalid email</span>-->
                                                     <!--</div>-->
                                                 <!--</i>-->
-                                                <el-select v-model="membersEmails"
-                                                           multiple
-                                                           filterable
-                                                           allow-create
-                                                           placeholder="Type members emails here"
-                                                           class="members-emails"
+                                                <!--<el-select v-model="membersEmails"-->
+                                                           <!--multiple-->
+                                                           <!--filterable-->
+                                                           <!--allow-create-->
+                                                           <!--placeholder="Type members emails here"-->
+                                                           <!--class="members-emails"-->
+                                                <!--&gt;-->
+                                                <!--</el-select>-->
+                                                <el-autocomplete
+                                                        v-model="queryString"
+                                                        placeholder="Search members"
+                                                        :fetch-suggestions="querySearch"
+                                                        value-key="name"
+                                                        :trigger-on-focus="false"
+                                                        class="members-search-input"
+                                                        @select="addMember"
                                                 >
-                                                </el-select>
+
+                                                </el-autocomplete>
                                             </el-col>
                                         </el-row>
                                         <el-row type="flex" justify="space-around" class="transfer">
-                                                <el-transfer v-model="teamUsers"
-                                                             :data="membersData"
-                                                             :titles="['Exists Members', 'To Add']"
-                                                >
-                                                </el-transfer>
-                                        </el-row>
-                                        <el-row type="flex" justify="space-around" class="transfer">
-                                            <el-table :data="members"
+                                            <el-table :data="team.users"
                                                       stripe
                                                       :default-sort="{ prop: 'name' }"
                                             >
@@ -84,6 +108,18 @@
                                                                  label="Name"
                                                                  sortable
                                                 ></el-table-column>
+                                                <el-table-column width="80">
+                                                    <template slot-scope="scope">
+                                                        <el-button type="danger"
+                                                                   plain
+                                                                   size="mini"
+                                                                   icon="el-icon-delete"
+                                                                   @click="removeMember(scope.row.id)"
+                                                        >
+
+                                                        </el-button>
+                                                    </template>
+                                                </el-table-column>
                                             </el-table>
                                         </el-row>
 
@@ -141,12 +177,13 @@
                 isEditing       : false,
                 showModal       : false,
                 showConfirmModal: false,
-                membersEmails   : [],
+//                membersEmails   : [],
                 teamUsers       : [],
-                members         : [],
+                queryString     : '',
+                queryUsers      : [],
                 activeTabName   : 'members',
                 teamName        : '',
-                teamsGenerated  : false,
+                querySended     : false,
             };
         },
         created() {
@@ -163,17 +200,16 @@
                         }
                     });
                 this.isEditing = true;
-                this.getExistsMembers()
-                    .then(() => {
-                        this.members = this.existsMembers;
-                    });
             }
             if (this.$route.name === 'newTeam') {
                 this.isCreating = true;
                 this.loading = false;
-                this.getExistsMembers();
             }
-            if (this.$route.name === 'editTeamOrg') {
+            if (this.$route.name === 'newOrgTeam') {
+                this.isCreating = true;
+                this.loading = false;
+            }
+            if (this.$route.name === 'editOrgTeam') {
                 this.getOrganizationTeam({
                     orgId : this.$route.params.organizationId,
                     teamId: this.teamId,
@@ -188,14 +224,15 @@
                             this.loading = false;
                         }
                     });
-                this.getOrganizationMembers({
-                    orgId: this.$route.params.organizationId,
-                })
-                    .then(() => {
-                        this.members = this.organizationMembers;
-                    });
                 this.isEditing = true;
             }
+        },
+        watch: {
+            queryString(value) {
+                if (value.length < 3) {
+                    this.querySended = false;
+                }
+            },
         },
         computed: {
             formInvalid() {
@@ -203,28 +240,11 @@
             },
             ...mapGetters([
                 'team',
-                'existsMembers',
+                'allUsers',
                 'organizationMembers',
             ]),
             confirmDeleteTeam() {
                 return this.teamName === this.team.name;
-            },
-            membersData() {
-                const data = [];
-                this.members.forEach((member) => {
-                    data.push({
-                        key  : member.id,
-                        label: member.name,
-                    });
-                });
-                if (!this.teamsGenerated && this.team.users) {
-                    this.team.users.map((user) => {
-                        this.teamUsers.push(user.id);
-                        return user;
-                    });
-                    this.teamsGenerated = true;
-                }
-                return data;
             },
         },
         destroyed() {
@@ -235,18 +255,55 @@
                 'getOneTeam',
                 'getOrganizationTeam',
                 'getOrganizationMembers',
-                'getExistsMembers',
+                'getAllUsers',
             ]),
+            querySearch(queryString, cb) {
+                if (queryString.length > 2 && !this.querySended) {
+                    if (this.$route.params.segment === 'personal') {
+                        this.getAllUsers({ queryString })
+                            .then(() => {
+                                this.queryUsers = this.allUsers;
+                                this.querySended = true;
+                            });
+                    }
+                    if (this.$route.params.segment === 'organization') {
+                        this.getOrganizationMembers({
+                            orgId: this.$route.params.organizationId,
+                        })
+                            .then(() => {
+                                this.queryUsers = this.organizationMembers;
+                                this.querySended = true;
+                            });
+                    }
+                }
+                const members = Object.assign(this.queryUsers);
+                const results = queryString ? members.filter(this.createFilter(queryString)) : [];
+                // call callback function to return suggestions
+                cb(results);
+            },
+            createFilter(queryString) {
+                return (member) => {
+                    return (member.name.toLowerCase().indexOf(queryString.toLowerCase()) === 0);
+                };
+            },
+            addMember(user) {
+                this.teamUsers.push(user.id);
+                this.team.users.push(user);
+                this.queryString = '';
+            },
+            removeMember(userId) {
+                this.teamUsers = this.teamUsers.filter(teamUserId => teamUserId !== userId);
+                this.team.users = this.team.users.filter(teamUser => teamUser.id !== userId);
+            },
             createPersonalTeam() {
                 if (this.$v.$invalid) return;
                 this.$store.dispatch('createPersonalTeam', {
-                    team          : this.team,
-                    teamUsers     : this.teamUsers,
-                    emailsToInvite: this.membersEmails,
+                    team     : this.team,
+                    teamUsers: this.teamUsers,
                 })
                     .then(() => {
                         this.showSuccess('Team saved successful');
-                        this.$router.push('/teams');
+                        this.$router.go(-1);
                     })
                     .catch(() => {
                         this.showError();
@@ -255,13 +312,27 @@
             updatePersonalTeam() {
                 if (this.$v.$invalid) return;
                 this.$store.dispatch('updatePersonalTeam', {
-                    team          : this.team,
-                    teamUsers     : this.teamUsers,
-                    emailsToInvite: this.membersEmails,
+                    team     : this.team,
+                    teamUsers: this.teamUsers,
                 })
                     .then(() => {
                         this.showSuccess('Team saved successful');
-                        this.$router.push('/teams');
+                        this.$router.go(-1);
+                    })
+                    .catch(() => {
+                        this.showError();
+                    });
+            },
+            createOrganizationTeam() {
+                if (this.formInvalid) return;
+                this.$store.dispatch('createOrganizationTeam', {
+                    orgId    : this.$route.params.organizationId,
+                    team     : this.team,
+                    teamUsers: this.teamUsers,
+                })
+                    .then(() => {
+                        this.showSuccess('Team created successfully');
+                        this.$router.go(-1);
                     })
                     .catch(() => {
                         this.showError();
@@ -270,9 +341,17 @@
             updateOrganizationTeam() {
                 if (this.formInvalid) return;
                 this.$store.dispatch('updateOrganizationTeam', {
+                    orgId    : this.$route.params.organizationId,
                     team     : this.team,
                     teamUsers: this.teamUsers,
-                });
+                })
+                    .then(() => {
+                        this.showSuccess('Team updated successfully');
+                        this.$router.go(-1);
+                    })
+                    .catch(() => {
+                        this.showError();
+                    });
             },
             deleteTeam() {
                 if (!this.confirmDeleteTeam) return;
@@ -280,7 +359,7 @@
                 this.$store.dispatch('deleteTeam', { teamId: this.team.id })
                     .then(() => {
                         this.showSuccess('Team deleted successful');
-                        this.$router.push('/teams');
+                        this.$router.go(-1);
                     })
                     .catch(() => {
                         this.showError();
@@ -328,7 +407,7 @@
 </style>
 
 <style>
-    .members-emails {
+    .members-search-input {
         width: 100%;
     }
 </style>
