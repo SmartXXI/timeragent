@@ -156,37 +156,55 @@ export default {
     updateUser(context, payload) {
         return Http.post('api/user', { user: payload.user });
     },
-    getTeams(context) {
-        return Http.get('api/teams').then((response) => {
-            context.commit(types.SET_TEAMS, response.data);
-        });
-    },
-    addTeam(context, payload) {
-        return Http.post('api/teams/new', { team: payload.team, teamUsers: payload.teamUsers }).then((response) => {
-            if (payload.emailsToInvite !== []) {
-                context.dispatch('inviteMembers', { teamId: response.data.id, emailsToInvite: payload.emailsToInvite });
-            }
-        });
-    },
-    inviteMembers(context, payload) {
-        Http.post('api/teams/invite', { members: payload.emailsToInvite, team_id: payload.teamId });
-    },
     getOneTeam(context, payload) {
         return Http.get(`api/teams/${payload.teamId}`)
             .then((response) => {
                 context.commit(types.SET_ONE_TEAM, response.data);
             });
     },
-    updateTeam(context, payload) {
+    getPersonalTeams(context) {
+        return Http.get('api/teams').then((response) => {
+            context.commit(types.SET_PERSONAL_TEAMS, response.data);
+        });
+    },
+    getOrganizationTeams(context, payload) {
+        return Http.get(`api/organization/${payload.orgId}/teams`)
+            .then((response) => {
+                context.commit(types.SET_ORGANIZATION_TEAMS, response.data);
+            });
+    },
+    getOrganizationTeam(context, payload) {
+        return Http.get(`api/organization/${payload.orgId}/teams/${payload.teamId}`)
+            .then((response) => {
+                context.commit(types.SET_ONE_TEAM, response.data);
+            });
+    },
+    createPersonalTeam(context, payload) {
+        return Http.post('api/teams/new', {
+            team     : payload.team,
+            teamUsers: payload.teamUsers,
+        });
+    },
+    createOrganizationTeam(context, payload) {
+        return Http.post(`api/organization/${payload.orgId}/teams/new`, {
+            team     : payload.team,
+            teamUsers: payload.teamUsers,
+        });
+    },
+    inviteMembers(context, payload) {
+        Http.post('api/teams/invite', { members: payload.emailsToInvite, team_id: payload.teamId });
+    },
+    updatePersonalTeam(context, payload) {
         return Http.post(`api/teams/${payload.team.id}`, {
             team     : payload.team,
             teamUsers: payload.teamUsers,
-        })
-            .then((response) => {
-                if (payload.emailsToInvite !== []) {
-                    context.dispatch('inviteMembers', { teamId: response.data.id, emailsToInvite: payload.emailsToInvite });
-                }
-            });
+        });
+    },
+    updateOrganizationTeam(context, payload) {
+        return Http.post(`api/organization/${payload.orgId}/teams/${payload.team.id}`, {
+            team     : payload.team,
+            teamUsers: payload.teamUsers,
+        });
     },
     clearTeam(context) {
         context.commit(types.CLEAR_TEAM);
@@ -266,9 +284,9 @@ export default {
             context.commit(types.SET_OWN_USERS, response.data);
         });
     },
-    getExistsMembers(context) {
-        return Http.get('api/teams/exists-members').then((response) => {
-            context.commit(types.SET_EXISTS_MEMBERS, response.data);
+    getAllUsers(context, payload) {
+        return Http.get(`api/teams/all-users?queryString=${payload.queryString}`).then((response) => {
+            context.commit(types.SET_ALL_USERS, response.data);
         });
     },
     createOrganization(context, payload) {
@@ -316,12 +334,12 @@ export default {
         return Http.post('logout');
     },
     getOrganizationMembers(context, payload) {
-        return Http.get(`api/organization/${payload.id}/members`)
+        return Http.get(`api/organization/${payload.orgId}/members`)
             .then((response) => {
                 context.commit(types.SET_ORGANIZATION_MEMBERS, response.data);
             });
     },
     clearOrganizationMembers(context) {
         context.commit(types.CLEAR_ORGANIZATION_MEMBERS);
-    }
+    },
 };

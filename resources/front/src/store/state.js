@@ -14,13 +14,16 @@ export default {
     personalTasks    : [],
     organizationTasks: [],
     personalProjects : [],
+    personalTeams    : [],
+    organizationTeams: [],
 
-    teams        : [],
-    team         : {},
+    team: {
+        users: [],
+    },
     project      : {},
     ownTeams     : [],
     ownUsers     : [],
-    existsMembers: [],
+    allUsers     : [],
     organization : {},
     profileStatus: '',
 

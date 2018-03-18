@@ -121,17 +121,17 @@ export default new Router({
                 },
                 {
                     path     : ':organizationId/teams',
-                    name     : 'teamsOrg',
+                    name     : 'orgTeams',
                     component: Teams,
                 },
                 {
                     path     : ':organizationId/teams/new',
-                    name     : 'newTeamOrg',
+                    name     : 'newOrgTeam',
                     component: EditTeam,
                 },
                 {
                     path     : ':organizationId/teams/:teamId',
-                    name     : 'editTeamOrg',
+                    name     : 'editOrgTeam',
                     component: EditTeam,
                     props    : true,
                 },

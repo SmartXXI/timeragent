@@ -46,7 +46,7 @@
         created() {
             if (this.$route.params.segment === 'organization') {
                 this.$store.dispatch('getOrganizationMembers', {
-                    id: this.$route.params.organizationId,
+                    orgId: this.$route.params.organizationId,
                 })
                     .then(() => {
                         this.members = this.organizationMembers;

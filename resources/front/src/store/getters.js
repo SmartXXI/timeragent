@@ -28,8 +28,11 @@ export default {
         }
         return ['a'];
     },
-    teams(state) {
-        return state.teams;
+    personalTeams(state) {
+        return state.personalTeams;
+    },
+    organizationTeams(state) {
+        return state.organizationTeams;
     },
     personalProjects(state) {
         return state.personalProjects;
@@ -46,8 +49,8 @@ export default {
     ownUsers(state) {
         return state.ownUsers;
     },
-    existsMembers(state) {
-        return state.existsMembers;
+    allUsers(state) {
+        return state.allUsers;
     },
     organization(state) {
         return state.organization;
