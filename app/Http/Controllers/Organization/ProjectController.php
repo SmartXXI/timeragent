@@ -31,11 +31,9 @@ class ProjectController extends Controller
         }
 
         $projects->map(function (Project $project) use ($organization) {
-            $project->teams->map(function (Team $team) {
-                $team->owner_name = User::find($team->owner_id)->name;
-            });
             $project->client_name = $project->client->name;
             $project->load('usersWithoutTeam');
+            $project->load('teams');
             return $project;
         });
 
@@ -113,7 +111,6 @@ class ProjectController extends Controller
         }
 
         foreach ($request->projectTeams as $teamData) {
-            $team = Team::find($teamData['id']);
 
             foreach ($teamData['users'] as $user) {
                 $team_users[$user['id']] = [

@@ -20,9 +20,7 @@ class ProjectController extends Controller
         $projects = $projects->merge($own_projects);
         $projects->map(function (Project $project) {
             $project->owner_name = User::find($project->owner_id)->name;
-//            $project->teams->map(function (Team $team) {
-//                $team->owner_name = User::find($team->owner_id)->name;
-//            });
+            $project->load('teams');
             $project->load('usersWithoutTeam');
             return $project;
         });
@@ -38,8 +36,6 @@ class ProjectController extends Controller
     	if ($request->projectTeams) {
             foreach($request->projectTeams as $teamData) {
                 $project->attachTeam($teamData['id']);
-
-                $team = Team::find($teamData['id']);
 
                 foreach ($teamData['users'] as $user) {
                     $project->attachUser($user['id'], [

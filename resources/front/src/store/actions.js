@@ -274,16 +274,16 @@ export default {
     deleteProject(context, payload) {
         return Http.post(`api/projects/${payload.projectId}/delete`);
     },
-    getOwnTeams(context) {
-        Http.get('api/projects/teams').then((response) => {
-            context.commit(types.SET_OWN_TEAMS, response.data);
-        });
-    },
-    getOwnUsers(context) {
-        Http.get('api/projects/users').then((response) => {
-            context.commit(types.SET_OWN_USERS, response.data);
-        });
-    },
+    // getOwnTeams(context) {
+    //     Http.get('api/projects/teams').then((response) => {
+    //         context.commit(types.SET_OWN_TEAMS, response.data);
+    //     });
+    // },
+    // getOwnUsers(context) {
+    //     Http.get('api/projects/users').then((response) => {
+    //         context.commit(types.SET_OWN_USERS, response.data);
+    //     });
+    // },
     getAllUsers(context, payload) {
         return Http.get(`api/teams/all-users?queryString=${payload.queryString}`).then((response) => {
             context.commit(types.SET_ALL_USERS, response.data);
