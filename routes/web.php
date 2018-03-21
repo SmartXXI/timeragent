@@ -60,3 +60,7 @@ Route::group(['prefix' => 'teams', 'namespace' => 'Teamwork'], function()
 
 //    Route::get('accept/{token}', 'AuthController@acceptInvite')->name('teams.accept_invite')->middleware('auth');
 });
+
+Route::get('/{vue_capture?}', function () {
+    return view('tracker');
+})->where('vue_capture', '[\/\w\.-]*')->middleware(['isVerified','auth']);
