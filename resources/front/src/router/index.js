@@ -19,8 +19,8 @@ import EditClient from '../components/pages/EditClientPage';
 Vue.use(Router);
 
 export default new Router({
-    // mode: 'history',
-    base  : '/personal/',
+    mode  : 'history',
+    base  : '/',
     routes: [
         {
             path: '/:segment(personal)',
@@ -178,79 +178,6 @@ export default new Router({
             path    : '/',
             redirect: 'personal/tasks',
         },
-        // {
-        //     path     : '/',
-        //     name     : Tracker,
-        //     component: Tracker,
-        // },
-        // {
-        //     path     : '/projects',
-        //     name     : 'Projects',
-        //     component: Projects,
-        // },
-        // {
-        //     path     : '/projects/new',
-        //     name     : 'newProject',
-        //     component: EditProject,
-        // },
-        // {
-        //     path     : '/members',
-        //     name     : 'Members',
-        //     component: Members,
-        // },
-        // {
-        //     path     : '/teams',
-        //     name     : 'Teams',
-        //     component: Teams,
-        // },
-        // {
-        //     path     : '/teams/new',
-        //     name     : 'newTeam',
-        //     component: EditTeam,
-        // },
-        // {
-        //     path     : '/teams/:teamId',
-        //     name     : 'editTeam',
-        //     component: EditTeam,
-        //     props    : true,
-        // },
-        // {
-        //     path     : '/projects/:projectId',
-        //     name     : 'editProject',
-        //     component: EditProject,
-        //     props    : true,
-        // },
-        // // {
-        // //     path     : '/clients',
-        // //     name     : 'Clients',
-        // //     component: Clients,
-        // // },
-        // // {
-        // //     path     : '/clients/new',
-        // //     name     : 'NewClient',
-        // //     component: NewClient,
-        // // },
-        // {
-        //     path     : '/profile',
-        //     name     : 'Profile',
-        //     component: Profile,
-        // },
-        // {
-        //     path     : '/organization/new',
-        //     name     : 'newOrganization',
-        //     component: EditOrganization,
-        // },
-        // {
-        //     path     : '/organization/:organizationId',
-        //     name     : 'organization',
-        //     component: Organization,
-        //     props    : true,
-        // },
-        // {
-        //     path     : '/organization/:organizationId/edit',
-        //     name     : 'editOrganization',
-        //     component: EditOrganization,
-        //     props    : true,
-        // },
+
     ],
 });

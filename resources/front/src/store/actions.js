@@ -18,7 +18,7 @@ export default {
         return 0;
     },
     getPersonalTasks(context, payload) {
-        return Http.get(`api/tasks?date=${payload.date}`).then((response) => {
+        return Http.get(`/api/tasks?date=${payload.date}`).then((response) => {
             context.commit(types.SET_PERSONAL_TASKS, { data: response.data, date: payload.date });
             const tasks = response.data;
             if (tasks.length > 0
@@ -35,7 +35,7 @@ export default {
         });
     },
     getOrganizationTasks(context, payload) {
-        return Http.get(`api/organization/${payload.orgId}/tasks?date=${payload.date}`)
+        return Http.get(`/api/organization/${payload.orgId}/tasks?date=${payload.date}`)
             .then((response) => {
                 context.commit(types.SET_ORGANIZATION_TASKS, {
                     data: response.data,
@@ -67,7 +67,7 @@ export default {
             context.commit(types.STOP_TASK, { withDelete: true });
         } else {
             const endTime = moment().format('YYYY-MM-DD HH:mm:ss');
-            Http.post(`api/stop-task/${obj.task.id}`, { endTime })
+            Http.post(`/api/stop-task/${obj.task.id}`, { endTime })
                 .then(() => {
                     context.commit(types.STOP_TASK, { withDelete: false });
                     context.dispatch('getTasks', { date: context.state.date });
@@ -108,100 +108,100 @@ export default {
 
         if (oldActiveTimeEntry && payload.task.id === oldActiveTimeEntry.task_id) {
             if (moment().diff(moment(oldActiveTimeEntry.endTime, 'YYYY-MM-DD HH:mm:ss'), 'seconds') > 60) {
-                Http.post('api/create-time-entry', { task })
+                Http.post('/api/create-time-entry', { task })
                     .then(() => context.dispatch('getTasks', { date: context.state.date }));
             } else {
-                Http.post(`api/continue-task/${oldActiveTimeEntry.id}`)
+                Http.post(`/api/continue-task/${oldActiveTimeEntry.id}`)
                     .then(() => context.dispatch('getTasks', { date: context.state.date }));
             }
         } else if (payload.task.id) {
-            Http.post('api/create-time-entry', { task })
+            Http.post('/api/create-time-entry', { task })
                 .then(() => context.dispatch('getTasks', { date: context.state.date }));
         }
     },
     createTask(context, payload) {
-        Http.post('api/create-task', { task: payload.task })
+        Http.post('/api/create-task', { task: payload.task })
             .then(() => context.dispatch('getTasks', { date: context.state.date }));
     },
     updateTask(context, obj) {
-        Http.post(`api/update-task/${obj.task.id}`, { task: obj.task })
+        Http.post(`/api/update-task/${obj.task.id}`, { task: obj.task })
             .then(() => context.dispatch('getTasks', { date: context.state.date }));
     },
     deleteTask(context, payload) {
-        Http.post('api/delete-task', { tasks: payload.tasks })
+        Http.post('/api/delete-task', { tasks: payload.tasks })
             .then(() => context.dispatch('getTasks', { date: context.state.date }));
     },
     deleteTimeEntry(context, payload) {
-        Http.post(`api/delete-time-entry/${payload.timeEntry.id}`)
+        Http.post(`/api/delete-time-entry/${payload.timeEntry.id}`)
             .then(() => context.dispatch('getTasks', { date: context.state.date }));
     },
     addTimeEntry(context, task) {
-        Http.post('api/create-time-entry', { task })
+        Http.post('/api/create-time-entry', { task })
             .then(() => context.dispatch('getTasks', { date: context.state.date }));
     },
     updateTimeEntry(context, payload) {
-        Http.post(`api/update-time-entry/${payload.timeEntry.id}`, { timeEntry: payload.timeEntry })
+        Http.post(`/api/update-time-entry/${payload.timeEntry.id}`, { timeEntry: payload.timeEntry })
             .then(() => context.dispatch('getTasks', { date: context.state.date }));
     },
     getUser(context) {
-        return Http.get('api/user')
+        return Http.get('/api/user')
             .then(response => context.commit(types.GET_USER, response.data));
     },
     clearUser(context) {
         context.commit(types.CLEAR_USER);
     },
     validateEmail(context, payload) {
-        return Http.post('api/user/validate-email', { email: payload.email });
+        return Http.post('/api/user/validate-email', { email: payload.email });
     },
     updateUser(context, payload) {
-        return Http.post('api/user', { user: payload.user });
+        return Http.post('/api/user', { user: payload.user });
     },
     getOneTeam(context, payload) {
-        return Http.get(`api/teams/${payload.teamId}`)
+        return Http.get(`/api/teams/${payload.teamId}`)
             .then((response) => {
                 context.commit(types.SET_ONE_TEAM, response.data);
             });
     },
     getPersonalTeams(context) {
-        return Http.get('api/teams').then((response) => {
+        return Http.get('/api/teams').then((response) => {
             context.commit(types.SET_PERSONAL_TEAMS, response.data);
         });
     },
     getOrganizationTeams(context, payload) {
-        return Http.get(`api/organization/${payload.orgId}/teams`)
+        return Http.get(`/api/organization/${payload.orgId}/teams`)
             .then((response) => {
                 context.commit(types.SET_ORGANIZATION_TEAMS, response.data);
             });
     },
     getOrganizationTeam(context, payload) {
-        return Http.get(`api/organization/${payload.orgId}/teams/${payload.teamId}`)
+        return Http.get(`/api/organization/${payload.orgId}/teams/${payload.teamId}`)
             .then((response) => {
                 context.commit(types.SET_ONE_TEAM, response.data);
             });
     },
     createPersonalTeam(context, payload) {
-        return Http.post('api/teams/new', {
+        return Http.post('/api/teams/new', {
             team     : payload.team,
             teamUsers: payload.teamUsers,
         });
     },
     createOrganizationTeam(context, payload) {
-        return Http.post(`api/organization/${payload.orgId}/teams/new`, {
+        return Http.post(`/api/organization/${payload.orgId}/teams/new`, {
             team     : payload.team,
             teamUsers: payload.teamUsers,
         });
     },
     inviteMembers(context, payload) {
-        Http.post('api/teams/invite', { members: payload.emailsToInvite, team_id: payload.teamId });
+        Http.post('/api/teams/invite', { members: payload.emailsToInvite, team_id: payload.teamId });
     },
     updatePersonalTeam(context, payload) {
-        return Http.post(`api/teams/${payload.team.id}`, {
+        return Http.post(`/api/teams/${payload.team.id}`, {
             team     : payload.team,
             teamUsers: payload.teamUsers,
         });
     },
     updateOrganizationTeam(context, payload) {
-        return Http.post(`api/organization/${payload.orgId}/teams/${payload.team.id}`, {
+        return Http.post(`/api/organization/${payload.orgId}/teams/${payload.team.id}`, {
             team     : payload.team,
             teamUsers: payload.teamUsers,
         });
@@ -210,56 +210,56 @@ export default {
         context.commit(types.CLEAR_TEAM);
     },
     deleteTeam(context, payload) {
-        return Http.post(`api/teams/${payload.teamId}/delete`);
+        return Http.post(`/api/teams/${payload.teamId}/delete`);
     },
     getOneProject(context, payload) {
-        return Http.get(`api/projects/${payload.projectId}`).then((response) => {
+        return Http.get(`/api/projects/${payload.projectId}`).then((response) => {
             context.commit(types.SET_ONE_PROJECT, response.data);
         });
     },
     getOrganizationProject(context, payload) {
-        return Http.get(`api/organization/${payload.orgId}/projects/${payload.projectId}`)
+        return Http.get(`/api/organization/${payload.orgId}/projects/${payload.projectId}`)
             .then((response) => {
                 context.commit(types.SET_ONE_PROJECT, response.data);
             });
     },
     getPersonalProjects(context) {
-        return Http.get('api/projects').then((response) => {
+        return Http.get('/api/projects').then((response) => {
             context.commit(types.SET_PERSONAL_PROJECTS, response.data);
         });
     },
     getOrganizationProjects(context, payload) {
-        return Http.get(`api/organization/${payload.id}/projects`)
+        return Http.get(`/api/organization/${payload.id}/projects`)
             .then((response) => {
                 context.commit(types.SET_ORGANIZATION_PROJECTS, response.data);
             });
     },
     inviteToOrganization(context, payload) {
-        return Http.post(`api/organization/${payload.orgId}/members/invite`, { emails: payload.emails });
+        return Http.post(`/api/organization/${payload.orgId}/members/invite`, { emails: payload.emails });
     },
     createPersonalProject(context, payload) {
-        return Http.post('api/projects/new', {
+        return Http.post('/api/projects/new', {
             project     : payload.project,
             projectTeams: payload.projectTeams,
             projectUsers: payload.projectUsers,
         });
     },
     createOrganizationProject(context, payload) {
-        return Http.post(`api/organization/${payload.orgId}/projects/new`, {
+        return Http.post(`/api/organization/${payload.orgId}/projects/new`, {
             project     : payload.project,
             projectTeams: payload.projectTeams,
             projectUsers: payload.projectUsers,
         });
     },
     updatePersonalProject(context, payload) {
-        return Http.post(`api/projects/${payload.projectId}`, {
+        return Http.post(`/api/projects/${payload.projectId}`, {
             project     : payload.project,
             projectTeams: payload.projectTeams,
             projectUsers: payload.projectUsers,
         });
     },
     updateOrganizationProject(context, payload) {
-        return Http.post(`api/organization/${payload.orgId}/projects/${payload.projectId}`, {
+        return Http.post(`/api/organization/${payload.orgId}/projects/${payload.projectId}`, {
             project     : payload.project,
             projectTeams: payload.projectTeams,
             projectUsers: payload.projectUsers,
@@ -272,33 +272,33 @@ export default {
         context.commit(types.CLEAR_PROJECTS);
     },
     deleteProject(context, payload) {
-        return Http.post(`api/projects/${payload.projectId}/delete`);
+        return Http.post(`/api/projects/${payload.projectId}/delete`);
     },
     // getOwnTeams(context) {
-    //     Http.get('api/projects/teams').then((response) => {
+    //     Http.get('/api/projects/teams').then((response) => {
     //         context.commit(types.SET_OWN_TEAMS, response.data);
     //     });
     // },
     // getOwnUsers(context) {
-    //     Http.get('api/projects/users').then((response) => {
+    //     Http.get('/api/projects/users').then((response) => {
     //         context.commit(types.SET_OWN_USERS, response.data);
     //     });
     // },
     getAllUsers(context, payload) {
-        return Http.get(`api/teams/all-users?queryString=${payload.queryString}`).then((response) => {
+        return Http.get(`/api/teams/all-users?queryString=${payload.queryString}`).then((response) => {
             context.commit(types.SET_ALL_USERS, response.data);
         });
     },
     createOrganization(context, payload) {
-        return Http.post('api/organizations/new', { organization: payload.organization });
+        return Http.post('/api/organizations/new', { organization: payload.organization });
     },
     updateOrganization(context, payload) {
-        return Http.post(`api/organizations/${payload.organization.id}`, {
+        return Http.post(`/api/organizations/${payload.organization.id}`, {
             organization: payload.organization,
         });
     },
     getOneOrganization(context, payload) {
-        return Http.get(`api/organizations/${payload.id}`)
+        return Http.get(`/api/organizations/${payload.id}`)
             .then((response) => {
                 context.commit(types.SET_ONE_ORGANIZATION, response.data);
             });
@@ -307,22 +307,22 @@ export default {
         context.commit(types.CLEAR_ORGANIZATION);
     },
     getClients(context, payload) {
-        return Http.post('api/clients', { organization_id: payload.organization_id })
+        return Http.post('/api/clients', { organization_id: payload.organization_id })
             .then((response) => {
                 context.commit(types.SET_CLIENTS, response.data);
             });
     },
     createClient(context, payload) {
-        return Http.post('api/clients/new', {
+        return Http.post('/api/clients/new', {
             client        : payload.client,
             organizationId: payload.organizationId,
         });
     },
     updateClient(context, payload) {
-        return Http.post(`api/clients/${payload.client.id}`, { client: payload.client });
+        return Http.post(`/api/clients/${payload.client.id}`, { client: payload.client });
     },
     getOneClient(context, payload) {
-        return Http.get(`api/clients/${payload.id}`)
+        return Http.get(`/api/clients/${payload.id}`)
             .then((response) => {
                 context.commit(types.SET_ONE_CLIENT, response.data);
             });
@@ -331,10 +331,10 @@ export default {
         context.commit(types.CLEAR_CLIENT);
     },
     logout() {
-        return Http.post('logout');
+        return Http.post('/logout');
     },
     getOrganizationMembers(context, payload) {
-        return Http.get(`api/organization/${payload.orgId}/members`)
+        return Http.get(`/api/organization/${payload.orgId}/members`)
             .then((response) => {
                 context.commit(types.SET_ORGANIZATION_MEMBERS, response.data);
             });
