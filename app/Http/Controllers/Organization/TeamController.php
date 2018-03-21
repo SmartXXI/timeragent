@@ -27,24 +27,28 @@ class TeamController extends Controller
             'organization_id' => $organization->id,
         ]);
 
-        $team->users()->sync($request->teamUsers);
+
+        $team->users()->sync(array_column($request->teamUsers, 'id'));
     }
 
     public function update(Request $request, Organization $organization, Team $team)
     {
-        $team_users = [];
-        foreach ($request->teamUsers as $user_id) {
-            $user = User::find($user_id);
-            $team_users[$user_id] = [
+        $project_users = [];
+
+        foreach ($request->teamUsers as $user) {
+
+            $project_users[$user['id']] = [
                 'team_id' => $team->id,
-                'billable_rate' => $user->billable_rate,
-                'cost_rate' => $user->cost_rate,
+                'billable_rate' => $user['billable_rate'],
+                'cost_rate' => $user['cost_rate'],
             ];
         }
 
-        $team->projects()->sync($request->team_users);
+        foreach ($team->projects as $project) {
+            $project->users()->sync($project_users);
+        }
 
-        $team->users()->sync($request->teamUsers);
+        $team->users()->sync(array_column($request->teamUsers, 'id'));
 
         $team->update([
             'name' => $request->team['name'],

@@ -158,6 +158,7 @@
             </el-row>
         </el-main>
         </el-container>
+        <div v-show="false">{{ team }}</div>
     </div>
 </template>
 
@@ -178,12 +179,11 @@
                 showModal       : false,
                 showConfirmModal: false,
 //                membersEmails   : [],
-                teamUsers       : [],
                 queryString     : '',
                 queryUsers      : [],
                 activeTabName   : 'members',
                 teamName        : '',
-                querySended     : false,
+                querySent       : false,
             };
         },
         created() {
@@ -230,7 +230,7 @@
         watch: {
             queryString(value) {
                 if (value.length < 3) {
-                    this.querySended = false;
+                    this.querySent = false;
                 }
             },
         },
@@ -258,12 +258,12 @@
                 'getAllUsers',
             ]),
             querySearch(queryString, cb) {
-                if (queryString.length > 2 && !this.querySended) {
+                if (queryString.length > 2 && !this.querySent) {
                     if (this.$route.params.segment === 'personal') {
                         this.getAllUsers({ queryString })
                             .then(() => {
                                 this.queryUsers = this.allUsers;
-                                this.querySended = true;
+                                this.querySent = true;
                             });
                     }
                     if (this.$route.params.segment === 'organization') {
@@ -272,7 +272,7 @@
                         })
                             .then(() => {
                                 this.queryUsers = this.organizationMembers;
-                                this.querySended = true;
+                                this.querySent = true;
                             });
                     }
                 }
@@ -287,19 +287,17 @@
                 };
             },
             addMember(user) {
-                this.teamUsers.push(user.id);
                 this.team.users.push(user);
                 this.queryString = '';
             },
             removeMember(userId) {
-                this.teamUsers = this.teamUsers.filter(teamUserId => teamUserId !== userId);
                 this.team.users = this.team.users.filter(teamUser => teamUser.id !== userId);
             },
             createPersonalTeam() {
                 if (this.$v.$invalid) return;
                 this.$store.dispatch('createPersonalTeam', {
                     team     : this.team,
-                    teamUsers: this.teamUsers,
+                    teamUsers: this.team.users,
                 })
                     .then(() => {
                         this.showSuccess('Team saved successful');
@@ -313,7 +311,7 @@
                 if (this.$v.$invalid) return;
                 this.$store.dispatch('updatePersonalTeam', {
                     team     : this.team,
-                    teamUsers: this.teamUsers,
+                    teamUsers: this.team.users,
                 })
                     .then(() => {
                         this.showSuccess('Team saved successful');
@@ -328,7 +326,7 @@
                 this.$store.dispatch('createOrganizationTeam', {
                     orgId    : this.$route.params.organizationId,
                     team     : this.team,
-                    teamUsers: this.teamUsers,
+                    teamUsers: this.team.users,
                 })
                     .then(() => {
                         this.showSuccess('Team created successfully');
@@ -343,7 +341,7 @@
                 this.$store.dispatch('updateOrganizationTeam', {
                     orgId    : this.$route.params.organizationId,
                     team     : this.team,
-                    teamUsers: this.teamUsers,
+                    teamUsers: this.team.users,
                 })
                     .then(() => {
                         this.showSuccess('Team updated successfully');

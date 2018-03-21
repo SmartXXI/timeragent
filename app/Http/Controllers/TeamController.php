@@ -25,15 +25,13 @@ class TeamController extends Controller
     }
 
     public function create(Request $request) {
-		$user = Auth::user();
 
-    	$team = new Team();
-		$team->owner_id = $user->getKey();
-		$team->name = $request->team['name'];
-		$team->save();
-        $team_users = $request->teamUsers;
+        $team = Team::create([
+            'name' => $request->team['name'],
+            'owner_id' => Auth::id(),
+        ]);
 
-        $team->users()->sync($team_users);
+        $team->users()->sync(array_column($request->teamUsers, 'id'));
 
 		return $team;
     }
@@ -79,14 +77,14 @@ class TeamController extends Controller
         return $team;
     }
     public function update(Request $request, Team $team) {
-        $projects = $team->projects;
-        $team_users = [];
-        foreach ($request->teamUsers as $user_id) {
-            $user = User::find($user_id);
-            $team_users[$user_id] = [
+        $project_users = [];
+
+        foreach ($request->teamUsers as $user) {
+
+            $project_users[$user['id']] = [
                 'team_id' => $team->id,
-                'billable_rate' => $user->billable_rate,
-                'cost_rate' => $user->cost_rate,
+                'billable_rate' => $user['billable_rate'],
+                'cost_rate' => $user['cost_rate'],
             ];
         }
 
@@ -104,11 +102,11 @@ class TeamController extends Controller
                 });
             });
 
-        foreach ($projects as $project) {
-            $project->users()->sync($team_users);
+        foreach ($team->projects as $project) {
+            $project->users()->sync($project_users);
         }
 
-        $team->users()->sync($request->teamUsers);
+        $team->users()->sync(array_column($request->teamUsers, 'id'));
 
         $team->update([
             'name' => $request->team['name'],
