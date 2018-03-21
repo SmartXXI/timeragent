@@ -22,11 +22,17 @@ class TaskController extends Controller
                         $sql->whereDate('startTime', $request->date);
                     });
             })
-            ->whereIn('project_id', $user->projects()
-                ->whereNull('client_id')
-                ->orWhere('owner_id', $user->id)
-                ->pluck('id')
-            )
+            ->where(function($query) use($user) {
+                $query->whereNull('project_id')
+                    ->orWhere(function($query) use($user) {
+                        $query->whereIn(
+                            'project_id',
+                            $user->projects()
+                                ->whereNull('client_id')
+                                ->orWhere('owner_id', $user->id)
+                                ->pluck('id'));
+                    });
+            })
             ->with(['timeEntries' => function($query) use($request) {
                 $query->whereDate('startTime', $request->date)->orderBy('startTime');
             }])
