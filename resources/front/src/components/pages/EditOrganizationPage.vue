@@ -32,7 +32,7 @@
                                     <el-row>
                                         <label>Name</label>
                                         <el-input :class="{ 'has-error': $v.localOrganization.name.$error }"
-                                                  placeholder="Enter localOrganization name"
+                                                  placeholder="Enter organization name"
                                                   v-model="localOrganization.name"
                                                   @input="$v.localOrganization.name.$touch()"
                                         ></el-input>
@@ -62,7 +62,7 @@
                                     <el-row>
                                         <label>Website</label>
                                         <el-input
-                                                placeholder="Enter localOrganization website"
+                                                placeholder="Enter organization website"
                                                 v-model="localOrganization.website"
                                         ></el-input>
                                     </el-row>
