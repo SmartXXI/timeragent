@@ -143,13 +143,13 @@
             }
 
             if (this.$route.params.segment === 'personal') {
-                Http.get('api/projects').then((response) => {
+                Http.get('/api/projects').then((response) => {
                     this.projects = response.data;
                 });
             }
             if (this.$route.params.segment === 'organization') {
                 const orgId = this.$route.params.organizationId;
-                Http.get(`api/organization/${orgId}/projects`)
+                Http.get(`/api/organization/${orgId}/projects`)
                     .then((response) => {
                         this.projects = response.data;
                     });
