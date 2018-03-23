@@ -88,7 +88,7 @@
 
 <script>
     import { required } from 'vuelidate/lib/validators';
-    import { mapGetters } from 'vuex';
+    import { mapGetters, mapActions } from 'vuex';
     import NavMenuAuth from '../blocks/NavMenuAuth';
     import notification from '../../mixins/notification';
 
@@ -130,6 +130,9 @@
             this.$store.dispatch('clearOrganization');
         },
         methods: {
+            ...mapActions([
+                'clearOrganization',
+            ]),
             createOrganization() {
                 if (this.formInvalid) return;
                 this.$store.dispatch('createOrganization', {
@@ -138,6 +141,7 @@
                     .then(() => {
                         this.showSuccess('Organization created successfully');
                         this.$router.go(-1);
+                        this.clearOrganization();
                     })
                     .catch(() => {
                         this.showError();

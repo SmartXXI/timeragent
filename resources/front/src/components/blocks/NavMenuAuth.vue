@@ -109,7 +109,7 @@
 <script>
     import ElRow from 'element-ui/packages/row/src/row';
     import moment from 'moment';
-    import { mapGetters } from 'vuex';
+    import { mapGetters, mapActions } from 'vuex';
 
     export default {
         components: {
@@ -130,12 +130,16 @@
             if (this.$route.params.segment === 'organization') {
                 localStorage.setItem('profile', 'organization');
                 localStorage.setItem('organizationId', this.$route.params.organizationId);
-                this.$store.dispatch('getOneOrganization', { id: this.$route.params.organizationId });
+                if (this.organization.id === undefined) {
+                    this.getOneOrganization({
+                        id: this.$route.params.organizationId,
+                    });
+                }
             }
             if (this.$route.params.segment === 'personal') {
                 localStorage.setItem('profile', 'personal');
                 if (this.user.id === undefined) {
-                    this.$store.dispatch('getUser');
+                    this.getUser();
                 }
             }
         },
@@ -166,6 +170,10 @@
             },
         },
         methods: {
+            ...mapActions([
+                'getUser',
+                'getOneOrganization',
+            ]),
             showSubMenu(name) {
                 this.isOpened = (this.isOpened === null) ? name : null;
             },
