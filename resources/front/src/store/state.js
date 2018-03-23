@@ -20,7 +20,10 @@ export default {
     team: {
         users: [],
     },
-    project      : {},
+    project: {
+        teams: [],
+        users: [],
+    },
     ownTeams     : [],
     ownUsers     : [],
     allUsers     : [],

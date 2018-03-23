@@ -198,44 +198,45 @@
                             </el-tabs>
 
                             <div v-if="isEditing">
-                            <div>
-                                <el-button
-                                        type="text"
-                                        class="delete_button"
-                                        @click="showConfirmModal = true"
-                                >
-                                    Delete Project
-                                </el-button>
-                            </div>
+                                <div>
+                                    <el-button
+                                            type="text"
+                                            class="delete_button"
+                                            @click="showConfirmModal = true"
+                                    >
+                                        Delete Project
+                                    </el-button>
+                                </div>
 
-                            <!-- Confirm delete project modal form -->
-                            <el-dialog
-                                    title="Delete team"
-                                    :visible.sync="showConfirmModal"
-                                    width="30%">
-                                <p>
-                                    It will not be undone. Please enter project name to continue: <br>
-                                    ({{ project.name }})
-                                </p>
-                                <el-input
-                                        v-model="projectName"
-                                        placeholder="Enter project name"
-                                ></el-input>
-                                <span slot="footer" class="dialog-footer">
-                                    <el-button
-                                            @click.prevent="showConfirmModal = false"
-                                    >
-                                        Cancel
-                                    </el-button>
-                                    <el-button
-                                            :disabled="!confirmDeleteProject"
-                                            type="danger"
-                                            @click.prevent="deleteProject"
-                                    >
-                                        Delete
-                                    </el-button>
-                                </span>
-                            </el-dialog>
+                                <!-- Confirm delete project modal form -->
+                                <el-dialog
+                                        title="Delete team"
+                                        :visible.sync="showConfirmModal"
+                                        width="30%">
+                                    <p>
+                                        It will not be undone. Please enter project name to continue: <br>
+                                        ({{ project.name }})
+                                    </p>
+                                    <el-input
+                                            v-model="projectName"
+                                            placeholder="Enter project name"
+                                    ></el-input>
+                                    <span slot="footer" class="dialog-footer">
+                                        <el-button
+                                                @click.prevent="showConfirmModal = false"
+                                        >
+                                            Cancel
+                                        </el-button>
+                                        <el-button
+                                                :disabled="!confirmDeleteProject"
+                                                type="danger"
+                                                @click.prevent="deleteProject"
+                                        >
+                                            Delete
+                                        </el-button>
+                                    </span>
+                                </el-dialog>
+                            </div>
                                 <!--Set team rate dialog-->
                                 <el-dialog title="Users rate in project"
                                            :visible.sync="showTeamRate"
@@ -364,7 +365,6 @@
                                     </span>
                                 </el-dialog>
                                 <!---->
-                            </div>
                         </el-col>
                           </el-row>
             		</el-card>

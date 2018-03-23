@@ -190,7 +190,7 @@ export default {
     [types.SET_PERSONAL_PROJECTS](state, personalProjects) {
         Object.assign(state, { personalProjects });
     },
-    [types.CLEAR_PROJECT](state, project = {}) {
+    [types.CLEAR_PROJECT](state, project = { teams: [], users: []}) {
         Object.assign(state, { project });
     },
     [types.CLEAR_PROJECTS](state, personalProjects = {}, organizationProjects = {}) {
