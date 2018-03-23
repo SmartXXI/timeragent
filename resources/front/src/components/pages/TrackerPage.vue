@@ -35,10 +35,13 @@
         created() {
             const { date } = this.$store.state;
             if (this.$route.params.segment === 'personal') {
-                this.$store.dispatch('getTasks', { date, segment: 'personal' });
+                this.$store.dispatch('getPersonalTasks', { date });
             }
             if (this.$route.params.segment === 'organization') {
-                this.$store.dispatch('getTasks', { date, segment: 'organization' });
+                this.$store.dispatch('getOrganizationTasks', {
+                    date,
+                    orgId: this.$route.params.organizationId,
+                });
             }
         },
         methods: {

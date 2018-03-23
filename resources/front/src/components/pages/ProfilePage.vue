@@ -126,7 +126,7 @@
 
 <script>
     import { required } from 'vuelidate/lib/validators';
-    import { mapGetters } from 'vuex';
+    import { mapGetters, mapActions } from 'vuex';
     import NavMenuAuth from '../blocks/NavMenuAuth';
     import notification from './../../mixins/notification';
 
@@ -167,12 +167,16 @@
             ]),
         },
         methods: {
+            ...mapActions([
+                'clearUser',
+            ]),
             updateUser() {
                 if (this.$v.$invalid) return;
                 this.$store.dispatch('updateUser', { user: this.localUser })
                     .then(() => {
                         this.showSuccess('Profile saved successful');
                         this.$router.go(-1);
+                        this.clearUser(); // clear user for update users data in store
                     })
                     .catch((error) => {
                         this.showError();
