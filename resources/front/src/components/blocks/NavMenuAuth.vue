@@ -54,7 +54,7 @@
                         <el-submenu index="4" v-if="isPersonal">
                             <template slot="title">{{ user.name }}</template>
                             <div v-for="organization in user.organizations">
-                                <el-menu-item :index="`/organization/${organization.id}/view`">
+                                <el-menu-item :index="`/organization/${organization.id}/tasks`">
                                     <router-link :to="{
                                             name: 'organization',
                                             params: {
