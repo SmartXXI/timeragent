@@ -134,7 +134,9 @@
             }
             if (this.$route.params.segment === 'personal') {
                 localStorage.setItem('profile', 'personal');
-                this.$store.dispatch('getUser');
+                if (this.user.id === undefined) {
+                    this.$store.dispatch('getUser');
+                }
             }
         },
         destroyed() {
