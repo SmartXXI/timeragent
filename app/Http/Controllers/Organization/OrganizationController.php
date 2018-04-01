@@ -151,6 +151,15 @@ class OrganizationController extends Controller
 
         $user->attachOrganization($organization->id, ['status' => '2']);
 
+        Mail::send('organization.emails.notify', [
+            'organization' => $organization,
+            'user' => $user,
+        ],
+        function ($message) use ($organization, $invite) {
+            $message->to(User::find($invite->user_id)->email)
+                ->subject('Accepted invitation to join organization' . $organization->name);
+        });
+
         return redirect()->route('home');
     }
 }
