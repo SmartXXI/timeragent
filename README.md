@@ -36,4 +36,3 @@ TimerAgent documentations is available [online](https://timeragent.com/docs).
 If you discover a security vulnerability within TimerAgent, please send an e-mail to Serhii Matrunchyk at serhii@digitalidea.studio. All security vulnerabilities will be promptly addressed.
 
 
-
