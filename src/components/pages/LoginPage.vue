@@ -83,15 +83,14 @@
 <script>
 import { required } from 'vuelidate/lib/validators';
 import { mapActions } from 'vuex';
-import NavMenuAuth from '../blocks/NavMenuAuth';
 import NavMenu from '../blocks/NavMenu';
-import notification from './../../mixins/notification';
-import loading from './../../mixins/loading';
-import User from './../../models/User';
+import notification from '../../mixins/notification';
+import loading from '../../mixins/loading';
+import User from '../../models/User';
 
 export default {
   components: {
-    NavMenuAuth, NavMenu,
+    NavMenu,
   },
   mixins: [notification, loading],
   data() {

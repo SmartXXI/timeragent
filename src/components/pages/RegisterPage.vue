@@ -205,13 +205,17 @@ export default {
     registerUser() {
       if (this.formInvalid) return;
       this.createUser({ user: this.user })
-        .then(() => {
-          this.showSuccess('Profile saved successful');
-          this.$router.go(-1);
-          this.clearUser(); // clear user for update users data in store
-          this.getMe();
+        .then(({ createUser }) => {
+          this.showSuccess(createUser.message);
+          this.$router.push({
+            name: 'login',
+            params: {
+              email: this.user.email,
+            },
+          });
         })
         .catch((error) => {
+          console.log(error);
           this.showError();
           this.errors = error;
         });
