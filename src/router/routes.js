@@ -1,4 +1,4 @@
-import router from '../router';
+import router from '.';
 import store from '../store';
 import Login from '../components/pages/LoginPage';
 import Register from '../components/pages/RegisterPage';
@@ -17,12 +17,13 @@ import Organization from '../components/pages/OrganizationPage';
 import Clients from '../components/pages/ClientsPage';
 import EditClient from '../components/pages/EditClientPage';
 
-import notification from './../notification';
+import notification from '../notification';
 
 
 const routes = [
   {
     path: '/',
+    name: 'home',
 
     beforeEnter() {
       router.push({

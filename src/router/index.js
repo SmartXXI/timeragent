@@ -20,7 +20,7 @@ router.beforeEach((to, from, next) => {
     router.push({ name: 'login' });
   }
 
-  if (to.path === '/login' || to.path === '/register' || to.name === 'verify') {
+  if (to.path === '/login' || to.path === '/register' || to.name === 'verify' || to.name === 'home') {
     return next();
   }
 
