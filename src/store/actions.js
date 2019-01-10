@@ -316,8 +316,8 @@ export default {
   },
 
   createUser(context, { user }) {
-    gqMutation('CREATE_USER', { user })
-      .then(({ data }) => data);
+    return gqMutation('CREATE_USER', { user })
+      .then(data => data);
   },
 
   verifyEmail(context, { verificationCode }) {

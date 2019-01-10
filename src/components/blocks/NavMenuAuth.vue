@@ -220,8 +220,10 @@ export default {
       return `/${this.$route.params.segment}/${url}`;
     },
     logout() {
-      this.$store.dispatch('logout');
-      this.$router.go('/');
+      localStorage.clear();
+      this.$router.push({
+        name: 'login',
+      });
     },
   },
 };
