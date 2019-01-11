@@ -27,10 +27,7 @@ const routes = [
 
     beforeEnter() {
       router.push({
-        name: 'tasks',
-        params: {
-          segment: 'personal',
-        },
+        name: 'login',
       });
     },
   },
