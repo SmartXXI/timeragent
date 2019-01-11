@@ -83,6 +83,7 @@ router.beforeEach((to, from, next) => {
         });
     }
   }
+  return false;
 });
 
 
