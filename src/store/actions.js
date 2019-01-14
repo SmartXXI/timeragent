@@ -172,6 +172,7 @@ export default {
       ownerType: payload.ownerType,
       ownerUuid: payload.ownerUuid,
       userUuid: payload.userUuid,
+      key: payload.key
     })
       .then(({ fetchProjects }) => commit('SET_PROJECTS', fetchProjects));
   },
