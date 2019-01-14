@@ -167,6 +167,7 @@ const routes = [
           store.dispatch('getProjects', {
             ownerType: 'user',
             ownerUuid: store.getters.user.uuid,
+            userUuid: store.getters.user.uuid,
           })
             .then(() => next());
         },

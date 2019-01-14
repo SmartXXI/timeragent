@@ -190,6 +190,8 @@ export default {
       this.getProjects({
         ownerType: 'user',
         ownerUuid: this.user.uuid,
+        userUuid: this.user.uuid,
+        key: 'tasks',
       });
     }
     if (this.$route.params.segment === 'organization') {
@@ -197,6 +199,7 @@ export default {
         ownerType: 'organization',
         ownerUuid: this.$route.params.organizationUuid,
         userUuid: this.user.uuid,
+        key: 'tasks',
       });
     }
   },

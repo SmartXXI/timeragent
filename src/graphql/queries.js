@@ -177,13 +177,14 @@ const fetchClient = gql`
 `;
 
 const fetchProjects = gql`
-    query fetchProjects($ownerType: String!, $ownerUuid: String!, $userUuid: String) {
-        fetchProjects(ownerType: $ownerType, ownerUuid: $ownerUuid, userUuid: $userUuid) {
+    query fetchProjects($ownerType: String!, $ownerUuid: String!, $userUuid: String, $key: String) {
+        fetchProjects(ownerType: $ownerType, ownerUuid: $ownerUuid, userUuid: $userUuid, key: $key) {
             uuid,
             name,
             clientName,
             ownerType,
             ownerName,
+            ownerUuid,
             teams {
                 uuid,
                 name,
