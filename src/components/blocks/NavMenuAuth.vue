@@ -1,16 +1,18 @@
 <template>
-  <div>
+  <div class="NavMenuAuth">
     <el-header>
       <el-row>
         <el-col
           :span="16"
-          :offset="4">
+          :offset="4"
+        >
           <span class="logo">
             <router-link to="/">
               <img
                 class="logo"
                 src="./../../assets/images/logo.svg"
-                alt="logo">
+                alt="logo"
+              >
             </router-link>
           </span>
           <el-menu
@@ -22,60 +24,82 @@
           >
             <el-menu-item :index="generateUrl('tasks')">
               <router-link :to="generateUrl('tasks')">
-                <span>Tasks</span>
+                <span>
+                  Tasks
+                </span>
               </router-link>
             </el-menu-item>
             <el-menu-item
               v-if="isOrganization"
-              :index="generateUrl('members')">
+              :index="generateUrl('members')"
+            >
               <router-link :to="generateUrl('members')">
-                <span>Members</span>
+                <span>
+                  Members
+                </span>
               </router-link>
             </el-menu-item>
             <el-menu-item
               v-if="isOrganization"
-              :index="generateUrl('projects')">
+              :index="generateUrl('projects')"
+            >
               <router-link :to="generateUrl('projects')">
-                <span>Projects</span>
+                <span>
+                  Projects
+                </span>
               </router-link>
             </el-menu-item>
             <el-menu-item
               v-if="isOrganization"
-              :index="generateUrl('teams')">
+              :index="generateUrl('teams')"
+            >
               <router-link :to="generateUrl('teams')">
                 Teams
               </router-link>
             </el-menu-item>
             <el-menu-item
               v-if="isOrganization"
-              :index="generateUrl('clients')">
+              :index="generateUrl('clients')"
+            >
               <router-link :to="generateUrl('clients')">
-                <span>Clients</span>
+                <span>
+                  Clients
+                </span>
               </router-link>
             </el-menu-item>
             <el-submenu
               v-if="isPersonal"
-              index="3">
-              <template slot="title">Manage</template>
+              index="3"
+            >
+              <template slot="title">
+                Manage
+              </template>
               <el-menu-item
                 v-if="isPersonal"
-                :index="generateUrl('teams')">
+                :index="generateUrl('teams')"
+              >
                 <router-link :to="generateUrl('teams')">
                   Teams
                 </router-link>
               </el-menu-item>
               <el-menu-item
                 v-if="isPersonal"
-                :index="generateUrl('projects')">
+                :index="generateUrl('projects')"
+              >
                 <router-link :to="generateUrl('projects')">
-                  <span>Projects</span>
+                  <span>
+                    Projects
+                  </span>
                 </router-link>
               </el-menu-item>
             </el-submenu>
             <el-submenu
               v-if="isPersonal"
-              index="4">
-              <template slot="title">{{ user.firstName }} {{ user.lastName }}</template>
+              index="4"
+            >
+              <template slot="title">
+                {{ user.firstName }} {{ user.lastName }}
+              </template>
               <div
                 v-for="organization in user.organizations"
                 :key="organization.uuid"
@@ -88,14 +112,16 @@
                         segment: 'organization',
                         organizationUuid: organization.uuid
                       }
-                  }">
+                    }"
+                  >
                     {{ organization.name }}
                   </router-link>
                 </el-menu-item>
               </div>
               <el-menu-item :index="generateUrl('organizations/new')">
                 <router-link :to="generateUrl('organizations/new')">
-                  <i class="el-icon-plus"/> New Organization
+                  <i class="el-icon-plus" />
+                  New Organization
                 </router-link>
               </el-menu-item>
               <el-menu-item :index="generateUrl('profile')">
@@ -105,16 +131,20 @@
               </el-menu-item>
               <el-menu-item
                 index=""
-                @click="logout">
-                <router-link to="" >
+                @click="logout"
+              >
+                <router-link to="">
                   <span>Log out</span>
                 </router-link>
               </el-menu-item>
             </el-submenu>
             <el-submenu
               v-if="isOrganization"
-              index="4">
-              <template slot="title">{{ organization.name }}</template>
+              index="4"
+            >
+              <template slot="title">
+                {{ organization.name }}
+              </template>
               <div
                 v-for="owner in organization.owners"
                 :key="owner.uuid"
@@ -126,7 +156,8 @@
                       params: {
                         segment: 'personal'
                       }
-                  }">
+                    }"
+                  >
                     {{ user.firstName }} {{ user.lastName }}
                   </router-link>
                 </el-menu-item>
@@ -136,7 +167,6 @@
         </el-col>
       </el-row>
     </el-header>
-
   </div>
 </template>
 
@@ -144,6 +174,7 @@
 import ElRow from 'element-ui/packages/row/src/row';
 import moment from 'moment';
 import { mapGetters, mapActions } from 'vuex';
+
 import loading from '../../mixins/loading';
 
 export default {
@@ -230,7 +261,11 @@ export default {
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style lang="scss" rel="stylesheet/scss" scoped>
+<style
+  lang="scss"
+  rel="stylesheet/scss"
+  scoped
+>
 
     .el-menu-item a {
         display: block;

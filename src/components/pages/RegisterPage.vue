@@ -1,13 +1,15 @@
 <template>
-  <div>
+  <div class="RegisterPage">
     <el-container direction="vertical">
-      <nav-menu/>
+      <NavMenu/>
       <el-main>
         <el-row>
           <el-col
             :span="16"
             :offset="4">
-            <span class="page-title"> Register </span>
+            <span class="page-title">
+              Register
+            </span>
             <el-col :span="24">
               <el-card>
                 <el-row>
@@ -15,12 +17,14 @@
                     :span="16"
                     :offset="4">
                     <el-row>
-                      <label>First Name</label>
+                      <label>
+                        First Name
+                      </label>
                       <el-input
+                        v-model="user.firstName"
                         :class="{
                           'has-error': $v.user.firstName.$error
                         }"
-                        v-model="user.firstName"
                         placeholder="Enter your first name"
                         @input="$v.user.firstName.$touch()"
                       />
@@ -31,16 +35,20 @@
                         <span
                           v-if="!$v.user.firstName.required"
                           class="error-message"
-                        >Field is required</span>
+                        >
+                          Field is required
+                        </span>
                       </div>
                     </el-row>
                     <el-row>
-                      <label>Last Name</label>
+                      <label>
+                        Last Name
+                      </label>
                       <el-input
+                        v-model="user.lastName"
                         :class="{
                           'has-error': $v.user.lastName.$error
                         }"
-                        v-model="user.lastName"
                         placeholder="Enter your last name"
                         @input="$v.user.lastName.$touch()"
                       />
@@ -51,11 +59,15 @@
                         <span
                           v-if="!$v.user.lastName.required"
                           class="error-message"
-                        >Field is required</span>
+                        >
+                          Field is required
+                        </span>
                       </div>
                     </el-row>
                     <el-row>
-                      <label>Middle Name</label>
+                      <label>
+                        Middle Name
+                      </label>
                       <el-input
                         v-model="user.middleName"
                         placeholder="Enter your middle name"
@@ -64,29 +76,36 @@
                     <el-row>
                       <label>Email</label>
                       <el-input
+                        v-model="user.email"
                         :class="{
                           'has-error': $v.user.email.$error
                         }"
-                        v-model="user.email"
                         placeholder="Enter your email"
                         @input="$v.user.email.$touch()"
                         @blur="validateEmail"
                       />
                       <div
                         v-if="$v.user.email.$error"
-                        class="errors">
+                        class="errors"
+                      >
                         <span
                           v-if="!$v.user.email.required"
                           class="error-message"
-                        >Field is required</span>
+                        >
+                          Field is required
+                        </span>
                         <span
                           v-if="!$v.user.email.isEmail"
                           class="error-message"
-                        >Invalid email</span>
+                        >
+                          Invalid email
+                        </span>
                         <span
                           v-if="!$v.user.email.isUniqueEmail"
                           class="error-message"
-                        >Email is used by another user</span>
+                        >
+                          Email is used by another user
+                        </span>
                       </div>
                     </el-row>
                     <el-row>
@@ -95,7 +114,7 @@
                         v-model="user.password"
                         :class="{
                           'has-error' : $v.passwords.$error ||
-                        $v.user.password.$error}"
+                            $v.user.password.$error}"
                         type="password"
                         placeholder="Enter new password"
                         @input="$v.passwords.$touch(),
@@ -104,21 +123,28 @@
                       />
                       <div
                         v-if="$v.passwords.$error ||
-                        $v.user.password.$error"
+                          $v.user.password.$error"
                         class="errors"
                       >
                         <span
                           v-if="!$v.passwords.areSame"
                           class="error-message"
-                        >Passwords are not the same</span>
+                        >
+                          Passwords are not the same
+                        </span>
                         <span
                           v-if="!$v.user.password.required"
                           class="error-message"
-                        >Field is required</span>
+                        >
+                          Field is required
+                        </span>
                       </div>
                     </el-row>
                     <el-row>
-                      <label>Confirm password</label><br>
+                      <label>
+                        Confirm password
+                      </label>
+                      <br>
                       <el-input
                         v-model="confirmPassword"
                         :class="{
@@ -133,16 +159,21 @@
                       />
                       <div
                         v-if="$v.passwords.$error ||
-                        $v.confirmPassword.$error"
-                        class="errors">
+                          $v.confirmPassword.$error"
+                        class="errors"
+                      >
                         <span
                           v-if="!$v.passwords.areSame"
                           class="error-message"
-                        >Passwords are not the same</span>
+                        >
+                          Passwords are not the same
+                        </span>
                         <span
                           v-if="!$v.confirmPassword.required"
                           class="error-message"
-                        >Field is required</span>
+                        >
+                          Field is required
+                        </span>
                       </div>
                     </el-row>
                     <div class="action-buttons">
@@ -150,7 +181,8 @@
                         :disabled="formInvalid"
                         type="success"
                         @click="registerUser"
-                      > Register
+                      >
+                        Register
                       </el-button>
                     </div>
                   </el-col>
@@ -167,14 +199,18 @@
 <script>
 import { required } from 'vuelidate/lib/validators';
 import { mapActions, mapGetters } from 'vuex';
-import NavMenuAuth from '../blocks/NavMenuAuth';
+
+import notification from '../../mixins/notification';
+
+// import NavMenuAuth from '../blocks/NavMenuAuth';
 import NavMenu from '../blocks/NavMenu';
-import notification from './../../mixins/notification';
-import User from './../../models/User';
+
+import User from '../../models/User';
 
 export default {
   components: {
-    NavMenuAuth, NavMenu,
+    // NavMenuAuth,
+    NavMenu,
   },
   mixins: [notification],
   data() {

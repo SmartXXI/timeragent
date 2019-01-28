@@ -1,12 +1,13 @@
 <template>
-  <div>
+  <div class="TasksPage">
     <el-main v-loading="loading">
       <el-row>
         <el-col
           :span="16"
-          :offset="4">
-          <app-page/>
-          <task-list/>
+          :offset="4"
+        >
+          <AppPage/>
+          <TaskList/>
         </el-col>
       </el-row>
     </el-main>
@@ -14,10 +15,12 @@
 </template>
 
 <script>
-import moment from 'moment';
+// import moment from 'moment';
+
+import loading from '../../mixins/loading';
+
 import AppPage from './tasks-page/AppPage';
 import TaskList from './tasks-page/TaskList';
-import loading from '../../mixins/loading';
 
 export default {
   components: {
@@ -67,6 +70,5 @@ export default {
     .container {
         margin-top: 70px;
     }
-
 
 </style>

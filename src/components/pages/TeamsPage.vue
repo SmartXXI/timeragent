@@ -1,20 +1,26 @@
 <template>
-  <div>
+  <div class="TeamsPage">
     <el-main v-loading="loading">
       <el-row>
         <el-col
           :span="16"
-          :offset="4">
-          <span class="page-title"> Teams </span>
+          :offset="4"
+        >
+          <span class="page-title">
+            Teams
+          </span>
           <el-card>
             <div
               slot="header"
-              class="clearfix">
+              class="clearfix"
+            >
               <router-link
                 v-if="$route.params.segment === 'personal' || statusInOrganization === 1"
                 to="teams/new"
-                class="el-button el-button--primary is-plain">
-                <i class="el-icon-plus"/> New Team
+                class="el-button el-button--primary is-plain"
+              >
+                <i class="el-icon-plus"/>
+                New Team
               </router-link>
             </div>
             <el-table
@@ -24,11 +30,13 @@
               <el-table-column
                 prop="name"
                 label="Name"
-                sortable/>
+                sortable
+              />
               <el-table-column
                 v-if="$route.params.segment === 'personal'"
                 prop="ownerName"
-                label="Owner(Team lead)"/>
+                label="Owner(Team lead)"
+              />
               <el-table-column label="Members">
                 <template slot-scope="scope">
                   <div v-if="scope.row.users !== null">
@@ -54,29 +62,38 @@
                       <el-button
                         type="text"
                         @click="showMembers(scope.row.users)"
-                      >others...</el-button>
+                      >
+                        others...
+                      </el-button>
                     </div>
                   </div>
-                  <div v-else>No members</div>
+                  <div v-else>
+                    No members
+                  </div>
                 </template>
               </el-table-column>
               <el-table-column
                 label=""
-                width="80">
+                width="80"
+              >
                 <template slot-scope="scope">
                   <div v-if="scope.row.ownerUuid === user.uuid">
                     <el-button
                       type="plain"
                       size="mini"
                       @click="goToTeam(scope.row.uuid)"
-                    >Edit</el-button>
+                    >
+                      Edit
+                    </el-button>
                   </div>
                   <div v-if="scope.row.ownerType === 'organization' && statusInOrganization === 1">
                     <el-button
                       type="plain"
                       size="mini"
                       @click="goToOrgTeam(scope.row.uuid)"
-                    >Edit</el-button>
+                    >
+                      Edit
+                    </el-button>
                   </div>
                 </template>
               </el-table-column>
@@ -104,7 +121,9 @@
                 class="dialog-footer">
                 <el-button
                   @click="membersTableVisible = false"
-                >Close</el-button>
+                >
+                  Close
+                </el-button>
               </span>
             </el-dialog>
           </el-card>
@@ -116,6 +135,7 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
+
 import notification from '../../mixins/notification';
 import loading from '../../mixins/loading';
 import accessRights from '../../mixins/accessRights';

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="OneTask">
     <el-row v-if="!isEditing">
       <el-col :span="1">
         <el-checkbox

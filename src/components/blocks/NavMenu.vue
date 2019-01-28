@@ -1,16 +1,18 @@
 <template>
-  <div>
+  <div class="NavMenu">
     <el-header>
       <el-row>
         <el-col
           :span="16"
-          :offset="4">
+          :offset="4"
+        >
           <span class="logo">
             <router-link to="/">
               <img
                 class="logo"
                 src="./../../assets/images/logo.svg"
-                alt="logo">
+                alt="logo"
+              >
             </router-link>
           </span>
           <el-menu
@@ -21,19 +23,22 @@
           >
             <el-menu-item index="/login">
               <router-link to="/login">
-                <span>Login</span>
+                <span>
+                  Login
+                </span>
               </router-link>
             </el-menu-item>
             <el-menu-item index="/register">
               <router-link to="/register">
-                <span>Register</span>
+                <span>
+                  Register
+                </span>
               </router-link>
             </el-menu-item>
           </el-menu>
         </el-col>
       </el-row>
     </el-header>
-
   </div>
 </template>
 
@@ -76,6 +81,10 @@ export default {
 
     .el-header {
         background-color: #fff;
+      // background: linear-gradient(to bottom, #6287bc 0%, #96e4c4 100%);
+      /*background-color: #6287bc;*/
+      /*background: @include filter-gradient(#6287bc, #96e4c4, vertical);*/
+      /*background: @include background-image(linear-gradient(top, #6287bc 0%, #96e4c4 100%));*/
     }
 
     a {

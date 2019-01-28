@@ -1,14 +1,16 @@
 <template>
-  <div>
+  <div class="VerifyUserPage">
     <el-container direction="vertical">
-      <nav-menu/>
+      <NavMenu/>
       <el-main>
         <el-row>
           <el-col
             v-loading="loading"
             :span="16"
             :offset="4">
-            <span class="page-title"> Verifying Account </span>
+            <span class="page-title">
+              Verifying Account
+            </span>
             <el-col :span="24">
               <el-card>
                 <el-row>
@@ -17,31 +19,40 @@
                     :offset="4">
                     <el-form>
                       <el-row>
-                        <label>Email</label>
+                        <label>
+                          Email
+                        </label>
                         <el-input
+                          v-model="email"
                           :class="{
                             'has-error': $v.email.$error
                           }"
-                          v-model="email"
                           placeholder="Enter your email"
                           @input="$v.email.$touch()"
                           @blur="validateEmail"
                         />
                         <div
                           v-if="$v.email.$error"
-                          class="errors">
+                          class="errors"
+                        >
                           <span
                             v-if="!$v.email.required"
                             class="error-message"
-                          >Field is required</span>
+                          >
+                            Field is required
+                          </span>
                           <span
                             v-if="!$v.email.isEmail"
                             class="error-message"
-                          >Invalid email</span>
+                          >
+                            Invalid email
+                          </span>
                         </div>
                       </el-row>
                       <el-row>
-                        <label>Password</label>
+                        <label>
+                          Password
+                        </label>
                         <br>
                         <el-input
                           v-model="password"
@@ -54,11 +65,14 @@
                         />
                         <div
                           v-if="$v.password.$error"
-                          class="errors">
+                          class="errors"
+                        >
                           <span
                             v-if="!$v.password.required"
                             class="error-message"
-                          >Field is required</span>
+                          >
+                            Field is required
+                          </span>
                         </div>
                       </el-row>
                       <div class="action-buttons">
@@ -66,7 +80,8 @@
                           :disabled="formInvalid"
                           type="success"
                           @click="verifyUser"
-                        > Verify
+                        >
+                          Verify
                         </el-button>
                       </div>
                     </el-form>
@@ -83,6 +98,7 @@
 
 <script>
 import { required } from 'vuelidate/lib/validators';
+
 import NavMenu from '../blocks/NavMenu';
 
 export default {

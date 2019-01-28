@@ -1,10 +1,11 @@
 <template>
-  <div>
+  <div class="OrganizationPage">
     <el-main>
       <el-row>
         <el-col
           :span="16"
-          :offset="4">
+          :offset="4"
+        >
           <div class="pull-right">
             <el-button
               v-if="userStatus === 1"
@@ -12,42 +13,60 @@
               plain
               title="Click to edit"
               @click.prevent="goToEdit(organization.id)"
-            > Edit </el-button>
+            >
+              Edit
+            </el-button>
           </div>
-          <span class="page-title"> Organization {{ organization.name }}</span>
+          <span class="page-title">
+            Organization {{ organization.name }}
+          </span>
           <el-col :span="24">
             <el-card>
               <el-row>
                 <el-col
                   :span="16"
-                  :offset="4">
+                  :offset="4"
+                >
                   <el-row>
-                    <label>Name</label>
+                    <label>
+                      Name
+                    </label>
                     <el-input
                       v-model="organization.name"
-                      disabled/>
+                      disabled
+                    />
                   </el-row>
                   <el-row>
-                    <label>Email</label>
+                    <label>
+                      Email
+                    </label>
                     <el-input
                       v-model="organization.email"
-                      disabled/>
+                      disabled
+                    />
                   </el-row>
                   <el-row>
-                    <label>Phone</label>
+                    <label>
+                      Phone
+                    </label>
                     <el-input
                       v-model="organization.phone"
-                      disabled/>
+                      disabled
+                    />
                   </el-row>
                   <el-row>
-                    <label>Website</label>
+                    <label>
+                      Website
+                    </label>
                     <el-input
                       v-model="organization.website"
                       disabled
                     />
                   </el-row>
                   <el-row>
-                    <label>Address</label>
+                    <label>
+                      Address
+                    </label>
                     <el-input
                       v-model="organization.address"
                       :rows="5"
@@ -67,6 +86,7 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
+
 import notification from '../../mixins/notification';
 
 export default {

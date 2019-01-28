@@ -1,6 +1,6 @@
-<template >
-  <div>
-    <one-task
+<template>
+  <div class="TaskListOld">
+    <OneTask
       v-for="(task, index) in tasks"
       :key="task.id"
       :task="task"

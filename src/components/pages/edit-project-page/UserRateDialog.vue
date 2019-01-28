@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="UserRateDialog">
     <el-dialog
       :visible.sync="showUserRate"
       title="Change rates"
@@ -33,7 +33,10 @@
       <span slot="footer">
         <el-button
           type="success"
-          @click="addUser()">Apply</el-button>
+          @click="addUser()"
+        >
+          Apply
+        </el-button>
       </span>
     </el-dialog>
   </div>

@@ -1,16 +1,17 @@
 <template>
-  <div>
+  <div class="TimeEntryEditor">
     <div class="timer-timeentry-editor">
       <el-form>
         <el-row>
           <el-col
             :span="24"
-            class="time-pickers">
+            class="time-pickers"
+          >
             <el-col :span="9">
               <el-col :span="15">
                 <el-time-picker
-                  :class="{'has-error': $v.localTimeEntry.startTime.$error }"
                   v-model="localTimeEntry.startTime"
+                  :class="{'has-error': $v.localTimeEntry.startTime.$error }"
                   :default-value="defaultTime"
                   placeholder="Start time"
                   value-format="HH:mm:ss"
@@ -23,24 +24,31 @@
                   <span
                     v-if="!$v.localTimeEntry.startTime.required"
                     class="error-message"
-                  >Field is required</span>
+                  >
+                    Field is required
+                  </span>
                   <span
                     v-if="!$v.localTimeEntry.startTime.validTime"
                     class="error-message"
-                  >Invalid time</span>
+                  >
+                    Invalid time
+                  </span>
                 </span>
               </el-col>
 
               <el-col :span="8">
-                <span class="spend-time">{{ spendTime }}</span>
+                <span class="spend-time">
+                  {{ spendTime }}
+                </span>
               </el-col>
             </el-col>
             <el-col
               v-if="(timeEntry) ? activeTimeEntry !== timeEntry.uuid : true"
-              :span="6">
+              :span="6"
+            >
               <el-time-picker
-                :class="{ 'has-error': $v.localTimeEntry.endTime.$error }"
                 v-model="localTimeEntry.endTime"
+                :class="{ 'has-error': $v.localTimeEntry.endTime.$error }"
                 :disabled="(timeEntry) ? activeTimeEntry === timeEntry.uuid : false"
                 placeholder="End time"
                 value-format="HH:mm:ss"
@@ -52,10 +60,16 @@
               <span v-if="$v.localTimeEntry.endTime.$error">
                 <span
                   v-if="!$v.localTimeEntry.endTime.required"
-                  class="error-message">Field is required</span>
+                  class="error-message"
+                >
+                  Field is required
+                </span>
                 <span
                   v-if="!$v.localTimeEntry.endTime.validTime"
-                  class="error-message">Invalid time</span>
+                  class="error-message"
+                >
+                  Invalid time
+                </span>
               </span>
             </el-col>
           </el-col>
@@ -63,15 +77,24 @@
         <el-dialog
           :visible.sync="confirmDeleting"
           title="Delete time entry"
-          width="30%">
-          <span>It will not be undone. Continue?</span>
+          width="30%"
+        >
+          <span>
+            It will not be undone. Continue?
+          </span>
           <span
             slot="footer"
-            class="dialog-footer">
-            <el-button @click="confirmDeleting = false">No</el-button>
+            class="dialog-footer"
+          >
+            <el-button @click="confirmDeleting = false">
+              No
+            </el-button>
             <el-button
               type="primary"
-              @click="deleteTimeEntry">Yes</el-button>
+              @click="deleteTimeEntry"
+            >
+              Yes
+            </el-button>
           </span>
         </el-dialog>
         <el-row class="actions">
@@ -83,7 +106,8 @@
               size="middle"
               title="Save editing"
               @click.prevent="updateTimeEntry"
-            > Save
+            >
+              Save
             </el-button>
             <el-button
               v-if="addingTimeEntry"
@@ -92,7 +116,8 @@
               size="middle"
               title="Add time entry"
               @click.prevent="createTimeEntry"
-            > Save
+            >
+              Save
             </el-button>
             <el-button
               type="plain"
@@ -106,7 +131,8 @@
               type="text"
               class="delete_button"
               @click.prevent="confirmDeleting = true"
-            >Delete Time Entry
+            >
+              Delete Time Entry
             </el-button>
           </el-col>
         </el-row>
@@ -119,6 +145,7 @@
 import moment from 'moment';
 import { mapGetters } from 'vuex';
 import { required } from 'vuelidate/lib/validators';
+
 import TimeEntry from '../../../models/TimeEntry';
 
 export default {
@@ -273,7 +300,9 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss"
        rel="stylesheet/css"
-       scoped>
+       scoped
+>
+
   .el-icon-edit-outline {
     font-size : 20px;
     margin    : 10px;

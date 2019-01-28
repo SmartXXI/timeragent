@@ -1,74 +1,97 @@
 <template>
-  <div>
+  <div class="EditClientPage">
     <el-main>
       <el-row>
         <el-col
           :span="16"
-          :offset="4">
+          :offset="4"
+        >
           <div class="pull-right">
             <el-button
               :disabled="saving"
               plain
               @click.prevent="cancel"
-            >Cancel</el-button>
+            >
+              Cancel
+            </el-button>
             <el-button
               v-if="isEditing"
               :disabled="formInvalid || saving"
               type="success"
               title="Click to save"
               @click.prevent="updateClient"
-            ><i
-              v-if="saving"
-              class="el-icon-loading"/> Save </el-button>
+            >
+              <i
+                v-if="saving"
+                class="el-icon-loading"
+              />
+              Save
+            </el-button>
             <el-button
               v-if="isCreating"
               :disabled="formInvalid || saving"
               type="success"
               title="Click to create"
               @click.prevent="createClient"
-            ><i
-              v-if="saving"
-              class="el-icon-loading"/> Save </el-button>
+            >
+              <i
+                v-if="saving"
+                class="el-icon-loading"
+              />
+              Save
+            </el-button>
           </div>
           <span
             v-if="isCreating"
-            class="page-title"> New Client</span>
+            class="page-title"
+          >
+            New Client
+          </span>
           <span
             v-if="isEditing"
-            class="page-title"> Edit Client</span>
+            class="page-title"
+          >
+            Edit Client
+          </span>
           <el-col :span="24">
             <el-card>
               <el-row>
                 <el-col
                   :span="16"
-                  :offset="4">
+                  :offset="4"
+                >
                   <el-row>
                     <label>Name</label>
                     <el-input
+                      v-model="localClient.name"
                       :class="{
                         'has-error': $v.localClient.name.$error
                       }"
-                      v-model="localClient.name"
                       placeholder="Enter client name"
                       @input="$v.localClient.name.$touch()"
                     />
                     <div
                       v-if="$v.localClient.name.$error"
-                      class="errors">
+                      class="errors"
+                    >
                       <span
                         v-if="!$v.localClient.name.required"
                         class="error-message"
-                      >Field is required</span>
+                      >
+                        Field is required
+                      </span>
                     </div>
                   </el-row>
                   <el-row>
-                    <label>Invoice prefix</label>
+                    <label>
+                      Invoice prefix
+                    </label>
                     <el-input
+                      v-model="localClient.invoicePrefix"
                       :class="{
                         'has-error': $v.localClient
                           .invoicePrefix.$error
                       }"
-                      v-model="localClient.invoicePrefix"
                       placeholder="Enter invoice prefix"
                       @input="$v.localClient.invoicePrefix.$touch()"
                     />
@@ -77,8 +100,7 @@
                       class="errors"
                     >
                       <span
-                        v-if="!$v.localClient
-                        .invoicePrefix.maxLength"
+                        v-if="!$v.localClient.invoicePrefix.maxLength"
                         class="error-message"
                       >
                         Invoice prefix shouldn't
@@ -87,22 +109,25 @@
                     </div>
                   </el-row>
                   <el-row>
-                    <label>Address</label>
+                    <label>
+                      Address
+                    </label>
                     <el-input
-                      :rows="5"
                       v-model="localClient.address"
+                      :rows="5"
                       type="textarea"
                       placeholder="Enter client address"
                     />
                   </el-row>
                   <el-row>
-                    <label>First name</label>
+                    <label>
+                      First name
+                    </label>
                     <el-input
-                      :class="{
-                        'has-error': $v.contact
-                          .firstName.$error
-                      }"
                       v-model="contact.firstName"
+                      :class="{
+                        'has-error': $v.contact.firstName.$error
+                      }"
                       placeholder="Enter first name of contact person"
                       @input="$v.contact.firstName.$touch()"
                     />
@@ -118,26 +143,31 @@
                     </div>
                   </el-row>
                   <el-row>
-                    <label>Last name</label>
+                    <label>
+                      Last name
+                    </label>
                     <el-input
                       v-model="contact.lastName"
                       placeholder="Enter last name of contact person"
                     />
                   </el-row>
                   <el-row>
-                    <label>Email</label>
+                    <label>
+                      Email
+                    </label>
                     <el-input
+                      v-model="contact.email"
                       :class="{
                         'has-error': $v.contact.email.$error
                       }"
-                      v-model="contact.email"
                       placeholder="Enter email of contact person"
                       @input="$v.contact.email.$touch()"
                       @blur="validateEmail"
                     />
                     <div
                       v-if="$v.contact.email.$error"
-                      class="errors">
+                      class="errors"
+                    >
                       <span
                         v-if="!$v.contact.email.required"
                         class="error-message"
@@ -153,13 +183,14 @@
                     </div>
                   </el-row>
                   <el-row>
-                    <label>Telephone</label>
+                    <label>
+                      Telephone
+                    </label>
                     <el-input
                       v-model="contact.telephone"
                       placeholder="Enter telephone of contact person"
                     />
                   </el-row>
-
 
                   <div>
                     <el-button
@@ -167,33 +198,44 @@
                       type="text"
                       class="delete_button"
                       @click="showConfirmModal = true"
-                    >Delete client</el-button>
+                    >
+                      Delete client
+                    </el-button>
                   </div>
-
 
                   <!-- Confirm delete client modal form -->
                   <el-dialog
                     v-if="isEditing"
                     :visible.sync="showConfirmModal"
                     title="Delete client"
-                    width="30%">
+                    width="30%"
+                  >
                     <p>
                       It will not be undone. Please
-                      enter client name to continue: <br>({{ client.name }})</p>
+                      enter client name to continue:
+                      <br>
+                      ({{ client.name }})
+                    </p>
                     <el-input
                       v-model="clientName"
-                      placeholder="Enter client name"/>
+                      placeholder="Enter client name"
+                    />
                     <span
                       slot="footer"
-                      class="dialog-footer">
+                      class="dialog-footer"
+                    >
                       <el-button
                         @click.prevent="showConfirmModal = false"
-                      >Cancel</el-button>
+                      >
+                        Cancel
+                      </el-button>
                       <el-button
                         :disabled="!confirmDelete"
                         type="danger"
                         @click.prevent="deleteClient"
-                      >Delete</el-button>
+                      >
+                        Delete
+                      </el-button>
                     </span>
                   </el-dialog>
                 </el-col>
@@ -209,8 +251,10 @@
 <script>
 import { required, maxLength } from 'vuelidate/lib/validators';
 import { mapGetters } from 'vuex';
+
 import notification from '../../mixins/notification';
 import loading from '../../mixins/loading';
+
 import Contact from '../../models/Contact';
 import Client from '../../models/Client';
 

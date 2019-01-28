@@ -1,12 +1,12 @@
 <template>
-  <div>
+  <div class="TaskList">
     <el-col :span="24">
       <el-card>
         <el-row justify="start">
           <el-col :span="1">
             <el-checkbox
-              :disabled="!tasksExists"
               v-model="isCheckedAll"
+              :disabled="!tasksExists"
               :indeterminate="isIndeterminate"
               @change="checkAll"
             />
@@ -14,7 +14,8 @@
           <el-col :span="6">
             <div
               v-if="!checkedTasks.length"
-              class="actions full-width">
+              class="actions full-width"
+            >
               <el-button
                 type="primary"
                 plain
@@ -36,7 +37,7 @@
           </el-col>
         </el-row>
         <div>
-          <task-editor
+          <TaskEditor
             v-if="addingTask"
             :adding-task="true"
             @add-task="createTask"
@@ -45,7 +46,7 @@
 
           <div class="tasks-section">
             <div v-if="tasksExists">
-              <one-task
+              <OneTask
                 v-for="(task, index) in tasks"
                 :key="task.uuid"
                 :task="task"
@@ -58,7 +59,8 @@
           </div>
           <div
             v-if="!tasksExists"
-            class="well text-center">
+            class="well text-center"
+          >
             No work time is recorded for this day.
           </div>
         </div>
@@ -69,10 +71,15 @@
         >
           <p>It will not be undone. Continue?</p>
           <span slot="footer">
-            <el-button @click="confirmDelete = false">No</el-button>
+            <el-button @click="confirmDelete = false">
+              No
+            </el-button>
             <el-button
               type="primary"
-              @click="deleteTasks">Yes</el-button>
+              @click="deleteTasks"
+            >
+              Yes
+            </el-button>
           </span>
         </el-dialog>
       </el-card>
@@ -83,13 +90,16 @@
 <script>
 import moment from 'moment';
 import { mapGetters } from 'vuex';
-import TimeEntryEditor from './TimeEntryEditor';
+
+// import TimeEntryEditor from './TimeEntryEditor';
 import TaskEditor from './TaskEditor';
 import OneTask from './OneTask';
 
 export default {
   components: {
-    TimeEntryEditor, TaskEditor, OneTask,
+    // TimeEntryEditor,
+    TaskEditor,
+    OneTask,
   },
   data() {
     return {

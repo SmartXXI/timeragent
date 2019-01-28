@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="AppPage">
     <div id="app-page">
       <div class="page-title">
         <div class="tracker-datepicker">
@@ -98,10 +98,11 @@ export default {
       'user',
     ]),
     spendTime() {
-                let spendTime = this.$store.state.spendTime;                                //eslint-disable-line
+      const { spendTime } = this.$store.state;
       if (spendTime !== null) {
         return spendTime.format('HH:mm:ss');
-                } else return null;                                                         //eslint-disable-line
+      }
+      return null;
     },
     activeTask() {
       return this.$store.state.activeTask;

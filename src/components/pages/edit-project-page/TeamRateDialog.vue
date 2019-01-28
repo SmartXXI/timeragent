@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="TeamRateDialog">
     <el-dialog
       :visible.sync="showDialog"
       title="Users rate in project"

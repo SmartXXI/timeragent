@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="EditProjectPage">
     <el-main
       v-loading="loading"
     >
@@ -14,7 +14,8 @@
                 :disabled="saving"
                 type="plain"
                 @click.prevent="cancel"
-              > Cancel
+              >
+                Cancel
               </el-button>
               <el-button
                 v-if="isEditing"
@@ -25,7 +26,8 @@
               >
                 <i
                   v-if="saving"
-                  class="el-icon-loading"/>
+                  class="el-icon-loading"
+                />
                 Save
               </el-button>
               <el-button
@@ -37,17 +39,24 @@
               >
                 <i
                   v-if="saving"
-                  class="el-icon-loading"/>
+                  class="el-icon-loading"
+                />
                 Save
               </el-button>
             </div>
           </div>
           <span
             v-if="isEditing"
-            class="page-title"> Edit Project </span>
+            class="page-title"
+          >
+            Edit Project
+          </span>
           <span
             v-if="isCreating"
-            class="page-title"> New Project </span>
+            class="page-title"
+          >
+            New Project
+          </span>
           <el-col :span="24">
             <el-card>
               <el-row>
@@ -58,24 +67,29 @@
                     <el-row>
                       <label>Name</label>
                       <el-input
-                        :class="{ 'has-error': $v.localProject.name.$error }"
                         v-model="localProject.name"
+                        :class="{ 'has-error': $v.localProject.name.$error }"
                         placeholder="Enter project name"
                         @input="$v.localProject.name.$touch()"
                       />
                       <div
                         v-if="$v.localProject.name.$error"
-                        class="errors">
+                        class="errors"
+                      >
                         <span
                           v-if="!$v.localProject.name.required"
                           class="error-message"
-                        >Field is required</span>
+                        >
+                          Field is required
+                        </span>
                       </div>
                     </el-row>
                   </div>
                   <div v-if="profile === 'organization'">
                     <el-row>
-                      <label>Client</label>
+                      <label>
+                        Client
+                      </label>
                       <div>
                         <el-select
                           v-model="localProject.clientUuid"
@@ -88,30 +102,35 @@
                           />
                           <el-option
                             v-for="client in clients"
+                            :key="client.uuid"
                             :label="client.name"
                             :value="client.uuid"
-                            :key="client.uuid"
                           />
                         </el-select>
                       </div>
                     </el-row>
                     <div
                       v-if="$v.localProject.clientUuid.$error"
-                      class="errors">
+                      class="errors"
+                    >
                       <span
                         v-if="!$v.localProject.clientUuid.required"
                         class="error-message"
-                      >Field is required</span>
+                      >
+                        Field is required
+                      </span>
                     </div>
                   </div>
 
                   <el-tabs v-model="activeTabName">
                     <el-tab-pane
                       label="Teams"
-                      name="teams">
+                      name="teams"
+                    >
                       <el-row
                         type="flex"
-                        justify="space-around">
+                        justify="space-around"
+                      >
                         <el-autocomplete
                           v-model="queryTeamsString"
                           :fetch-suggestions="searchTeams"
@@ -124,7 +143,8 @@
                       </el-row>
                       <el-row
                         type="flex"
-                        justify="space-around">
+                        justify="space-around"
+                      >
 
                         <el-table
                           :data="localProject.teams"
@@ -180,10 +200,12 @@
                     </el-tab-pane>
                     <el-tab-pane
                       label="Users"
-                      name="users">
+                      name="users"
+                    >
                       <el-row
                         type="flex"
-                        justify="space-around">
+                        justify="space-around"
+                      >
                         <el-autocomplete
                           v-model="queryUsersString"
                           :fetch-suggestions="searchUsers"
@@ -193,23 +215,26 @@
                           @select="setUserRate"
                         >
                           <template slot-scope="{ item }">
-                            <span>{{ item.name }}  </span>
+                            <span>
+                              {{ item.name }}
+                            </span>
                             <span
                               class="green-text"
-                            >({{
-                              item.email.substr(0, queryUsersString.length)
-                            }}</span><span
+                            >
+                              ({{ item.email.substr(0, queryUsersString.length)}}
+                            </span>
+                            <span
                               class="gray-text"
-                            >{{
-                              item.email.slice(queryUsersString.length, item.email.length)
-                            }})</span>
+                            >
+                              {{ item.email.slice(queryUsersString.length, item.email.length) }})
+                            </span>
                           </template>
                         </el-autocomplete>
                       </el-row>
                       <el-row
                         type="flex"
-                        justify="space-around">
-
+                        justify="space-around"
+                      >
                         <el-table
                           :data="localProject.users"
                           :default-sort="{ prop: 'name' }"
@@ -288,14 +313,14 @@
                     </el-dialog>
                   </div>
                   <!--Set team rate dialog-->
-                  <team-rates-dialog
+                  <TeamRatesDialog
                     v-if="showTeamRate"
                     :team="teamForChangeRate"
                     @add-team="addTeam"
                   />
                   <!---->
                   <!--Set user rate dialog-->
-                  <user-rate-dialog
+                  <UserRateDialog
                     v-if="showUserRate"
                     :users="userForChangeRate"
                     @add-user="addUser"
@@ -314,10 +339,13 @@
 <script>
 import { required } from 'vuelidate/lib/validators';
 import { mapGetters, mapActions } from 'vuex';
+
 import notification from '../../mixins/notification';
 import loading from '../../mixins/loading';
+
 import TeamRatesDialog from './edit-project-page/TeamRateDialog';
 import UserRateDialog from './edit-project-page/UserRateDialog';
+
 import Project from '../../models/Project';
 
 export default {

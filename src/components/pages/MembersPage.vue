@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="MembersPage">
     <el-main v-loading="loading">
       <el-row>
         <el-col
@@ -15,7 +15,9 @@
                 to="members/invite"
                 class="el-button el-button--primary is-plain"
               >
-              <i class="el-icon-plus"/> Manage Members</router-link>
+                <i class="el-icon-plus"/>
+                Manage Members
+              </router-link>
             </div>
             <el-table
               :data="organizationMembers"
@@ -30,14 +32,18 @@
               />
               <el-table-column
                 label="Status"
-                sortable>
+                sortable
+              >
                 <template slot-scope="scope">
                   <span
                     v-if="scope.row.statusInOrganization === 1"
                   >
-                    <i class="el-icon-success gray-text"/> Owner
+                    <i class="el-icon-success gray-text"/>
+                    Owner
                   </span>
-                  <span v-else>Member</span>
+                  <span v-else>
+                    Member
+                  </span>
                 </template>
               </el-table-column>
             </el-table>
@@ -50,6 +56,7 @@
 
 <script>
 import { mapGetters } from 'vuex';
+
 import notification from '../../mixins/notification';
 import loading from '../../mixins/loading';
 

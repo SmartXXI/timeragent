@@ -1,16 +1,19 @@
 <template>
-  <div>
+  <div class="InviteMembersPage">
     <el-main>
       <el-row>
         <el-col
           :span="16"
-          :offset="4">
+          :offset="4"
+        >
           <div class="pull-right">
             <el-button
               :disabled="saving"
               plain
               @click.prevent="$router.go(-1)"
-            >Cancel</el-button>
+            >
+              Cancel
+            </el-button>
             <el-button
               v-if="isCreating"
               :disabled="saving"
@@ -20,16 +23,23 @@
             >
               <i
                 v-if="saving"
-                class="el-icon-loading"/>
+                class="el-icon-loading"
+              />
               Save
             </el-button>
           </div>
           <span
             v-if="isCreating"
-            class="page-title"> Invite members </span>
+            class="page-title"
+          >
+            Invite members
+          </span>
           <span
             v-if="isEditing"
-            class="page-title"> Edit Member </span>
+            class="page-title"
+          >
+            Edit Member
+          </span>
           <el-col :span="24">
             <el-card>
               <el-row>
@@ -49,6 +59,7 @@
                         class="members-search-input"
                         @select="addMember"
                       >
+                        <!--TODO refactor next block-->
                         <template slot-scope="{ item }">
                           <span>{{ item.name }}  </span>
                           <span
@@ -67,7 +78,8 @@
                   <el-row
                     type="flex"
                     justify="space-around"
-                    class="transfer">
+                    class="transfer"
+                  >
                     <el-table
                       :data="localMembers"
                       :default-sort="{ prop: 'name' }"
@@ -84,28 +96,25 @@
                         sortable>
                         <template slot-scope="scope">
                           <span
-                            v-if="scope.row
-                            .statusInOrganization === 1"
+                            v-if="scope.row.statusInOrganization === 1"
                           >
-                            <i class="el-icon-success gray-text"/> Owner
+                            <i class="el-icon-success gray-text"/>
+                            Owner
                           </span>
-                          <span v-else>Member</span>
+                          <span v-else>
+                            Member
+                          </span>
                         </template>
                       </el-table-column>
                       <el-table-column width="80">
                         <template slot-scope="scope">
                           <el-button
-                            :disabled="
-                              scope.row
-                                .statusInOrganization === 1
-                            "
+                            :disabled="scope.row.statusInOrganization === 1"
                             type="danger"
                             plain
                             size="mini"
                             icon="el-icon-delete"
-                            @click="
-                              removeMember(scope.row.uuid)
-                            "
+                            @click="removeMember(scope.row.uuid)"
                           />
                         </template>
                       </el-table-column>

@@ -1,46 +1,60 @@
 <template>
   <div>
-    <el-container direction="vertical">
-      <nav-menu/>
+    <el-container
+      class="LoginPage"
+      direction="vertical"
+    >
+      <NavMenu/>
       <el-main v-loading="loading">
         <el-row>
           <el-col
             :span="16"
-            :offset="4">
-            <span class="page-title"> Login </span>
+            :offset="4"
+          >
+            <span class="page-title">
+              Login
+            </span>
             <el-col :span="24">
               <el-card>
                 <el-row>
                   <el-col
                     :span="16"
-                    :offset="4">
+                    :offset="4"
+                  >
                     <el-form>
                       <el-row>
                         <label>Email</label>
                         <el-input
+                          v-model="user.email"
                           :class="{
                             'has-error': $v.user.email.$error
                           }"
-                          v-model="user.email"
                           placeholder="Enter your email"
                           @input="$v.user.email.$touch()"
                           @blur="validateEmail"
                         />
                         <div
                           v-if="$v.user.email.$error"
-                          class="errors">
+                          class="errors"
+                        >
                           <span
                             v-if="!$v.user.email.required"
                             class="error-message"
-                          >Field is required</span>
+                          >
+                            Field is required
+                          </span>
                           <span
                             v-if="!$v.user.email.isEmail"
                             class="error-message"
-                          >Invalid email</span>
+                          >
+                            Invalid email
+                          </span>
                         </div>
                       </el-row>
                       <el-row>
-                        <label>Password</label>
+                        <label>
+                          Password
+                        </label>
                         <br>
                         <el-input
                           v-model="user.password"
@@ -53,11 +67,14 @@
                         />
                         <div
                           v-if="$v.user.password.$error"
-                          class="errors">
+                          class="errors"
+                        >
                           <span
                             v-if="!$v.user.password.required"
                             class="error-message"
-                          >Field is required</span>
+                          >
+                            Field is required
+                          </span>
                         </div>
                       </el-row>
                       <div class="action-buttons">
@@ -65,7 +82,8 @@
                           :disabled="formInvalid"
                           type="success"
                           @click="loginUser"
-                        > Login
+                        >
+                          Login
                         </el-button>
                       </div>
                     </el-form>
@@ -83,9 +101,12 @@
 <script>
 import { required } from 'vuelidate/lib/validators';
 import { mapActions } from 'vuex';
-import NavMenu from '../blocks/NavMenu';
+
 import notification from '../../mixins/notification';
 import loading from '../../mixins/loading';
+
+import NavMenu from '../blocks/NavMenu';
+
 import User from '../../models/User';
 
 export default {
@@ -113,7 +134,7 @@ export default {
       this.startLoading();
       this.login({ user: this.user })
         .then((data) => {
-          console.log(data);
+          console.info(data);
           localStorage.setItem('accessToken', data.accessToken);
           localStorage.setItem('refreshToken', data.refreshToken);
           localStorage.setItem('expiresIn', data.expiresIn);

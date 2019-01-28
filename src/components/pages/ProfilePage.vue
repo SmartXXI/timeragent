@@ -1,35 +1,46 @@
 <template>
-  <div>
+  <div class="ProfilePage">
     <el-main v-loading="loading">
       <el-row>
         <el-col
           :span="16"
-          :offset="4">
-          <div class="pull-right">
+          :offset="4"
+        >
+          <div class="pull-right"
+          >
             <el-button
               type="plain"
               @click="$router.go(-1)"
-            > Cancel </el-button>
+            >
+              Cancel
+            </el-button>
             <el-button
               :disabled="formInvalid"
               type="success"
               @click="updateUser"
-            > Save </el-button>
+            >
+              Save
+            </el-button>
           </div>
-          <span class="page-title"> My Profile </span>
+          <span class="page-title">
+            My Profile
+          </span>
           <el-col :span="24">
             <el-card>
               <el-row>
                 <el-col
                   :span="16"
-                  :offset="4">
+                  :offset="4"
+                >
                   <el-row>
-                    <label>First Name</label>
+                    <label>
+                      First Name
+                    </label>
                     <el-input
+                      v-model="localUser.firstName"
                       :class="{
                         'has-error': $v.localUser.firstName.$error
                       }"
-                      v-model="localUser.firstName"
                       placeholder="Enter your name"
                       @input="$v.localUser.firstName.$touch()"
                     />
@@ -40,16 +51,20 @@
                       <span
                         v-if="!$v.localUser.firstName.required"
                         class="error-message"
-                      >Field is required</span>
+                      >
+                        Field is required
+                      </span>
                     </div>
                   </el-row>
                   <el-row>
-                    <label>Last Name</label>
+                    <label>
+                      Last Name
+                    </label>
                     <el-input
+                      v-model="localUser.lastName"
                       :class="{
                         'has-error': $v.localUser.lastName.$error
                       }"
-                      v-model="localUser.lastName"
                       placeholder="Enter your name"
                       @input="$v.localUser.lastName.$touch()"
                     />
@@ -60,16 +75,20 @@
                       <span
                         v-if="!$v.localUser.lastName.required"
                         class="error-message"
-                      >Field is required</span>
+                      >
+                        Field is required
+                      </span>
                     </div>
                   </el-row>
                   <el-row>
-                    <label>Email</label>
+                    <label>
+                      Email
+                    </label>
                     <el-input
+                      v-model="localUser.email"
                       :class="{
                         'has-error': $v.localUser.email.$error
                       }"
-                      v-model="localUser.email"
                       placeholder="Enter your email"
                       disabled
                       @input="$v.localUser.email.$touch()"
@@ -77,19 +96,26 @@
                     />
                     <div
                       v-if="$v.localUser.email.$error"
-                      class="errors">
+                      class="errors"
+                    >
                       <span
                         v-if="!$v.localUser.email.required"
                         class="error-message"
-                      >Field is required</span>
+                      >
+                        Field is required
+                      </span>
                       <span
                         v-if="!$v.localUser.email.isEmail"
                         class="error-message"
-                      >Invalid email</span>
+                      >
+                        Invalid email
+                      </span>
                       <span
                         v-if="!$v.localUser.email.isUniqueEmail"
                         class="error-message"
-                      >Email is used by another user</span>
+                      >
+                        Email is used by another user
+                      </span>
                     </div>
                   </el-row>
                   <!--<el-row>-->
@@ -113,20 +139,26 @@
                     />
                     <div
                       v-if="$v.currentPassword.$error"
-                      class="errors">
+                      class="errors"
+                    >
                       <span
                         v-if="!$v.localUser.currentPassword.required"
                         class="error-message"
-                      >Field is required</span>
+                      >
+                        Field is required
+                      </span>
                     </div>
                     <div
                       v-if="errors.currentPassword"
-                      class="errors">
+                      class="errors"
+                    >
                       <span
                         v-for="message in errors.currentPassword"
                         :key="message"
                         class="error-message"
-                      >{{ message }}</span>
+                      >
+                        {{ message }}
+                      </span>
                     </div>
                   </el-row>
                   <el-row>
@@ -135,7 +167,7 @@
                       v-model="localUser.password"
                       :class="{
                         'has-error' : $v.passwords.$error ||
-                      $v.localUser.password.$error}"
+                          $v.localUser.password.$error}"
                       type="password"
                       placeholder="Enter new password"
                       @input="$v.passwords.$touch(),
@@ -144,21 +176,28 @@
                     />
                     <div
                       v-if="$v.passwords.$error ||
-                      $v.localUser.password.$error"
+                        $v.localUser.password.$error"
                       class="errors"
                     >
                       <span
                         v-if="!$v.passwords.areSame"
                         class="error-message"
-                      >Passwords are not the same</span>
+                      >
+                        Passwords are not the same
+                      </span>
                       <span
                         v-if="!$v.localUser.password.required"
                         class="error-message"
-                      >Field is required</span>
+                      >
+                        Field is required
+                      </span>
                     </div>
                   </el-row>
                   <el-row>
-                    <label>Confirm password</label><br>
+                    <label>
+                      Confirm password
+                    </label>
+                    <br>
                     <el-input
                       v-model="confirmPassword"
                       :class="{
@@ -173,16 +212,21 @@
                     />
                     <div
                       v-if="$v.passwords.$error ||
-                      $v.confirmPassword.$error"
-                      class="errors">
+                        $v.confirmPassword.$error"
+                      class="errors"
+                    >
                       <span
                         v-if="!$v.passwords.areSame"
                         class="error-message"
-                      >Passwords are not the same</span>
+                      >
+                        Passwords are not the same
+                      </span>
                       <span
                         v-if="!$v.confirmPassword.required"
                         class="error-message"
-                      >Field is required</span>
+                      >
+                        Field is required
+                      </span>
                     </div>
                   </el-row>
                 </el-col>
@@ -198,9 +242,11 @@
 <script>
 import { required } from 'vuelidate/lib/validators';
 import { mapGetters, mapActions } from 'vuex';
-import notification from './../../mixins/notification';
+
+import notification from '../../mixins/notification';
 import loading from '../../mixins/loading';
-import User from './../../models/User';
+
+import User from '../../models/User';
 
 export default {
   mixins: [notification, loading],

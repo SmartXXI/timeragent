@@ -1,29 +1,36 @@
 <template>
-  <div>
+  <div class="ClientsPage">
     <el-main v-loading="loading">
       <el-row>
         <el-col
           :span="16"
           :offset="4">
-          <span class="page-title"> Clients </span>
+          <span class="page-title">
+            Clients
+          </span>
           <el-card>
             <div
               slot="header"
-              class="clearfix">
+              class="clearfix"
+            >
               <router-link
                 :to="generateUrl('clients/new')"
-                class="el-button el-button--primary is-plain">
-                <i class="el-icon-plus"/> New Client
+                class="el-button el-button--primary is-plain"
+              >
+                <i class="el-icon-plus"/>
+                New Client
               </router-link>
             </div>
             <el-table
               :data="clients"
               :default-sort = "{prop: 'name'}"
-              stripe>
+              stripe
+            >
               <el-table-column
                 prop="name"
                 label="Name"
-                sortable/>
+                sortable
+              />
               <el-table-column label="Contact Name">
                 <template slot-scope="scope">
                   <div>
@@ -33,14 +40,17 @@
               </el-table-column>
               <el-table-column
                 label=""
-                width="80">
+                width="80"
+              >
                 <template slot-scope="scope">
                   <div v-if="organization.uuid === scope.row.organizationUuid">
                     <el-button
                       type="plain"
                       size="mini"
                       @click="goToClient(scope.row.uuid)"
-                    >Edit</el-button>
+                    >
+                      Edit
+                    </el-button>
                   </div>
                 </template>
               </el-table-column>
@@ -54,6 +64,7 @@
 
 <script>
 import { mapGetters } from 'vuex';
+
 import notification from '../../mixins/notification';
 import loading from '../../mixins/loading';
 

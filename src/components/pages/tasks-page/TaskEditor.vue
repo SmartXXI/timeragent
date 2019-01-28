@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="TaskEditor">
     <div class="timer-timeentry-editor">
       <el-form
         @keyup.enter.native="(editingTask) ? updateTask() : addTask()"
@@ -11,8 +11,8 @@
               <el-col :span="22">
                 <el-input
                   ref="description"
-                  :class="{ 'has-error': $v.localTask.description.$error }"
                   v-model="localTask.description"
+                  :class="{ 'has-error': $v.localTask.description.$error }"
                   placeholder="Enter description"
                   prefix-icon="el-icon-edit-outline"
                   @input="$v.localTask.description.$touch()"
@@ -23,7 +23,9 @@
                   <span
                     v-if="!$v.localTask.description.required"
                     class="error-message"
-                  >Field is required</span>
+                  >
+                    Field is required
+                  </span>
                 </div>
               </el-col>
             </div>
@@ -41,23 +43,27 @@
                 label="No project"/>
               <el-option
                 v-for="(project) in projects"
+                :key="project.uuid"
                 :label="project.name"
                 :value="project.uuid"
-                :key="project.uuid"
               />
             </el-select>
             <div
               v-if="$v.localTask.projectUuid.$error"
-              class="errors">
+              class="errors"
+            >
               <span
                 v-if="!$v.localTask.projectUuid.required"
                 class="error-message"
-              >This field is required</span>
+              >
+                This field is required
+              </span>
             </div>
           </el-col> <!-- project field if organization-->
           <el-col
             v-else
-            :span="6">
+            :span="6"
+          >
             <el-select
               v-model="localTask.projectUuid"
               :disabled="projects.length > 0 ? false : true"
@@ -67,9 +73,9 @@
                 label="No project"/>
               <el-option
                 v-for="(project) in projects"
+                :key="project.uuid"
                 :label="project.name"
                 :value="project.uuid"
-                :key="project.uuid"
               />
             </el-select>
           </el-col> <!-- project field -->
@@ -83,14 +89,18 @@
                 controls-position="right"
                 @change="setHours"
               />
-              <span class="hours gray-text">h</span>
+              <span class="hours gray-text">
+                h
+              </span>
               <el-input-number
                 v-model="minutes"
                 :min="0"
                 controls-position="right"
                 @change="setMinutes"
               />
-              <span class="minutes gray-text">m</span>
+              <span class="minutes gray-text">
+                m
+              </span>
             </el-col>
           </el-col>
         </el-row>
@@ -103,7 +113,9 @@
               size="middle"
               title="Save editing"
               @click.prevent="updateTask"
-            > Save </el-button>
+            >
+              Save
+            </el-button>
             <el-button
               v-if="addingTask"
               :disabled="formInvalid"
@@ -111,7 +123,9 @@
               size="middle"
               title="Add task"
               @click.prevent="addTask"
-            > Save </el-button>
+            >
+              Save
+            </el-button>
             <el-button
               type="plain"
               size="middle"
@@ -124,7 +138,9 @@
               type="text"
               class="delete_button"
               @click.prevent="deleteTask"
-            >Delete Task</el-button>
+            >
+              Delete Task
+            </el-button>
           </el-col>
         </el-row>
       </el-form>
@@ -135,7 +151,9 @@
 <script>
 import moment from 'moment';
 import { mapActions, mapGetters } from 'vuex';
+
 import { required } from 'vuelidate/lib/validators';
+
 import Task from '../../../models/Task';
 
 export default {

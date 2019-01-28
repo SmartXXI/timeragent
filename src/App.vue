@@ -67,18 +67,18 @@ export default {
   }
 
   .error-icon:before {
-    position  : relative;
-    font-size : 20px;
-    margin    : 5px;
     color     : #e02c48;
     display   : block;
+    font-size : 20px;
+    margin    : 5px;
+    position  : relative;
   }
 
   .error-message {
-    display    : block;
     color      : red;
-    margin-top : 2px;
+    display    : block;
     font-size  : 13px;
+    margin-top : 2px;
   }
 
   .error-icon:hover .errors {

@@ -1,17 +1,19 @@
 <template>
-  <div>
+  <div class="EditTeamPage">
     <el-main v-loading="loading">
       <el-row>
         <el-col
           :span="16"
-          :offset="4">
+          :offset="4"
+        >
           <div class="pull-right">
             <div>
               <el-button
                 :disabled="saving"
                 type="plain"
                 @click.prevent="cancel"
-              > Cancel
+              >
+                Cancel
               </el-button>
               <el-button
                 v-if="isEditing"
@@ -22,7 +24,8 @@
               >
                 <i
                   v-if="saving"
-                  class="el-icon-loading"/>
+                  class="el-icon-loading"
+                />
                 Save
               </el-button>
               <el-button
@@ -34,7 +37,8 @@
               >
                 <i
                   v-if="saving"
-                  class="el-icon-loading"/>
+                  class="el-icon-loading"
+                />
                 Save
               </el-button>
             </div>
@@ -59,10 +63,16 @@
           </div>
           <span
             v-if="isCreating"
-            class="page-title"> New Team </span>
+            class="page-title"
+          >
+            New Team
+          </span>
           <span
             v-if="isEditing"
-            class="page-title"> Edit Team </span>
+            class="page-title"
+          >
+            Edit Team
+          </span>
           <el-col :span="24">
             <el-card>
               <el-row>
@@ -70,31 +80,38 @@
                   :span="16"
                   :offset="4">
                   <div>
-                    <label>Name</label>
+                    <label>
+                      Name
+                    </label>
                     <el-input
-                      :class="{ 'has-error': $v.localTeam.name.$error }"
                       v-model="localTeam.name"
+                      :class="{ 'has-error': $v.localTeam.name.$error }"
                       placeholder="Enter team name"
                       @input="$v.localTeam.name.$touch()"
                     />
                     <div
                       v-if="$v.localTeam.name.$error"
-                      class="errors">
+                      class="errors"
+                    >
                       <span
                         v-if="!$v.localTeam.name.required"
                         class="error-message"
-                      >Field is required</span>
+                      >
+                        Field is required
+                      </span>
                     </div>
                   </div>
 
                   <el-tabs v-model="activeTabName">
                     <el-tab-pane
                       label="Members"
-                      name="members">
+                      name="members"
+                    >
 
                       <el-row
                         type="flex"
-                        justify="space-around">
+                        justify="space-around"
+                      >
                         <el-col :span="24">
                           <el-autocomplete
                             v-model="queryString"
@@ -105,6 +122,7 @@
                             class="members-search-input"
                             @select="addMember"
                           >
+                            <!--TODO refactor next block-->
                             <template slot-scope="{ item }">
                               <span>{{ item.name }}  </span>
                               <span
@@ -123,7 +141,8 @@
                       <el-row
                         type="flex"
                         justify="space-around"
-                        class="transfer">
+                        class="transfer"
+                      >
                         <el-table
                           :data="localTeam.users"
                           :default-sort="{ prop: 'name' }"
@@ -157,7 +176,8 @@
                       type="text"
                       class="delete_button"
                       @click="showConfirmModal = true"
-                    >Delete team
+                    >
+                      Delete team
                     </el-button>
                   </div>
                   <!-- Confirm delete team modal form -->
@@ -166,24 +186,33 @@
                     v-if="isEditing"
                     :visible.sync="showConfirmModal"
                     title="Delete team"
-                    width="30%">
+                    width="30%"
+                  >
                     <p>
                       It will not be undone. Please
-                      enter team name to continue: <br>({{ team.name }})</p>
+                      enter team name to continue:
+                      <br>
+                      ({{ team.name }})
+                    </p>
                     <el-input
                       v-model="teamName"
                       placeholder="Enter team name"/>
                     <span
                       slot="footer"
-                      class="dialog-footer">
+                      class="dialog-footer"
+                    >
                       <el-button
                         @click.prevent="showConfirmModal = false"
-                      >Cancel</el-button>
+                      >
+                        Cancel
+                      </el-button>
                       <el-button
                         :disabled="!confirmDeleteTeam"
                         type="danger"
                         @click.prevent="deleteTeam"
-                      >Delete</el-button>
+                      >
+                        Delete
+                      </el-button>
                     </span>
                   </el-dialog>
                 </el-col>
@@ -193,16 +222,20 @@
         </el-col>
       </el-row>
     </el-main>
-    <div v-show="false">{{ team }}</div>
+    <div v-show="false">
+      {{ team }}
+    </div>
   </div>
 </template>
 
 <script>
 import { required } from 'vuelidate/lib/validators';
 import { mapGetters, mapActions } from 'vuex';
-import Team from '../../models/Team';
+
 import notification from '../../mixins/notification';
 import loading from '../../mixins/loading';
+
+import Team from '../../models/Team';
 
 export default {
   mixins: [notification, loading],

@@ -1,11 +1,13 @@
 <template>
-  <div>
+  <div class="ProjectsPage">
     <el-main v-loading="loading">
       <el-row>
         <el-col
           :span="16"
           :offset="4">
-          <span class="page-title"> Projects </span>
+          <span class="page-title">
+            Projects
+          </span>
           <el-card>
             <div
               slot="header"
@@ -15,7 +17,9 @@
                 to="projects/new"
                 class="el-button el-button--primary is-plain"
               >
-              <i class="el-icon-plus"/> New Project</router-link>
+                <i class="el-icon-plus"/>
+                New Project
+              </router-link>
             </div>
             <el-table
               :data="projects"
@@ -42,12 +46,16 @@
                   <template v-if="scope.row.teams.length && scope.row.teams.length < 4">
                     Teams:
                     <template v-for="(team, index) in scope.row.teams">
+                      <!--TODO change :key-->
                       <el-button
+                        :key="`te-${index}`"
                         type="text"
                         @click="showTeamMembers(team)"
                       >
                         {{ team.name }}
-                        <span v-if="index !== scope.row.teams.length - 1">,</span>
+                        <span v-if="index !== scope.row.teams.length - 1">
+                          ,
+                        </span>
                       </el-button>
                     </template>
                   </template>
@@ -55,7 +63,9 @@
                     <el-button
                       type="text"
                       @click="showTeams(scope.row.teams)"
-                    >Teams</el-button>
+                    >
+                      Teams
+                    </el-button>
                   </template>
                   <div v-if="scope.row.users.length === 1">
                     User: {{ scope.row.users[0].name }}
@@ -72,31 +82,38 @@
                 </template>
               </el-table-column>
               <el-table-column
-                width="80">
+                width="80"
+              >
                 <template slot-scope="scope">
                   <div v-if="scope.row.ownerUuid === user.uuid">
                     <el-button
                       type="plain"
                       size="mini"
                       @click="goToProject(scope.row.uuid)"
-                    >Edit</el-button>
+                    >
+                      Edit
+                    </el-button>
                   </div>
                   <div v-if="scope.row.ownerType === 'organization' && statusInOrganization === 1">
                     <el-button
                       type="plain"
                       size="mini"
                       @click="goToOrgProject(scope.row.uuid)"
-                    >Edit</el-button>
+                    >
+                      Edit
+                    </el-button>
                   </div>
                 </template>
               </el-table-column>
             </el-table>
             <el-dialog
               :visible.sync="teamsTableVisible"
-              title="Teams">
+              title="Teams"
+            >
               <el-table
                 :data="teams"
-                :default-sort="{prop: 'name'}">
+                :default-sort="{prop: 'name'}"
+              >
                 <el-table-column
                   property="name"
                   label="Name"
@@ -110,7 +127,10 @@
                   label="Members"
                 >
                   <template slot-scope="scope">
-                    <div v-for="user in scope.row.users">
+                    <div
+                      v-for="(user, index) in scope.row.users"
+                      :key="`us-${index}`"
+                    >
                       {{ user.name }}
                     </div>
                   </template>
@@ -118,18 +138,23 @@
               </el-table>
               <span
                 slot="footer"
-                class="dialog-footer">
+                class="dialog-footer"
+              >
                 <el-button
                   @click="teamsTableVisible = false"
-                >Close</el-button>
+                >
+                  Close
+                </el-button>
               </span>
             </el-dialog>
             <el-dialog
               :visible.sync="teamMembersTableVisible"
-              title="Team Members">
+              title="Team Members"
+            >
               <el-table
                 :data="teamMembers"
-                :default-sort="{prop: 'name'}">
+                :default-sort="{prop: 'name'}"
+              >
                 <el-table-column
                   property="name"
                   label="Name"
@@ -138,10 +163,13 @@
               </el-table>
               <span
                 slot="footer"
-                class="dialog-footer">
+                class="dialog-footer"
+              >
                 <el-button
                   @click="teamMembersTableVisible = false"
-                >Close</el-button>
+                >
+                  Close
+                </el-button>
               </span>
             </el-dialog>
           </el-card>
@@ -153,6 +181,7 @@
 
 <script>
 import { mapGetters } from 'vuex';
+
 import notification from '../../mixins/notification';
 import loading from '../../mixins/loading';
 import accessRights from '../../mixins/accessRights';

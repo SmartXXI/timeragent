@@ -1,12 +1,14 @@
 <template>
-  <div>
+  <div class="TimeEntry">
     <div
       class="time-entry"
-      @dblclick="showEditor">
-      {{ format(localTimeEntry.startTime) }} - {{ (localTimeEntry.active) ? 'now' :
-      format(localTimeEntry.endTime) }}
+      @dblclick="showEditor"
+    >
+      {{ format(localTimeEntry.startTime) }} - {{ (localTimeEntry.active)
+        ? 'now'
+        : format(localTimeEntry.endTime) }}
     </div>
-    <time-entry-editor
+    <TimeEntryEditor
       v-if="isEditing"
       :time-entry="localTimeEntry"
       :editing-time-entry="true"

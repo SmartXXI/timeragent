@@ -1,68 +1,89 @@
 <template>
-  <div>
+  <div class="EditOrganizationPage">
     <el-main>
       <el-row>
         <el-col
           :span="16"
-          :offset="4">
+          :offset="4"
+        >
           <div class="pull-right">
             <el-button
               plain
               @click.prevent="$router.go(-1)"
-            >Cancel</el-button>
+            >
+              Cancel
+            </el-button>
             <el-button
               v-if="isEditing"
               :disabled="formInvalid"
               type="success"
               title="Click to save"
               @click.prevent="updateOrganization"
-            > Save </el-button>
+            >
+              Save
+            </el-button>
             <el-button
               v-if="isCreating"
               :disabled="formInvalid"
               type="success"
               title="Click to create"
               @click.prevent="createOrganization"
-            > Save </el-button>
+            >
+              Save
+            </el-button>
           </div>
           <span
             v-if="isCreating"
-            class="page-title"> New Organization </span>
+            class="page-title"
+          >
+            New Organization
+          </span>
           <span
             v-if="isEditing"
-            class="page-title"> Edit Organization </span>
+            class="page-title"
+          >
+            Edit Organization
+          </span>
           <el-col :span="24">
             <el-card>
               <el-row>
                 <el-col
                   :span="16"
-                  :offset="4">
+                  :offset="4"
+                >
                   <el-row>
-                    <label>Name</label>
+                    <label>
+                      Name
+                    </label>
                     <el-input
+                      v-model="localOrganization.name"
                       :class="{
                         'has-error': $v.localOrganization.name.$error
                       }"
-                      v-model="localOrganization.name"
                       placeholder="Enter organization name"
                       @input="$v.localOrganization.name.$touch()"
                     />
                     <div
                       v-if="$v.localOrganization.name.$error"
-                      class="errors">
+                      class="errors"
+                    >
                       <span
                         v-if="!$v.localOrganization.name.required"
                         class="error-message"
-                      >Field is required</span>
+                      >
+                        Field is required
+                      </span>
                     </div>
                   </el-row>
                   <el-row>
-                    <label>Email</label>
+                    <label>
+                      Email
+                    </label>
                     <el-input
+                      v-model="localOrganization.email"
                       :class="{
                         'has-error': $v.localOrganization.email.$error
                       }"
-                      v-model="localOrganization.email"
                       placeholder="Enter organization email"
                       @input="$v.localOrganization.email.$touch()"
                       @blur="validateEmail"
@@ -74,32 +95,42 @@
                       <span
                         v-if="!$v.localOrganization.email.isEmail"
                         class="error-message"
-                      >Invalid Email</span>
+                      >
+                        Invalid Email
+                      </span>
                       <span
                         v-if="!$v.localOrganization.email.required"
                         class="error-message"
-                      >Field is required</span>
+                      >
+                        Field is required
+                      </span>
                     </div>
                   </el-row>
                   <el-row>
-                    <label>Phone</label>
+                    <label>
+                      Phone
+                    </label>
                     <el-input
                       v-model="localOrganization.phone"
                       placeholder="Enter organization phone"
                     />
                   </el-row>
                   <el-row>
-                    <label>Website</label>
+                    <label>
+                      Website
+                    </label>
                     <el-input
                       v-model="localOrganization.website"
                       placeholder="Enter organization website"
                     />
                   </el-row>
                   <el-row>
-                    <label>Address</label>
+                    <label>
+                      Address
+                    </label>
                     <el-input
-                      :rows="5"
                       v-model="localOrganization.address"
+                      :rows="5"
                       type="textarea"
                       placeholder="Enter organization address"
                     />
@@ -117,7 +148,9 @@
 <script>
 import { required } from 'vuelidate/lib/validators';
 import { mapGetters, mapActions } from 'vuex';
+
 import notification from '../../mixins/notification';
+
 import Organization from '../../models/Organization';
 
 export default {
